@@ -7,8 +7,6 @@ Book your (goated) flight from anywhere :)
 - [Usage](#usage)
 - [Setup](#setup)
 
-<hr>
-
 ## Current State
 
 ## Usage
