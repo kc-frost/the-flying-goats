@@ -1,0 +1,63 @@
+create database TFG;
+use TFG;
+
+create table gates(
+gate varchar(255) primary key
+);
+
+create table flight(
+IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
+planeName varchar(255),
+gate varchar(255) references gates(gate),
+status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded")
+);
+
+create table schedule(
+flight varchar(7) references flight(IATA),
+liftOff datetime,
+landing datetime
+);
+
+create table plane(
+ICAO varchar(4) primary key
+);
+
+create table users(
+userID int primary key,
+fname varchar(255),
+mname varchar(255) , 
+lname varchar(255),
+username varchar(255),
+email varchar(255),
+password varchar(255)
+-- maybe add passport or some sorta identification?
+);
+
+create table staff(
+staffID int primary key,
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security")
+);
+
+create table flightClass(
+classID int auto_increment primary key,
+className varchar(255),
+price double
+);
+
+create table planeSeat(
+seatNumber int primary key,
+flightID int references flight(IATA),
+class varchar(255) references flightClass(className)
+);
+
+-- A table with all the info in one for the view appointment part and cause it's cleaner
+create table booking(
+bookingNumber int primary key,
+userID int references users(userID),
+flightID int references flight(IATA),
+seat int references planeSeat(seatNumber)
+);
+
+-- create table inventory;
+
+-- create table payment;
