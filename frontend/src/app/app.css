@@ -49,13 +49,18 @@ img.brand-logo {
     margin-right: 2.5%;
     position: relative;
 }
-.dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content{
     display:block;
     color:black;
 
     /* TODO: This is being overlapped by the background in home.css.
     Eventually, find a better fix for it so this doesn't need to be used. */
     z-index: 10;
+}
+
+/* Removes black dots given by default in <li> */
+.dropdown:hover .dropdown-content li{
+    list-style-type: none;
 }
 
 .dropdown:hover img.profile-dropdown {
