@@ -3,19 +3,23 @@
   <header>
     <!-- Brand Details -->
     <section class="brand-group">
-      <img class="brand-logo" src="/brand/plane-logo.svg" alt="An image of a paper plane with a trail marking its path"/>
+      <nav>
+        <a routerLink=''>
+          <img class="brand-logo" src="/brand/plane-logo.svg" alt="An image of a paper plane with a trail marking its path"/>
+        </a>
+      </nav>
       <h1>The Flying Goats</h1>
     </section>
 
     <!-- Navigation Links -->
     <nav class="nav-links-group">
       <section class="nav-link"> 
-      <a href="#"> Book a Flight</a>
-      <img src="/header/navlink/navlink-arrow.svg" />
+        <a href="#"> Book a Flight</a>
+        <img src="/header/navlink/navlink-arrow.svg" />
       </section>
       <section class="nav-link"> 
-      <a href="#"> View Inventory </a>
-      <img src="/header/navlink/navlink-arrow.svg" />
+        <a href="#"> View Inventory </a>
+        <img src="/header/navlink/navlink-arrow.svg" />
       </section>
     </nav>
 
@@ -23,8 +27,12 @@
     <section class="dropdown">
       <img class="profile-dropdown" src="/header/profile-dropdown/profile-dropdown.svg" alt="A flat image of a person" />
       <div class="dropdown-content">
-        <p> Login </p>
-        <p> Register </p>
+        <nav>
+          <ul>
+            <li> <a routerLink="/auth">Login</a> </li>
+            <li> <a routerLink="/auth">Register</a> </li>
+          </ul>
+        </nav>
       </div>
     </section>
   </header>
@@ -35,6 +43,5 @@
   <!-- ---------- -->
   <section class="content">
     <router-outlet />
-    <app-home />
   </section>
 </main>
