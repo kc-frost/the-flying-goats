@@ -13,7 +13,7 @@ status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", 
 );
 
 create table schedule(
-flight varchar(7) references flight(IATA),
+flight varchar(7) primary key references flight(IATA),
 liftOff datetime,
 landing datetime
 );
@@ -24,23 +24,23 @@ ICAO varchar(4) primary key
 
 create table users(
 userID int primary key,
-fname varchar(255),
-mname varchar(255) , 
-lname varchar(255),
-username varchar(255),
-email varchar(255),
-password varchar(255)
+fname varchar(255) not null,
+mname varchar(255) not null, 
+lname varchar(255) not null,
+username varchar(255) not null,
+email varchar(255) not null,
+password varchar(255) not null
 -- maybe add passport or some sorta identification?
 );
 
 create table staff(
 staffID int primary key,
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security")
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null
 );
 
 create table flightClass(
 classID int auto_increment primary key,
-className varchar(255),
+className varchar(255) not null,
 price double
 );
 
@@ -58,6 +58,12 @@ flightID int references flight(IATA),
 seat int references planeSeat(seatNumber)
 );
 
--- create table inventory;
+create table inventory(
+itemID int primary key,
+planeID int references plane(ICAO),
+staffID int references staff(staffID),
+quantity int check (quantity > 0),
+isAvailable boolean default true
+);
 
 -- create table payment;
