@@ -1,0 +1,75 @@
+/* For: brand-logo and brand-name */
+.brand-group {
+    display:flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-header-color);
+}
+
+img.brand-logo {
+    width: 100px;
+    height: 100px;
+}
+
+/* For: navigation-links */
+.nav-links-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 19px;
+    gap: 10px;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav-link a {
+    color: white;
+    text-decoration: none;
+}
+
+.nav-link a:hover {
+    color: white;
+    text-decoration: white wavy underline;
+}
+
+.nav-link img {
+    width: 45px;
+    height: 45px;
+    margin-top: 1.5%;
+    margin-left: -7px;
+}
+
+/* For: profile picture and dropdown effect */
+.dropdown {
+    margin-left: auto;
+    margin-right: 2.5%;
+    position: relative;
+}
+.dropdown:hover .dropdown-content {
+    display:block;
+    color:black;
+}
+
+.dropdown:hover img.profile-dropdown {
+    /* Changes the image when hovered */
+    content: url("/profile-dropdown-hover.svg");
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #f9f9f9;
+    min-width: 150px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+img.profile-dropdown {
+    width:50px;
+    height: 50px;
+}
