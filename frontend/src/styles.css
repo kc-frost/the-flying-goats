@@ -1,1 +1,38 @@
-/* You can add global styles to this file, and also import other style files */
+/* Below resets ALL elements to have a margin and padding of 0 for extra control*/
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Define global variable CSS styles */
+:root {
+    --primary-color: #192e56;
+
+    --primary-header-color: whitesmoke;
+    --header-font: "Nunito Sans";
+    --header-content-padding: 10px;
+}
+
+/* Fonts */
+.nunito-sans {
+    font-family: "Nunito Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100,
+    "YTLC" 500;
+}
+
+/* Design for header across all pages */
+header {
+    height: 70px;
+    font-family: var(--header-font);
+    background-color: var(--primary-color);
+    padding: var(--header-content-padding);
+
+    display: flex;
+    align-items: center;
+    color: var(--primary-header-color);
+    gap: 50px;
+}
