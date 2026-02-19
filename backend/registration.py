@@ -15,7 +15,7 @@ def connect_to_db() -> PooledMySQLConnection | MySQLConnectionAbstract:
     """
     Attempts to connect to the database using user variables from the
     hidden .env file, and returns a connection object if successful.    
-    :return: Description
+    :return: A object that's connected to the db and can do queries
     :rtype: PooledMySQLConnection | MySQLConnectionAbstract
     """
 
@@ -37,7 +37,8 @@ def connect_to_db() -> PooledMySQLConnection | MySQLConnectionAbstract:
 # validation of it being a good password
 def hash_password(password: str) -> str:
     """
-    Returns a 
+    Using SHA224, returns a hashed password to be used
+    to insert into the database
     
     :param password: Unhashed password
     :type password: str
