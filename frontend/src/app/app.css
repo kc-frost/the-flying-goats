@@ -56,7 +56,7 @@ img.brand-logo {
 
 .dropdown:hover img.profile-dropdown {
     /* Changes the image when hovered */
-    content: url("/profile-dropdown-hover.svg");
+    content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
 }
 
 .dropdown-content {
