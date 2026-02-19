@@ -34,5 +34,5 @@ header {
     display: flex;
     align-items: center;
     color: var(--primary-header-color);
-    gap: 50px;
+    gap: 90px;
 }
