@@ -38,11 +38,6 @@ the HTML file. */
 
 /* Home Page Content */
 .center {
-    padding-top: 130px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     gap: 100px;
 }
 
