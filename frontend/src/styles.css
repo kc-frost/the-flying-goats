@@ -1,0 +1,60 @@
+/* Below resets ALL elements to have a margin and padding of 0 for extra control*/
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Define global variable CSS styles */
+:root {
+    --primary-color: #192e56;
+
+    --primary-header-color: whitesmoke;
+    --header-font: "Nunito Sans";
+    --header-content-padding: 10px;
+
+    --body-font: "Arimo";
+}
+
+/* Fonts */
+.nunito-sans {
+    font-family: "Nunito Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100,
+    "YTLC" 500;
+}
+
+
+.arimo {
+  font-family: "Arimo", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+/* Global header design */
+header {
+    height: 70px;
+    font-family: var(--header-font);
+    background-color: var(--primary-color);
+    padding: var(--header-content-padding);
+
+    display: flex;
+    align-items: center;
+    color: var(--primary-header-color);
+    gap: 90px;
+}
+
+/* Global content design */
+section.content {
+    font-family: var(--body-font);
+}
+
+section.content .center {
+    padding-top: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

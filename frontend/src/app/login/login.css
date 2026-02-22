@@ -1,0 +1,58 @@
+:root {
+    --center: 21px;
+}
+
+main {
+    background-color:whitesmoke;
+    width:300px;
+    height:350px;
+    padding: 10px;
+}
+
+.form-centered {
+    padding: 10px;
+    margin-top: 10px;
+    margin-left: 21px;
+}
+
+/* By turning label (which is originally an inline element) into a block element, it gets forced to be above `input` since it now takes up the entire width of its line (instead of being INline)*/
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+input {
+    box-sizing: border-box;
+    width: 238px;
+    padding: 7px;
+    margin-bottom: 35px;
+    border-radius: 4px;
+    border: 3px solid #ccc;
+    transition: 0.5s
+}
+
+input:focus {
+    border: 3px solid #555;
+    border-radius: 4px;
+}
+
+.btn-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 25px;
+}
+
+.submit-btn {
+    border-radius: 9px;
+    width: 100px;
+    height: 50px;
+    font-family: var(--body-font);
+    font-weight:900
+}
+
+.submit-btn:hover {
+    background-color:#c2c2c2
+}
