@@ -38,6 +38,7 @@ export class Login {
   // When the Register button is pressed (see: login.html), 
   // programatically navigate to Register. Note the syntax.
   goToRegister() {
-    this.router.navigate([{ outlets: { dropdown: ['register'] } }]);
+    this.router.navigate([{ outlets: 
+      { dropdown: ['register'] } }]);
   }
 }
