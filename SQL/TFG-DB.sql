@@ -27,6 +27,7 @@ userID int primary key,
 fname varchar(255) not null,
 mname varchar(255) not null, 
 lname varchar(255) not null,
+phoneNumber int not null,
 username varchar(255) not null,
 email varchar(255) not null,
 password varchar(255) not null
