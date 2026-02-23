@@ -1,15 +1,12 @@
 create database TFG;
 use TFG;
 
-create table gates(
-gate varchar(255) primary key
-);
-
 create table flight(
 IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
 gate varchar(255) references gates(gate),
-status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded")
+status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
+destination varchar(255)
 );
 
 create table schedule(
@@ -58,12 +55,30 @@ flightID int references flight(IATA),
 seat int references planeSeat(seatNumber)
 );
 
+create table equipment(
+equipmentID int primary key auto_increment,
+equipmentName varchar(255),
+equipmentDescription text
+);
+
+create table transporation(
+transportationID int primary key auto_increment
+);
+
+create table parkingLot(
+lot char(1) primary key,
+lotSpace int 
+);
+
 create table inventory(
 itemID int primary key,
 planeID int references plane(ICAO),
 staffID int references staff(staffID),
+equipmentID int references equipment(equipmentID),
+transportationID int references transportation(transportationID),
 quantity int check (quantity > 0),
 isAvailable boolean default true
 );
+
 
 -- create table payment;
