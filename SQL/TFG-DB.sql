@@ -4,7 +4,7 @@ use TFG;
 create table flight(
 IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
-gate varchar(255) references gates(gate),
+gate varchar(255),
 status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
 destination varchar(255)
 );
@@ -22,17 +22,19 @@ ICAO varchar(4) primary key
 create table users(
 userID int primary key,
 fname varchar(255) not null,
-mname varchar(255) not null, 
+phoneNumber int not null,
 lname varchar(255) not null,
 username varchar(255) not null,
 email varchar(255) not null,
-password varchar(255) not null
+password varchar(255) not null,
+isStaff boolean default false
 -- maybe add passport or some sorta identification?
 );
 
 create table staff(
 staffID int primary key,
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null,
+email varchar(255) references users(email)
 );
 
 create table flightClass(
