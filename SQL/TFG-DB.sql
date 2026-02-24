@@ -21,18 +21,21 @@ ICAO varchar(4) primary key
 
 create table users(
 userID int primary key,
+phoneNumber int not null,
 fname varchar(255) not null,
 mname varchar(255) not null, 
 lname varchar(255) not null,
 username varchar(255) not null,
 email varchar(255) not null,
-password varchar(255) not null
+password varchar(255) not null,
+isStaff boolean default false
 -- maybe add passport or some sorta identification?
 );
 
 create table staff(
 staffID int primary key,
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null,
+email varchar(255) references users(email)
 );
 
 create table flightClass(
