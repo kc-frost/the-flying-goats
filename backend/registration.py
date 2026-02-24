@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 import mysql.connector
 
+
 def connect_to_db():
     """Attempts to connect to the database using user variables from the
     hidden .env file, and returns a connection object if successful
@@ -109,11 +110,3 @@ def register(email: str, password: str):
 # TODO: Add Flask support
 def login(email: str, password: str):
     pass
-
-def main():
-    # connect_to_db()
-    pw = input("pw: ")
-    print(validate_password(pw))
-
-if __name__ == '__main__':
-    main()
