@@ -9,4 +9,13 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('tfg');
+
+  defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
+  clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
+  
+  expanded: boolean = true;
+  toggleExpanded() {
+    this.expanded = !this.expanded;
+    return this.expanded;
+  }
 }
