@@ -19,8 +19,9 @@ create table plane(
 ICAO varchar(4) primary key
 );
 
+
 create table users(
-userID int primary key,
+userID int primary key auto_increment,
 fname varchar(255) not null,
 phoneNumber int not null,
 lname varchar(255) not null,
@@ -31,9 +32,10 @@ isStaff boolean default false
 -- maybe add passport or some sorta identification?
 );
 
+
 create table staff(
 staffID int primary key,
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security") not null,
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned",
 email varchar(255) references users(email)
 );
 
@@ -82,5 +84,16 @@ quantity int check (quantity > 0),
 isAvailable boolean default true
 );
 
+delimiter //
+create trigger createStaff
+after insert on users
+for each row
+begin
+	if new.isStaff = True
+		then
+			insert into staff(staffID, position, email) values (new.userID, new.email);
+	end if;
+end//
+delimiter ;
 
 -- create table payment;
