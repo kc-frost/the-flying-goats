@@ -14,7 +14,7 @@
     background-size: cover;
 }
 
-/* This is a pseudo element that doesn't appear in 
+/* This is a pseudo element that doesn't appear in
 the HTML file. */
 /* This also creates the "fake" black overlay image. */
 .bg::before {

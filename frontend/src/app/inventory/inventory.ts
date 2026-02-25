@@ -7,6 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
 })
+// For forms/entering info
 export class Inventory {
   inventoryCount = new FormGroup({
     Item: new FormControl(''),
