@@ -1,35 +1,61 @@
-/* Background settings */
-
-.et {
-  min-height: 100vh;
-  position:relative;
-  background-image: url("/bg/home-bg.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+/* Similar to the dim you have, except applicable everywhere whenever modal drops*/
+.inv-backdrop {
+  position: fixed;
+  inset: 0;
+  /* do NOT just use black bro */
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
 }
 
-/* Dim background*/
-.et::before {
-    /* Needs to exist if using the ::before tag */
-    content: "";
-    position: absolute;
+/* Actual panel config*/
+.inv-panel {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  /* Both centers the panel, and puts it above the */
+  transform: translate(-50%, -110%);
+  /* Cap width, adjust for smaller screens */
+  width: min(900px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  margin-top: 1rem;
 
-    /* Since we want to cover the entire screen, set distance (inset) to the parent view (.bg) to be 0 on all sides. */
-    inset: 0;
-    background-color: black;
-    opacity: 0.3;
-    z-index: 0;
+  /* Panel customization like white background, rounded corners*/
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px (0,0,0,0.45);
+  z-index: 1001;
+
+  /* Drop down animation (don't ask me how it works, stack overflow W*/
+  animation: dropDown 220ms ease-out forwards;
+  overflow: hidden;
+}
+@keyframes dropDown {
+  from { transform: translate(-50%, -110%); }
+  to   { transform: translate(-50%, 0); }
 }
 
-/* Raise ALL direct child elements of .bg to be closer to the screen
-(z-index) */
-.bg > * {
-    position: relative;
-    z-index: 1;
+.inv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
-/* Home Page Content */
-.center {
-    gap: 100px;
+.inv-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.inv-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inv-body {
+  padding: 1rem 1.25rem;
+  overflow: auto;
 }

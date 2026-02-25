@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { Login } from './login/login';
 import { Register } from './register/register';
-import { Inventory } from './inventory/inventory';
+import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
 export const routes: Routes = [
@@ -12,15 +12,26 @@ export const routes: Routes = [
         component: Home,
     },
     {
+        path: '',
+        outlet: 'dropdown',
+        redirectTo: 'login',
+        pathMatch: 'full',
+    },
+    {
         path: 'login',
-        component: Login,
+        outlet: 'dropdown',
+        component: Login,    
     },
     {
         path: 'register',
+        outlet: 'dropdown',
         component: Register,
     },
     {
         path: 'inventory',
+        // If they try to go to inventory, send to modal
+        // canMatch: [inventoryModalRedirect],
+        outlet: "modal",
         component: Inventory,
     },
     {

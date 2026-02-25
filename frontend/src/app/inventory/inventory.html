@@ -2,6 +2,20 @@
   <section class="header">
     <div class="dim">
     </div>
-    <h1>Manage & View Inventory</h1>
   </section>
+  <section class="modal-dropdown">
+    <div class="inv-backdrop" (click) = "closeModal()"></div>
+    <section class="inv-panel">
+      <header class="inv-header"> 
+        <h1>Manage & View Inventory</h1>
+        <button type = "button" class="inv-close-btn" (click) = "closeModal()"> X </button>
+      </header>
+
+      <div class="inv-body">
+        <p>Shit ton of stuff</p>
+      </div>
+    </section>
+  </section>
+
+
 </main>
