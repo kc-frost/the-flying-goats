@@ -21,6 +21,7 @@ ICAO varchar(4) primary key
 
 create table users(
 userID int primary key,
+phoneNumber int not null,
 fname varchar(255) not null,
 phoneNumber int not null,
 lname varchar(255) not null,
