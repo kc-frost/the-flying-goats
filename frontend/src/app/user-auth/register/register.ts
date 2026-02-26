@@ -20,6 +20,12 @@ export class Register {
     lastName: ['',
       [Validators.required]
     ],
+    phoneNum: ['',
+      [Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]
+    ],
     username: ['',
       [Validators.required]
     ],
