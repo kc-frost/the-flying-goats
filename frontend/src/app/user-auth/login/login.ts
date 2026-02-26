@@ -29,8 +29,7 @@ export class Login {
   // Sends a POST request with the body being the value of the form userProfile 
   onSubmit() {
     this.http.post(`${BASE_URL}/api/login`,
-      this.userProfile.value,
-      {responseType: 'text'}).subscribe((response) => {
+      this.userProfile.value).subscribe((response) => {
       console.log(response);
     })
   };
