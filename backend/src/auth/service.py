@@ -1,90 +1,52 @@
-import re
-import hashlib
 from typing import Any
+from .security import get_hashed_password
 
-# NOTE: This function only ever runs upon
-# validation of it being a good password
-def get_hashed_password(password: str) -> str:
-    """Using SHA224, returns a hashed password to be used
-    to insert a new user or validate an existing one into the database
-
-    Args:
-        password (str): Unhashed password
-
-    Returns:
-        str: A hashed version of a validated password
-    """
-
-    encoded_pass = password.encode()
-    hashed_pass = hashlib.sha224(encoded_pass).hexdigest()
-
-    return hashed_pass
-
-# TODO (not immediate): Ensure that domains don't have hyphens as its
-# last character
-def validate_email(email: str) -> bool:
-    """Validates email according to specified regex pattern
-    Local Part (part before the @): 
-        Can have any alphanumeric characters [a-ZA-Z0-9]
-        and special characters (. * + ? $ ^ / '\')
-    Domain (part after the @):
-        Can have any alphanumeric character
-
-    Args:
-        email (str): Inputted email of a user trying to authenticate 
-
-    Returns:
-        bool: If this email follows valid structure
-    """
-
-    VALID_PATTERN = r"[a-zA-Z0-9\.\*\+\?\$\^\/\\]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+"
-    search = re.fullmatch(VALID_PATTERN, email.strip())
-
-    return search is not None
-
-def validate_password(password: str) -> bool:
-    """Validates password according to specified regex pattern
-    A password requires:
-        at least 8 characters                       .{8,}
-        at least one upper/lowercase letter         [A-Z][a-z]
-        at least one digit                          [0-9]
-        at least one special character              [()#?!@$%^&*-]
-    
-    Regex explanation:
-        Further reading: Lookaheads
-
-        (?=.*?[A-Z]) = "Somewhere ahead of the string (?=...) there is
-        at least one character of any kind (.) repeated zero or more
-        times (*) matched (as few needed to match ?) that is an
-        uppercase letter [A-Z]"
-
-    Args:
-        password (str): A possible password for a user
-
-    Returns:
-        bool: If this password is considered secure enough
-    """
-    VALID_PATTERN = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[()#?!@$%^&*-]).{8,}$"
-    search = re.fullmatch(VALID_PATTERN, password.strip())
-
-    return search is not None
-
-def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
-    """_summary_
+def find_user(email: str, conn) -> dict[str, Any] | None:
+    """Query the database if a user with the passed argument exists.
+    Expected to be used for login/register validation.
 
     Args:
         email (str): A user's email
-        password (str): A user's unhashed password
-        conn (_type_): A connection object that is connected to the database
+        conn (_type_): A connection object that can communicate to the database
 
     Returns:
-        dict[str, Any] | None: A user's details, if it exists
+        dict[str, Any] | None: An existing user's email, if it exists
     """
-    hashed_password = get_hashed_password(password)
 
     with conn.cursor() as cursor:
-        query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
-        cursor.execute(query, (email, hashed_password))
+        query = "SELECT `email` FROM `users` WHERE `email`=%s"
+        cursor.execute(query, (email))
         result = cursor.fetchone()
-    
+
     return result
+
+def insert_user(data: dict, conn) -> dict:
+    """Insert a new user into the database
+
+    Args:
+        data (dict): The request in JSON format, received by the server
+        conn (_type_): A connection object that can communicate to the database
+
+    Returns:
+        dict: Contains success state, and an error messsage if the insert failed
+    """
+    hashed_password = get_hashed_password(data['password'])
+
+    query = "INSERT INTO `users` VALUES (%s, %s, %s, %s, %s, %s)"    
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (
+                data['phoneNum'],
+                data['fname'],
+                data['lname'],
+                data['username'],
+                data['email'],
+                hashed_password
+            ))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"success": False,
+                    "error": str(e)}
+    
+    return {"success": True}
