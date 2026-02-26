@@ -3,9 +3,9 @@ import hashlib
 
 # NOTE: This function only ever runs upon
 # validation of it being a good password
-def hash_password(password: str) -> str:
+def get_hashed_password(password: str) -> str:
     """Using SHA224, returns a hashed password to be used
-    to insert into the database
+    to insert a new user or validate an existing one into the database
 
     Args:
         password (str): Unhashed password
