@@ -1,5 +1,6 @@
 import re
 import hashlib
+from typing import Any
 
 # NOTE: This function only ever runs upon
 # validation of it being a good password
@@ -67,3 +68,23 @@ def validate_password(password: str) -> bool:
     search = re.fullmatch(VALID_PATTERN, password.strip())
 
     return search is not None
+
+def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
+    """_summary_
+
+    Args:
+        email (str): A user's email
+        password (str): A user's unhashed password
+        conn (_type_): A connection object that is connected to the database
+
+    Returns:
+        dict[str, Any] | None: A user's details, if it exists
+    """
+    hashed_password = get_hashed_password(password)
+
+    with conn.cursor() as cursor:
+        query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
+        cursor.execute(query, (email, hashed_password))
+        result = cursor.fetchone()
+    
+    return result
