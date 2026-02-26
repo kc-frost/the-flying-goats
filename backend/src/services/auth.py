@@ -1,38 +1,5 @@
 import re
 import hashlib
-import os
-from dotenv import load_dotenv
-import pymysql.cursors
-
-def connect_to_db():
-    """Attempts to connect to the database using user variables from the
-    hidden .env file, and returns a connection object if successful
-
-    Returns:
-        _type_: A object that's connected to the db and can do queries
-    """
-
-    # database login credentials
-    load_dotenv()
-    USER = os.getenv("USER") or ""
-    PASSWORD = os.getenv("PASSWORD") or ""
-    HOST = os.getenv("HOST") or ""
-    DATABASE = os.getenv("DATABASE") or ""
-
-    # ensures all database variables are properly instantiated
-    # before establishing a connection
-    # all(): bool where True if params are not "", None, or False
-    if not all([USER, PASSWORD, HOST, DATABASE]):
-        raise ValueError("One or more database variables are missing.")
-
-    return pymysql.connect(
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        database=DATABASE,
-        charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor
-        )
 
 # NOTE: This function only ever runs upon
 # validation of it being a good password
@@ -100,24 +67,3 @@ def validate_password(password: str) -> bool:
     search = re.fullmatch(VALID_PATTERN, password.strip())
 
     return search is not None
-
-
-# TODO: Add Flask support
-def register(email: str, password: str):
-    info_message = ""
-
-
-
-    return info_message, email, password
-
-# TODO: Add Flask support
-def login(email: str, password: str):
-    pass
-
-def main():
-    # connect_to_db()
-    pw = input("pw: ")
-    print(validate_password(pw))
-
-if __name__ == '__main__':
-    main()
