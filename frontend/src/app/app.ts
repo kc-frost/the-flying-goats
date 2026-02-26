@@ -5,17 +5,25 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  host: {
+    'document:click': 'onClick()'
+  },
 })
+
 export class App {
   protected readonly title = signal('tfg');
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
   
-  expanded: boolean = true;
+  isExpanded: boolean = false;
   toggleExpanded() {
-    this.expanded = !this.expanded;
-    return this.expanded;
+    this.isExpanded = !this.isExpanded;
+    return this.isExpanded;
+  }
+
+  onClick() {
+    console.log("The window was clicked");
   }
 }
