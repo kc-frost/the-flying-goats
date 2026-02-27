@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { BASE_URL } from '../../../_environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -11,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class Register {
   private formBuilder = inject(FormBuilder);
+  private http = inject(HttpClient);
   private router = inject(Router);
 
   newUserProfile = this.formBuilder.group({
@@ -38,7 +40,9 @@ export class Register {
   })
 
   onSubmit() {
-
+    this.http.post(`${BASE_URL}/api/register`, this.newUserProfile.value).subscribe((response) => {
+      console.log(response);
+    })
   }
 
   goToLogin() {
