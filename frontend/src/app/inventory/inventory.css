@@ -1,3 +1,4 @@
+/* -------------------------------------------- Modal Syling -------------------------------------------- */
 /* Similar to the dim you have, except applicable everywhere whenever modal drops*/
 .inv-backdrop {
   position: fixed;
@@ -22,7 +23,7 @@
   /* Panel customization like white background, rounded corners*/
   background: rgb(241, 241, 241);
   border-radius: 14px;
-  box-shadow: 0 12px 40px (0,0,0,0.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
   z-index: 1001;
 
   /* Drop down animation (don't ask me how it works, stack overflow W*/
@@ -74,14 +75,20 @@
 .inv-body {
   padding: 1vh 1.25vh;
   overflow: auto;
+  gap: 1vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ------------------------------------------------- Below are inventory forms styling ------------------------------------------------ */
 /* item backdrop */
 .inv-body-forms {
   background: white;
   border-radius: 16px;
   padding: 1vh;
   box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+  position: relative;
+  overflow: visible;
 }
 
 /* item name*/
@@ -118,7 +125,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
+  height: 38px;
   border-radius: 0;
   white-space: nowrap; /* Stops the labels from being on top of each other*/
 }
@@ -127,8 +134,90 @@
   height: 38px;
   border: 0;
   background-color: aliceblue;
-  border-radius: 1024px;
-  padding: 0 0.85vh;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+  border-radius: 0;
+  padding: 0 12px;
   outline: none;
+}
+
+/* Border around field currently editing to make selection more obvious*/
+.input-fields:focus-within {
+  border-color: rgba(25,46,86,.6);
+  box-shadow: 0 0 0 3px tgba(25,46,86,.48);
+}
+
+/* ------------------------------------------------ Delete Button Styling---------------------------------------------- */
+.inv-delete-btn {
+  position: absolute;
+  top: -14px;
+  right: -16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 0;
+  line-height: 0;
+}
+
+.inv-delete-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* hover effects like slight shadow change, also click effect.*/
+.inv-delete-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(25, 46, 86, 0.45);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.22);
+}
+.inv-delete-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+
+/* -------------------------------------------------- Plus button ----------------------------------------------------  */
+.btn-img img {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.inv-add-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  color: #192e56;
+  font-weight: bold;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border:2px solid rgba(25,46,86,.25); /* Best color that matches that I could find, check agian later, eyesight is shit right now */
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+}
+
+.add-btn {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Recycled inv-delete button effects hallelujah*/
+.inv-add-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(25, 46, 86, 0.45);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.22);
+}
+
+.inv-add-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
 }
