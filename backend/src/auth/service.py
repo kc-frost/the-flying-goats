@@ -37,8 +37,8 @@ def insert_user(data: dict, conn) -> dict:
         try:
             cursor.execute(query, (
                 data['phoneNum'],
-                data['fname'],
-                data['lname'],
+                data['firstName'],
+                data['lastName'],
                 data['username'],
                 data['email'],
                 hashed_password
