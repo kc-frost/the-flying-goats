@@ -25,10 +25,16 @@
 
     <!-- User Profile -->
     <section class="dropdown">
-      <img class="profile-dropdown" src="/header/profile-dropdown/profile-dropdown.svg" alt="A flat image of a person" />
-      <div class="dropdown-content">
-        <!-- This will be changed soon so it can dynamically change between login and register. -->
-        <app-login />
+      <img class="profile-dropdown" 
+        [src]="toggleExpanded()? defaultImg : clickedImg" 
+        alt="A flat image of a person" 
+        (click)="toggleExpanded()" />
+      <div class="dropdown-content" 
+        [style.display]="toggleExpanded() ? 'block' : 'none'">
+        <!-- See login.ts (goToRegister()) for more details
+        on what this does -->
+        <!-- Keywords: Secondary (named) outlet [angular] -->
+        <router-outlet name="dropdown"></router-outlet>
       </div>
     </section>
   </header>

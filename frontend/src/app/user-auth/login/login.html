@@ -1,0 +1,18 @@
+<div class="form-container">
+    <form [formGroup]="userProfile" (ngSubmit)="onSubmit()" id="userProfile">
+        <div class="form-centered">
+            <label for="email">Email </label>
+            <input id="email" type="text" formControlName="email" required />
+            <label for="password">Password </label>
+            <input id="password" type="password" formControlName="password" required />
+        </div>
+    </form>
+    
+    <!-- TODO: Insert an Error message here
+    Error message: Invalid email/password -->
+    
+    <section class="btn-centered">
+        <button class="submit-btn" form="userProfile" type="submit" [disabled]="!userProfile.valid">Login</button>
+        <button class="submit-btn" (click)="goToRegister()">Register</button>
+    </section>
+</div>

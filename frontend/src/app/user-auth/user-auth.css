@@ -2,17 +2,20 @@
     --center: 21px;
 }
 
-main {
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     background-color:whitesmoke;
-    width:300px;
-    height:350px;
+    width: 300px;
     padding: 10px;
+    overflow-y: auto;
+    max-height: 600px;
 }
 
 .form-centered {
-    padding: 10px;
-    margin-top: 10px;
-    margin-left: 21px;
+    margin-top: 15px;
 }
 
 /* By turning label (which is originally an inline element) into a block element, it gets forced to be above `input` since it now takes up the entire width of its line (instead of being INline)*/
@@ -42,7 +45,8 @@ input:focus {
     align-items: center;
     justify-content: center;
     gap: 35px;
-    margin-top: 25px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .submit-btn {
