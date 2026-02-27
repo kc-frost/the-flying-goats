@@ -29,9 +29,7 @@ export const routes: Routes = [
     },
     {
         path: 'inventory',
-        // If they try to go to inventory, send to modal
-        // canMatch: [inventoryModalRedirect],
-        outlet: "modal",
+        outlet: 'modal',
         component: Inventory,
     },
     {

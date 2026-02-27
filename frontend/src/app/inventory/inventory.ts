@@ -19,6 +19,7 @@ export class Inventory {
 // This, when clicked rerouts back to home.
 // Basically the opposite/undoes the router that you have for login.
   constructor(private router: Router) {}
+
   closeModal() {
     this.router.navigate([{ outlets: { modal: null } }]);
   }

@@ -24,7 +24,6 @@ create table users(
 userID int primary key auto_increment,
 phoneNumber int not null,
 fname varchar(255) not null,
-phoneNumber int not null,
 lname varchar(255) not null,
 username varchar(255) not null,
 email varchar(255) not null,

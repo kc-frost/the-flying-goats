@@ -8,11 +8,39 @@
     <section class="inv-panel">
       <header class="inv-header"> 
         <h1>Manage & View Inventory</h1>
-        <button type = "button" class="inv-close-btn" (click) = "closeModal()"> X </button>
+        <button type="button" class="inv-close-btn" (click)="closeModal()">
+  <img src="/xButton/maybe-virus.svg" alt="red X">
+</button>
       </header>
 
       <div class="inv-body">
-        <p>Shit ton of stuff</p>
+        <!-- Item card header-->
+        <section class="inv-body-forms">
+          <div class="item-card">
+            <h2>Item1</h2>
+          </div>
+          
+          <div class="item-forms">
+            <div class = "input-fields">
+              <span class="field-name">Item ID </span>
+              <input class="field-input" value="">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Total Quantity </span>
+              <input class="field-input" value="">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Reserved Quantity </span>
+              <input class="field-input" value="">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Available Quantity </span>
+              <input class="field-input" value="">
+            </div>
+          </div>
+        </section>
+
+
       </div>
     </section>
   </section>

@@ -15,12 +15,12 @@
   /* Both centers the panel, and puts it above the */
   transform: translate(-50%, -110%);
   /* Cap width, adjust for smaller screens */
-  width: min(900px, calc(100% - 2rem));
-  max-height: calc(100vh - 2rem);
-  margin-top: 1rem;
+  width: min(900px, calc(100% - 2vh));
+  max-height: calc(100vh - 2vh);
+  margin-top: 1vh;
 
   /* Panel customization like white background, rounded corners*/
-  background: white;
+  background: rgb(241, 241, 241);
   border-radius: 14px;
   box-shadow: 0 12px 40px (0,0,0,0.45);
   z-index: 1001;
@@ -37,25 +37,98 @@
 .inv-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
+  justify-content: center;
+  padding: 1vh 1.25vh;
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
 .inv-header h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.1vh;
 }
 
-.inv-close {
-  border: 0;
+/* modal close button css */
+.inv-close-btn {
+  position: absolute;
+  right: 20px;
+  display: inline-flex; /* This stops the button image from stretching*/
+  align-items: center;
+  justify-content: center;
+  
+  padding: 0; /* smaller padding */
+  margin: 0;
+  width: 32px; /* clickbox size */
+  height: 32px;
+
+  border: none; /* Gets rid of the weird border that's there otherwise*/
   background: transparent;
-  font-size: 1.25rem;
-  line-height: 1;
   cursor: pointer;
 }
 
+/* button size */
+.inv-close-btn img {
+  width: 18px;
+  height: 18px;
+}
+
 .inv-body {
-  padding: 1rem 1.25rem;
+  padding: 1vh 1.25vh;
   overflow: auto;
+}
+
+/* item backdrop */
+.inv-body-forms {
+  background: white;
+  border-radius: 16px;
+  padding: 1vh;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+}
+
+/* item name*/
+.item-card {
+  font-weight: 700;
+  margin-bottom: .75vh;
+}
+
+/* Item forms*/
+.item-forms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75vh 1vh
+}
+
+.input-fields {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  /* Removes gap between field name and input, and makes them the same height*/
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+}
+
+.field-name {
+  background: #192e56;
+  color: white;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border-radius: 0;
+  white-space: nowrap; /* Stops the labels from being on top of each other*/
+}
+
+.field-input {
+  height: 38px;
+  border: 0;
+  background-color: aliceblue;
+  border-radius: 1024px;
+  padding: 0 0.85vh;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+  outline: none;
 }
