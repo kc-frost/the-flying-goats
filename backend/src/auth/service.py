@@ -13,10 +13,10 @@ def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
     Returns:
         dict[str, Any] | None: An existing user's email and password, if it exists
     """
-
+    true_password = get_hashed_password(password)
     with conn.cursor() as cursor:
         query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
-        cursor.execute(query, (email, password))
+        cursor.execute(query, (email, true_password))
         result = cursor.fetchone()
 
     return result
