@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BASE_URL } from '../../../_environments/environment';
+import { BASE_URL } from '../../../_environments/environment.dev';
 
 @Component({
   selector: 'app-register',
