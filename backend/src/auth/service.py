@@ -32,7 +32,7 @@ def insert_user(data: dict, conn) -> dict:
     """
     hashed_password = get_hashed_password(data['password'])
 
-    query = "INSERT INTO `users` VALUES (%s, %s, %s, %s, %s, %s)"    
+    query = "INSERT INTO `users`(phoneNumber, fname, lname, username, email, password) VALUES (%s, %s, %s, %s, %s, %s)"    
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (
