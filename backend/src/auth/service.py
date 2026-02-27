@@ -1,21 +1,22 @@
 from typing import Any
 from .security import get_hashed_password
 
-def find_user(email: str, conn) -> dict[str, Any] | None:
+def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
     """Query the database if a user with the passed argument exists.
     Expected to be used for login/register validation.
 
     Args:
         email (str): A user's email
+        password (str): A user's password
         conn (_type_): A connection object that can communicate to the database
 
     Returns:
-        dict[str, Any] | None: An existing user's email, if it exists
+        dict[str, Any] | None: An existing user's email and password, if it exists
     """
 
     with conn.cursor() as cursor:
-        query = "SELECT `email` FROM `users` WHERE `email`=%s"
-        cursor.execute(query, (email))
+        query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
+        cursor.execute(query, (email, password))
         result = cursor.fetchone()
 
     return result

@@ -18,9 +18,10 @@ def login():
     # transforms json into python dict
     data = request.json
     email = data['email']
+    password = data['password']
 
     conn = get_connection()
-    result = find_user(email, conn)
+    result = find_user(email, password, conn)
 
     if result is not None:
         # user exists
@@ -32,7 +33,7 @@ def login():
         # user doesn't exist
         return jsonify({
             "success": False,
-            "message": "User doesn't exist"
+            "message": "User doesn't exist/Incorrect password"
         }), 400
 
 @bp.post('/register')
@@ -46,7 +47,7 @@ def register():
 
     # check for:
     # if user already exists
-    user_exist = find_user(email, conn)
+    user_exist = find_user(email, password, conn)
     if user_exist is not None:
         return jsonify({
             "success": False,
