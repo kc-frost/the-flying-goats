@@ -25,6 +25,20 @@ img.brand-logo {
     flex-direction: row;
     align-items: center;
 
+.modal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+/* makes the layer invisible */
+.modal-layer:empty {
+    display:none
+}
+
+.nav-link a {
+    color: white;
+    text-decoration: none;
+}
     & img {
         width: 45px;
         height: 45px;

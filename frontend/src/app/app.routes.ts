@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './user-auth/login/login';
-import { Register } from './user-auth/register/register';
-import { Inventory } from './inventory/inventory';
+import { Login } from './login/login';
+import { Register } from './register/register';
+import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
 // SOME ROUTER BASICS:
@@ -33,6 +33,12 @@ export const routes: Routes = [
         pathMatch: 'full',
     },
     {
+        path: '',
+        outlet: 'dropdown',
+        redirectTo: 'login',
+        pathMatch: 'full',
+    },
+    {
         path: 'login',
         outlet: 'dropdown',
         component: Login,    
@@ -44,6 +50,7 @@ export const routes: Routes = [
     },
     {
         path: 'inventory',
+        outlet: 'modal',
         component: Inventory,
     },
     {

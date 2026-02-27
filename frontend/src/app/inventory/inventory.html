@@ -1,26 +1,57 @@
-<main>
-    <form [formGroup] = "inventoryCount">
-        <label for="item">Equipment: </label>
-        <input id="item" type="Item" formControlName="name" />
-        <label for="item">Quantity: </label>
-        <input id="item" type="Item" formControlName="name" />
-    </form>
-    <form [formGroup] = "inventoryCount">
-        <label for="item">Staff: </label>
-        <input id="item" type="Item" formControlName="name" />
-        <label for="item">Quantity: </label>
-        <input id="item" type="Item" formControlName="name" />
-    </form>
-    <form [formGroup] = "inventoryCount">
-        <label for="item">Transportation: </label>
-        <input id="item" type="Item" formControlName="name" />
-        <label for="item">Quantity: </label>
-        <input id="item" type="Item" formControlName="name" />
-    </form>
-    <form [formGroup] = "inventoryCount">
-        <label for="item">Lot: </label>
-        <input id="item" type="Item" formControlName="name" />
-        <label for="item">Quantity: </label>
-        <input id="item" type="Item" formControlName="name" />
-    </form>
+<main class = "et">
+  <section class="header">
+    <div class="dim">
+    </div>
+  </section>
+  <section class="modal-dropdown">
+    <div class="inv-backdrop" (click) = "closeModal()"></div>
+    <section class="inv-panel">
+      <header class="inv-header"> 
+        <h1>Manage & View Inventory</h1>
+        <button type="button" class="inv-close-btn" (click)="closeModal()">
+  <img src="/xButton/maybe-virus.svg" alt="red X">
+</button>
+      </header>
+
+      <div class="inv-body">
+        <!-- Item card header-->
+        <section class="inv-body-forms" *ngFor="let item of items; let i = index">
+          <button type="button" class="inv-delete-btn" aria-label="Delete" (click) = "deleteItem(i)" title="Delete item">
+              <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan"/>
+            </button>
+          <div class="item-card">
+            <h2>{{item.name}}</h2>
+          </div>
+          <div class="item-forms">
+            <div class = "input-fields">
+              <span class="field-name">Item ID </span>
+              <input class="field-input" [value]="item.id">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Total Quantity </span>
+              <input class="field-input" [value]="item.total">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Reserved Quantity </span>
+              <input class="field-input" [value]="item.reserved">
+            </div>
+            <div class = "input-fields">
+              <span class="field-name">Available Quantity </span>
+              <input class="field-input" [value]="item.available">
+            </div>
+          </div>
+        </section>
+        <div class="add-btn">
+          <button type="button" class="inv-add-btn" aria-label="Add" (click) = "addItem()" title="Add Item">
+            <div class="btn-img">
+              <img src="/addItem/greenPlus.png" alt="PlusSign" class=""/>
+            </div>
+            Add Item 
+          </button>
+        </div>
+      </div>
+    </section>
+  </section>
+
+
 </main>

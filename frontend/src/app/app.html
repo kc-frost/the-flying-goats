@@ -18,8 +18,11 @@
         <img src="/header/navlink/navlink-arrow.svg" />
       </section>
       <section class="nav-link"> 
-        <a routerLink="/inventory"> View Inventory </a>
-        <img src="/header/navlink/navlink-arrow.svg" />
+        <!-- lil div class to modify the modal without affecting anything else-->
+          <div class="modal">
+            <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
+            <img src="/header/navlink/navlink-arrow.svg" />
+          </div>
       </section>
     </nav>
 
@@ -46,4 +49,9 @@
   <section class="content">
     <router-outlet />
   </section>
+  <!-- for the modal stuff for view inventory -->
+<div class="modal-layer">
+  <router-outlet name="modal"></router-outlet>
+</div>
+
 </main>
