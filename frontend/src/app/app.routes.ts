@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
+<<<<<<< ftr/auth-flask
 import { Login } from './user-auth/login/login';
 import { Register } from './user-auth/register/register';
 
@@ -14,6 +15,12 @@ import { Register } from './user-auth/register/register';
 
 // In order to circumvent the above (wanting more than one component rendered on screen at the same time), use a secondary named outlet. Basically, it tells Angular that this component will only be rendered on an outlet with name = ['nameOfOutlet']
 // (This is what we use for Login/Register)
+=======
+import { Login } from './login/login';
+import { Register } from './register/register';
+import { Inventory } from './inventory/inventory';
+import { BookFlight } from './book-flight/book-flight';
+>>>>>>> main
 
 export const routes: Routes = [
     {
@@ -40,8 +47,19 @@ export const routes: Routes = [
         outlet: 'dropdown',
         component: Register,
     },
+<<<<<<< ftr/auth-flask
     
     
+=======
+    {
+        path: 'inventory',
+        component: Inventory,
+    },
+    {
+        path: 'book-flight',
+        component: BookFlight,
+    },
+>>>>>>> main
 ];
 
 export default routes;
