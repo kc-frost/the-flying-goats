@@ -24,7 +24,6 @@ img.brand-logo {
     display: flex;
     flex-direction: row;
     align-items: center;
-}
 
 .modal {
     display: flex;
@@ -40,16 +39,21 @@ img.brand-logo {
     color: white;
     text-decoration: none;
 }
+    & img {
+        width: 45px;
+        height: 45px;
+        margin-top: 1.5%;
+        margin-left: -7px;
+    }
 
-.nav-link a:hover {
-    text-decoration: white wavy underline;
-}
+    & a {
+        color:white;
+        text-decoration: none;
 
-.nav-link img {
-    width: 45px;
-    height: 45px;
-    margin-top: 1.5%;
-    margin-left: -7px;
+        &:hover {
+            text-decoration: white wavy underline;
+        }
+    }
 }
 
 /* For: profile picture and dropdown effect */
@@ -57,20 +61,13 @@ img.brand-logo {
     margin-left: auto;
     margin-right: 2.5%;
     position: relative;
-}
+    
+    /* Important to ensure it's on top of everything */
+    z-index:10;
 
-.dropdown:hover .dropdown-content {
-    display:block;
-    color:black;
-
-    /* TODO: This is being overlapped by the background in home.css.
-    Eventually, find a better fix for it so this doesn't need to be used. */
-    z-index: 10;
-}
-
-.dropdown:hover img.profile-dropdown {
-    /* Changes the image when hovered */
-    content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
+    & .dropdown-content {
+        color:black
+    }
 }
 
 .dropdown-content {
@@ -88,4 +85,8 @@ img.brand-logo {
 .profile-dropdown {
     width:50px;
     height: 50px;
+
+    &:hover {
+        content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
+    }
 }
