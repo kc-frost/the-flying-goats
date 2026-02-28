@@ -47,6 +47,9 @@ export class Register {
 
   goToLogin() {
     this.router.navigate([{ outlets: 
-      { dropdown: ['login']}}])
+      { dropdown: ['login']}}],
+    {
+      skipLocationChange: true
+    })
   }
 }

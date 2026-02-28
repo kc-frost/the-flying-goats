@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { Login } from './user-auth/login/login';
 import { Register } from './user-auth/register/register';
+import { ProfilePage } from './profile-page/profile-page';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
@@ -22,22 +23,6 @@ export const routes: Routes = [
         path: '',
         component: Home,
     },
-    
-    // this autoloads login, but now '' is always gonna be redirected
-    // to 'login'.
-    // eventually, turn dropdown into a clickable dropdown
-    {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
-    },
-    {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
-    },
     {
         path: 'login',
         outlet: 'dropdown',
@@ -47,6 +32,11 @@ export const routes: Routes = [
         path: 'register',
         outlet: 'dropdown',
         component: Register,
+    },
+    {
+        path: 'profilepage',
+        outlet: 'dropdown',
+        component: ProfilePage
     },
     {
         path: 'inventory',

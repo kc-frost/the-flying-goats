@@ -38,6 +38,9 @@ export class Login {
   // programatically navigate to Register. Note the syntax.
   goToRegister() {
     this.router.navigate([{ outlets: 
-      { dropdown: ['register'] } }]);
+      { dropdown: ['register'] } }], 
+    {
+      skipLocationChange: true
+    });
   }
 }

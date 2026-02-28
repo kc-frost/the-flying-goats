@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { Component, signal, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { Inventory } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
@@ -15,6 +15,7 @@ import { BookFlight } from './book-flight/book-flight';
 
 export class App {
   protected readonly title = signal('tfg');
+  private router = inject(Router);
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
@@ -25,7 +26,12 @@ export class App {
     return this.isExpanded;
   }
 
-  onClick() {
-    console.log("The window was clicked");
+  navigateToLogin() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['login']}}],
+      {
+        skipLocationChange: true
+      }
+    )
   }
 }
