@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BASE_URL } from '../../../_environments/environment.dev';
+import { environment } from '../../../_environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +28,7 @@ export class Login {
 
   // Sends a POST request with the body being the value of the form userProfile 
   onSubmit() {
-    this.http.post(`${BASE_URL}/api/login`,
+    this.http.post(`${environment.api_url}/api/login`,
       this.userProfile.value).subscribe((response) => {
       console.log(response);
     })
