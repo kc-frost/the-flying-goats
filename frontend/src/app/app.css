@@ -87,6 +87,7 @@ img.brand-logo {
     height: 50px;
 
     &:hover {
+        cursor: pointer;
         content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
     }
 }
