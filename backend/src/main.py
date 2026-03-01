@@ -1,12 +1,19 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
+from flask_login import LoginManager
 
+load_dotenv()
 # Import a new routes/blueprint file here
 # Format:
 # from [module] import bp as [name]bp
 from auth.routes import bp as authbp
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET KEY")
+login_manager = LoginManager()
+login_manager.init_app(app)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # What is a blueprint?
