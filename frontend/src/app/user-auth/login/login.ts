@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { Form, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../../_environments/environment';
 import { AuthService } from '../../_shared/services/auth-service';
 
 @Component({
@@ -13,7 +11,6 @@ import { AuthService } from '../../_shared/services/auth-service';
 })
 export class Login {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private authService = inject(AuthService);
 
