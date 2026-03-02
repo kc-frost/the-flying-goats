@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint, session
+from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user
 from .service import find_user, insert_user
 from .validators import validate_email, validate_password
@@ -8,6 +8,29 @@ from models.user import User
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
 # Second param: __name__
 bp = Blueprint("auth", __name__)
+
+@bp.get('/check-session')
+def check_session():
+    """Check if a session exists, implying a logged-in user
+
+    Returns:
+        Tuple(bool, int): If user is authenticated, and an HTTP status code
+    """
+    if current_user.is_authenticated:
+        return jsonify({
+            "authenticated": True
+        }), 200
+    else:
+        return jsonify({
+            "authenticated": False
+        }), 401
+
+@bp.get('/test')
+@login_required
+def test():
+    return {
+        "message": "You're logged in"
+    }
 
 # In a Flask project that doesn't have Blueprints, we would normally put
 # @app.route()

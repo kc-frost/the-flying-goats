@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 from flask_login import LoginManager
+from db import get_connection
+from models.user import User
 
 load_dotenv()
 # Import a new routes/blueprint file here
@@ -11,21 +13,41 @@ load_dotenv()
 from auth.routes import bp as authbp
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET KEY")
+
+# check Flask docs on how to create this
+app.secret_key = os.getenv("SECRET_KEY")
+
 login_manager = LoginManager()
 login_manager.init_app(app)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+
+# TODO: THIS IS BADLY PLACED, but figuring out where to properly place it is trickier. will do post sprint 3
+@login_manager.user_loader
+def load_user(email: str) -> User | None:
+    """Reloads User object stored in the session based on their email
+
+    Args:
+        email (str): Email of a user
+
+    Returns:
+        User | None: A User if email has a match, otherwise None
+    """
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        query = "SELECT `username`, `email` FROM `users` WHERE `email`=%s"
+        cursor.execute(query, (email))
+        result = cursor.fetchone()
+    
+    if result is not None:
+        return User(result['username'], result['email'])
+    else:
+        return None
 
 # What is a blueprint?
 # For our purporses, a blueprint allows us to point to a file that holds routes that contains endpoints for our API
-# This is to not clog this file, and be able to divide responsibilities across multiple files.
-# By also dividing work like this, it becomes easier to work independently, as we become prone to merge conflicts otherwise.
 
 # What is url_prefix?
-# url_prefix does what you think it does
-# In order to access any of the routes present in a Blueprint, the client has to make sure their links are prepended with the Blueprint's respective[url_prefix]
-# Ex. "localhost:5000/login" will return a 404
-# Meanwhile, "localhost:5000/api/login" can potentially return a response
+# Puts a prefix before every route inside the blueprint
 
 app.register_blueprint(authbp, url_prefix="/api")
 
