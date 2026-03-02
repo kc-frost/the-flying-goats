@@ -3,7 +3,8 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { Login } from './user-auth/login/login';
 import { Register } from './user-auth/register/register';
-import { ProfilePage } from './profile-page/profile-page';
+import { ProfilePage } from './profile-page/profile-page/profile-page';
+import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdown';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
@@ -19,10 +20,20 @@ import { BookFlight } from './book-flight/book-flight';
 // (This is what we use for Login/Register)
 
 export const routes: Routes = [
+    // main router
     {
         path: '',
         component: Home,
     },
+    {
+        path: 'book-flight',
+        component: BookFlight,
+    },
+    {
+        path: 'profile',
+        component: ProfilePage
+    },
+    // dropdown outlet
     {
         path: 'login',
         outlet: 'dropdown',
@@ -34,18 +45,16 @@ export const routes: Routes = [
         component: Register,
     },
     {
-        path: 'profilepage',
+        path: 'profile-page',
         outlet: 'dropdown',
-        component: ProfilePage
+        component: ProfileDropdown
     },
+    
+    // modal outlet
     {
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-    },
-    {
-        path: 'book-flight',
-        component: BookFlight,
     },
 ];
 
