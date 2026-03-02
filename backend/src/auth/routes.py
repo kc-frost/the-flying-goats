@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from flask_login import login_user, login_required, current_user
+from flask_login import login_user, login_required, current_user, logout_user
 from .service import find_user, insert_user
 from .validators import validate_email, validate_password
 from models.user import User
@@ -8,6 +8,11 @@ from models.user import User
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
 # Second param: __name__
 bp = Blueprint("auth", __name__)
+
+# In a Flask project that doesn't have Blueprints, we would normally put
+# @app.route()
+# This would also require us to import app from main
+# With Blueprints, you can replace "app" with the name of the bp VARIABLE
 
 @bp.get('/check-session')
 def check_session():
@@ -25,17 +30,23 @@ def check_session():
             "authenticated": False
         }), 401
 
-@bp.get('/test')
+@bp.route('/test')
 @login_required
 def test():
     return {
         "message": "You're logged in"
     }
 
-# In a Flask project that doesn't have Blueprints, we would normally put
-# @app.route()
-# This would also require us to import app from main
-# With Blueprints, you can replace "app" with the name of the bp VARIABLE
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    
+    # Redirect handled by Angular
+    return jsonify({
+        "message": "Logged out"
+    }), 200
+
 @bp.post('/login')
 def login():
     # obtain request data

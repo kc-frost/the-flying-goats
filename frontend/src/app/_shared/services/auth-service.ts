@@ -38,8 +38,9 @@ export class AuthService {
     )
   }
 
-  // TODO
   logout() {
-
+    return this.http.get(`${environment.api_url}/api/logout`,
+      { observe: 'response'}
+    )
   }
 }
