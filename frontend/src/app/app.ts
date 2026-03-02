@@ -17,7 +17,7 @@ import { BookFlight } from './book-flight/book-flight';
 export class App {
   protected readonly title = signal('tfg');
   private router = inject(Router);
-  isLoggedIn = inject(AuthService);
+  authService = inject(AuthService);
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
@@ -27,6 +27,24 @@ export class App {
     this.isExpanded = !this.isExpanded;
     return this.isExpanded;
   }
+
+
+  handleProfileClick() {
+    this.authService.checkSession().subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.navigateToProfile();
+        } else {
+          this.navigateToLogin();
+        }
+      },
+      error: (res) => {
+        console.log(res);
+        this.navigateToLogin();
+      }
+    })
+  }
+
 
   navigateToLogin() {
     this.router.navigate([{ outlets: 
