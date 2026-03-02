@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../../_environments/environment';
+import { AuthState } from '../../_shared/services/authstate.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ export class Login {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  isLoggedIn = inject(AuthState);
 
   // This is a quicker way to instantiate a FormGroup
   // Each item in the Group is a FormControl (look at login.html and notice the 'formControlName' property)
@@ -28,9 +30,19 @@ export class Login {
 
   // Sends a POST request with the body being the value of the form userProfile 
   onSubmit() {
-    this.http.post(`${environment.api_url}/api/login`,
-      this.userProfile.value).subscribe((response) => {
-      console.log(response);
+    this.http.post(
+      `${environment.api_url}/api/login`, 
+      this.userProfile.value, 
+      { observe: 'response' }
+    ).subscribe({
+      next: (res) => {
+        console.log(res)
+        this.isLoggedIn.setTrue()
+        this.showProfileDropdown()
+      },
+      error: (err) => {
+        console.log("Error message: ", err.error.message);
+      }
     })
   };
 
@@ -39,6 +51,14 @@ export class Login {
   goToRegister() {
     this.router.navigate([{ outlets: 
       { dropdown: ['register'] } }], 
+    {
+      skipLocationChange: true
+    });
+  }
+
+  showProfileDropdown() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['profile-page'] } }], 
     {
       skipLocationChange: true
     });

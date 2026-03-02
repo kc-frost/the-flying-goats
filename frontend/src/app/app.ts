@@ -1,5 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { AuthState } from './_shared/services/authstate.service';
 import { Inventory } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
@@ -16,6 +17,7 @@ import { BookFlight } from './book-flight/book-flight';
 export class App {
   protected readonly title = signal('tfg');
   private router = inject(Router);
+  isLoggedIn = inject(AuthState);
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
@@ -33,5 +35,13 @@ export class App {
         skipLocationChange: true
       }
     )
+  }
+
+  navigateToProfile() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['profile-page'] } }], 
+    {
+      skipLocationChange: true
+    });
   }
 }
