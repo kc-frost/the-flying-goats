@@ -1,3 +1,11 @@
-<div class="form-container">
-    <p>profile-dropdown works!</p>
+<div class="container">
+    <section class="content">
+        <img class="profile"
+        [src]="staticProfileImage" />
+        <h2> Welcome User! </h2>
+    </section>
+    
+    <section class="btn-centered">
+        <button class="btn" (click)="goToProfilePage()"> View Profile</button>
+    </section>
 </div>

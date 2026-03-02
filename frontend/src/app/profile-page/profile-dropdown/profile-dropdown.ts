@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ProfilePage } from '../profile-page/profile-page';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-dropdown',
@@ -7,5 +9,12 @@ import { Component } from '@angular/core';
   styleUrl: './profile-dropdown.css',
 })
 export class ProfileDropdown {
+  private router = inject(Router);
 
+  staticProfileImage = "/profile/static-profile-image.svg";
+
+  goToProfilePage() {
+    this.router.navigate(['/profile']
+    );
+  }
 }
