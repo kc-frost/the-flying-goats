@@ -14,7 +14,8 @@
     <!-- Navigation Links -->
     <nav class="nav-links-group">
       <section class="nav-link"> 
-        <a routerLink="/book-flight"> Book a Flight</a>
+        <!-- <a routerLink="/book-flight"> Book a Flight</a> -->
+        <a href="http://localhost:5000/api/test"> Book a Flight</a>
         <img src="/header/navlink/navlink-arrow.svg" />
       </section>
       <section class="nav-link"> 
@@ -29,7 +30,7 @@
     <!-- User Profile -->
     <section class="dropdown">
       <!-- TODO: Add a service that tracks whether you're logged in or not, instead of just calling Login itself. Use ternary and if not logged in, navigate to Login. Otherwise, call the profile page dropdown-->
-      <a (click)="isLoggedIn.getState() ? navigateToProfile() : navigateToLogin()">
+      <a (click)="isLoggedIn.getLoggedIn() ? navigateToProfile() : navigateToLogin()">
         <img class="profile-dropdown" 
           [src]="toggleExpanded() ? defaultImg : clickedImg" 
           alt="A flat image of a person" 

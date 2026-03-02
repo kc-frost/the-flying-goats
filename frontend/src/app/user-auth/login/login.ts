@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../../_environments/environment';
-import { AuthState } from '../../_shared/services/authstate.service';
+import { AuthService } from '../../_shared/services/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ export class Login {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
-  isLoggedIn = inject(AuthState);
+  isLoggedIn = inject(AuthService);
 
   // This is a quicker way to instantiate a FormGroup
   // Each item in the Group is a FormControl (look at login.html and notice the 'formControlName' property)

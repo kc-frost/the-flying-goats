@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthState {
+export class AuthService {
   private isLoggedIn: boolean = false;
 
-  getState(): boolean {
+  getLoggedIn(): boolean {
     return this.isLoggedIn;
   }
 

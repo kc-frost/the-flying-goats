@@ -1,6 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { AuthState } from './_shared/services/authstate.service';
+import { AuthService } from './_shared/services/auth-service';
 import { Inventory } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 
@@ -17,7 +17,7 @@ import { BookFlight } from './book-flight/book-flight';
 export class App {
   protected readonly title = signal('tfg');
   private router = inject(Router);
-  isLoggedIn = inject(AuthState);
+  isLoggedIn = inject(AuthService);
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
