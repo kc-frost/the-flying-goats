@@ -28,7 +28,8 @@ export class App {
     return this.isExpanded;
   }
 
-
+  // If a session exists, clicking on the profile picture should also show ProfileDropdown
+  // Otherwise (including errors), show Login
   handleProfileClick() {
     this.authService.checkSession().subscribe({
       next: (res) => {
