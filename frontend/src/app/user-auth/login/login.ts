@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Form, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../../_environments/environment';
 import { AuthService } from '../../_shared/services/auth-service';
@@ -15,7 +15,7 @@ export class Login {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
-  isLoggedIn = inject(AuthService);
+  private authService = inject(AuthService);
 
   // This is a quicker way to instantiate a FormGroup
   // Each item in the Group is a FormControl (look at login.html and notice the 'formControlName' property)
@@ -28,23 +28,19 @@ export class Login {
     ]
   });
 
-  // Sends a POST request with the body being the value of the form userProfile 
+  // Sends a POST request with the body being the value of the form userProfile
+
   onSubmit() {
-    this.http.post(
-      `${environment.api_url}/api/login`, 
-      this.userProfile.value, 
-      { observe: 'response' }
-    ).subscribe({
+    this.authService.login(this.userProfile.value).subscribe({
       next: (res) => {
         console.log(res)
-        this.isLoggedIn.setTrue()
         this.showProfileDropdown()
       },
       error: (err) => {
-        console.log("Error message: ", err.error.message);
+        console.log(err)
       }
     })
-  };
+  }
 
   // When the Register button is pressed (see: login.html), 
   // programatically navigate to Register. Note the syntax.

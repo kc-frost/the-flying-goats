@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../_environments/environment';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private isLoggedIn: boolean = false;
-  http = inject(HttpClient);
+  constructor(private http: HttpClient) {}
   
   // returns blueprint for the request
   // does not actually send it yet
@@ -17,16 +17,29 @@ export class AuthService {
     );
   }
 
-  getLoggedIn(): boolean {
-    return this.isLoggedIn;
+  login(userProfile: any) {
+    const _headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    return this.http.post(`${environment.api_url}/api/login`,
+      userProfile,
+      { headers: _headers, observe: 'response'}
+    );
+  }
+  
+  register(newUserProfile: any) {
+    const _headers = {
+      'Content-Type': 'application/json'
+    };
+
+    return this.http.post(`${environment.api_url}/api/register`, newUserProfile,
+      { headers: _headers, observe: 'response'}
+    )
   }
 
-  // This is to make it more predictable instead of toggling
-  setTrue(): void {
-    this.isLoggedIn = true;
-  }
+  // TODO
+  logout() {
 
-  setFalse(): void {
-    this.isLoggedIn = false;
   }
 }

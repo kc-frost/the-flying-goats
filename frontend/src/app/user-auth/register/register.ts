@@ -3,6 +3,7 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../_environments/environment';
+import { AuthService } from '../../_shared/services/auth-service';
 
 @Component({
   selector: 'app-register',
@@ -14,6 +15,7 @@ export class Register {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   newUserProfile = this.formBuilder.group({
     firstName: ['',
@@ -40,8 +42,10 @@ export class Register {
   })
 
   onSubmit() {
-    this.http.post(`${environment.api_url}/api/register`, this.newUserProfile.value).subscribe((response) => {
-      console.log(response);
+    this.authService.register(this.newUserProfile.value).subscribe({
+      next: (res) => {
+        console.log(res);
+      }
     })
   }
 
