@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { ProfilePage } from '../profile-page/profile-page';
 import { Router } from '@angular/router';
 
 @Component({
