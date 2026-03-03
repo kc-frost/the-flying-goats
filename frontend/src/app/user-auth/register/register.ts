@@ -42,6 +42,10 @@ export class Register {
     this.authService.register(this.newUserProfile.value).subscribe({
       next: (res) => {
         console.log(res);
+        this.goToLogin();
+      },
+      error: (err) => {
+        console.log(err);
       }
     })
   }
