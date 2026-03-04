@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from .service import find_user, insert_user
 from .validators import validate_email, validate_password
-from models.user import User
+from _models.user import User
 
 # This is where you setup the Blueprint on the respective roues file.
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)

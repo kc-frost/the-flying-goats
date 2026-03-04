@@ -4,13 +4,14 @@ from flask import Flask
 from flask_cors import CORS
 from flask_login import LoginManager
 from db import get_connection
-from models.user import User
+from _models.user import User
 
 load_dotenv()
 # Import a new routes/blueprint file here
 # Format:
 # from [module] import bp as [name]bp
 from auth.routes import bp as authbp
+from profile.routes import bp as ppbp
 
 app = Flask(__name__)
 
@@ -50,6 +51,7 @@ def load_user(email: str) -> User | None:
 # Puts a prefix before every route inside the blueprint
 
 app.register_blueprint(authbp, url_prefix="/api")
+app.register_blueprint(ppbp, url_prefix="/api")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=5000)
