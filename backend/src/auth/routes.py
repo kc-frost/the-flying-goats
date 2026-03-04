@@ -1,6 +1,6 @@
 from flask import jsonify, request, Blueprint, session
 from db import get_connection
-from .service import find_user, insert_user
+from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory
 from .validators import validate_email, validate_password
 
 # This is where you setup the Blueprint on the respective roues file.
@@ -77,3 +77,111 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
+
+@bp.get("/inventory")
+def getInventory():
+    conn = get_connection()
+    result = find_inventory(conn)
+    return jsonify(result)
+
+"""
+constaints/checks/validations for inventory is handled in my sql (hopefully)
+"""
+@bp.post("/inventory/add")
+def addItemToInventory():
+    data = request.get_json()
+    itemID = data["itemID"]
+    quantity = data["quantity"]
+    equipmentName = data["equipmentName"]
+    equipmentID = data.get("equipmentID")
+    transportationID = data.get("transportationID")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        insert into item(itemID, equipmentName, equipmentID, transportationID) values
+        (%s,%s,%s,%s)
+        """,
+        (itemID, equipmentName, equipmentID, transportationID)
+    )
+
+    cursor.execute(
+        """
+        insert into inventory(itemID, quantity) values
+        (%s,%s)
+        """,
+        (itemID, quantity)
+    )
+
+    conn.commit()
+
+    return jsonify({"success": True})
+
+@bp.post("/inventory/delete")
+def deleteItemFromInventory():
+    conn = get_connection()
+    data = request.json
+    itemID = data['itemID']
+    result = delete_from_inventory(conn, itemID)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Item deleted from inventory FOREVER" #Items are NOT deleted from item, only from inventory
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+# def update inventory(conn, data):
+
+# Reservation logic
+@bp.get("/reservations")
+def viewReservations():
+    query = "select * from 'booking'"
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchall()
+    return jsonify(result)
+
+@bp.post("/reservations/make")
+def makeReservation():
+
+    """
+    We're taking booking args, meaing:
+    
+    bookingNumber int primary key auto_increment,
+    userID int references users(userID),
+    flightID varchar(7) references flight(IATA),
+    seat int references planeSeat(seatNumber)
+
+    """
+    data = request.json
+
+    # BookingID is auto increment, unlike inventory it's not needed here
+    userID = data['userID']
+    flightID = data['flightID']
+    seat = data['seat']
+
+    conn = get_connection()
+    # Right now this assumes user exists in users, flight exists, and seat exists. Wednesday, gunna add more validation and checks, but for now just wanna get it working
+    query = "insert into booking (userID, flightID, seat) values (%s, %s, %s)"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (userID, flightID, seat))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 500
+    return jsonify({
+        "success": True,
+        "message": "Reservation successfully made"
+    }), 201
+    

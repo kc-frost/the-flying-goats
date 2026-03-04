@@ -1,11 +1,11 @@
+drop database TFG;
 create database TFG;
 use TFG;
 
 create table flight(
 IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
-gate varchar(255),
-status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
+gate varchar(2),
 destination varchar(255)
 );
 
@@ -15,14 +15,20 @@ liftOff datetime,
 landing datetime
 );
 
-create table plane(
-ICAO varchar(4) primary key
+create table planeStatusEnums(
+psEnumID int primary key,
+status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
+ICAO varchar(4)
 );
 
+create table plane(
+ICAO varchar(4) primary key, 
+statusID int references planeStatusEnums(psEnumID)
+);
 
 create table users(
 userID int primary key auto_increment,
-phoneNumber int not null,
+phoneNumber char(10) not null,
 fname varchar(255) not null,
 lname varchar(255) not null,
 username varchar(255) not null,
@@ -32,11 +38,15 @@ isStaff boolean default false
 -- maybe add passport or some sorta identification?
 );
 
+create table positionEnums (
+positionID int primary key auto_increment, 
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned"
+);
 
 create table staff(
 staffID int primary key,
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned",
-email varchar(255) references users(email)
+email varchar(255) references users(email),
+positionID int default 5 references positionEnums(positionID) 
 );
 
 create table flightClass(
@@ -46,27 +56,46 @@ price double
 );
 
 create table planeSeat(
-seatNumber int primary key,
-flightID int references flight(IATA),
-class varchar(255) references flightClass(className)
+seatNumber int,
+flightID varchar(7) references flight(IATA),
+class varchar(255) references flightClass(className),
+primary key(seatNumber, flightID)
 );
 
 -- A table with all the info in one for the view appointment part and cause it's cleaner
 create table booking(
-bookingNumber int primary key,
+bookingNumber int primary key auto_increment,
 userID int references users(userID),
-flightID int references flight(IATA),
+flightID varchar(7) references flight(IATA),
 seat int references planeSeat(seatNumber)
 );
 
-create table equipment(
-equipmentID int primary key auto_increment,
-equipmentName varchar(255),
-equipmentDescription text
+create table item (
+itemID int primary key auto_increment,
+itemName varchar(255) not null,
+itemDescription text,
+type enum("equipment","transportation", "misc") not null
 );
 
-create table transporation(
-transportationID int primary key auto_increment
+create table equipment(
+itemID int primary key,
+equipmentName varchar(255),
+equipmentDescription text,
+constraint fk_equipment_item foreign key (itemID) references item(itemID) on delete cascade
+);
+
+create table transportation(
+itemID int primary key,
+transportName varchar(255),
+transportDescription text,
+constraint fk_transportation_item foreign key (itemID) references item(itemID) on delete cascade
+);
+
+create table miscellaneousItem(
+itemID int primary key,
+itemName varchar(255),
+itemDescription text,
+constraint fk_miscellaneous_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
 create table parkingLot(
@@ -76,24 +105,45 @@ lotSpace int
 
 create table inventory(
 itemID int primary key,
-planeID int references plane(ICAO),
-staffID int references staff(staffID),
-equipmentID int references equipment(equipmentID),
-transportationID int references transportation(transportationID),
-quantity int check (quantity > 0),
-isAvailable boolean default true
+quantity int check (quantity >= 0),
+constraint fk_inventory_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
+-- create table payment
+
+
+
+
+
+-- triggers
 delimiter //
+create trigger transportAndEquipmentInsert
+after insert on item
+for each row
+begin
+	if (new.type = "equipment")
+		then
+			insert into equipment(itemID, equipmentName, equipmentDescription) values 
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type = "transportation")
+		then 
+			insert into transportation(itemID, transportName, transportDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type="misc")
+		then
+			insert into miscellaneousItem(itemID, itemName, itemDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	end if;
+end//
+
 create trigger createStaff
 after insert on users
 for each row
 begin
-	if new.isStaff = True
+    if new.isStaff = true 
 		then
-			insert into staff(staffID, position, email) values (new.userID, new.email);
-	end if;
+			insert into staff(staffID, email) values
+            (new.userID, new.email);
+    end if;
 end//
 delimiter ;
-
--- create table payment;

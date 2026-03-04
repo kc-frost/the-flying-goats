@@ -23,4 +23,3 @@ Book your (goated) flight from anywhere* :)
 `pip install -r requirements.txt`
 
 ## Credits
-
