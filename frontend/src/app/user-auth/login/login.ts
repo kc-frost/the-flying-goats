@@ -33,7 +33,6 @@ export class Login {
       next: (res) => {
         // THIS IS HOW WE GET THE CURRENT USER'S EMAIL
         // this is bad implementation, but it works with our time constraint.
-        // the only issue is that due to timing, you'll have to click on the dropdown for it to load
         // WILL REPLACE AFTER SPRINT 3
         
         var email = this.userProfile.get('email')?.value!;
