@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from db import get_connection
 from _models.user import User
+from auth.service import check_ifadmin
 
 load_dotenv()
 # Import a new routes/blueprint file here
@@ -40,7 +41,9 @@ def load_user(email: str) -> User | None:
         result = cursor.fetchone()
     
     if result is not None:
-        return User(result['username'], result['email'])
+         # BAD PLACEMENT. will fix after sprint 3
+        is_admin = check_ifadmin(result['email'])
+        return User(result['username'], result['email'], is_admin)
     else:
         return None
 

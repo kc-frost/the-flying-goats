@@ -2,6 +2,23 @@ from typing import Any
 from db import get_connection
 from .security import get_hashed_password
 
+def check_ifadmin(email: str) -> bool:
+    """THIS IS NOT THE FINAL IMPLEMENTATION. Does a simple check if
+    the user is an admin
+
+    Args:
+        email (str): User email
+        password (str): User password
+
+    Returns:
+        bool: If user is an admin or not
+    """
+
+    if email == "admin@gmail.com":
+        return True
+    else:
+        return False
+    
 def find_user(email: str, password: str) -> dict[str, Any] | None:
     """Query the database if a user with the passed argument exists.
     Expected to be used for login/register validation.

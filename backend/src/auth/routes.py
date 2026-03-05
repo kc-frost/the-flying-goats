@@ -1,7 +1,8 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
-from .service import find_user, insert_user
+from .service import find_user, insert_user, check_ifadmin
 from .validators import validate_email, validate_password
+from .security import admin_required
 from _models.user import User
 
 # This is where you setup the Blueprint on the respective roues file.
@@ -37,6 +38,13 @@ def test():
         "message": "You're logged in"
     }
 
+@bp.route('/admin')
+@admin_required
+def admin():
+    return jsonify({
+        "message": "you're an admin!"
+    }), 200
+
 @bp.route('/logout')
 @login_required
 def logout():
@@ -57,7 +65,8 @@ def login():
 
     result = find_user(email, password)
     if result is not None:
-        user: User = User(result['username'], result['email'])
+        is_admin = check_ifadmin(result['email'])
+        user: User = User(result['username'], result['email'], is_admin)
 
         login_user(user)
         # user exist
