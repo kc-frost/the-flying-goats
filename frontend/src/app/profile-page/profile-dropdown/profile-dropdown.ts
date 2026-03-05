@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../_shared/services/auth-service';
+import { UserService } from '../../_shared/services/user-service';
 
 @Component({
   selector: 'app-profile-dropdown',
@@ -11,6 +12,7 @@ import { AuthService } from '../../_shared/services/auth-service';
 export class ProfileDropdown {
   private router = inject(Router);
   private authService = inject(AuthService);
+  userService = inject(UserService);
 
   staticProfileImage = "/profile/static-profile-image.svg";
 
@@ -20,5 +22,8 @@ export class ProfileDropdown {
 
   backToLogin() {
     this.authService.logout().subscribe();
+    this.router.navigate([{ outlets: {
+      dropdown: ['login']
+    }}], { skipLocationChange: true});
   }
 }
