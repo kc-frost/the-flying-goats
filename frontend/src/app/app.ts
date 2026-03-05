@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './_shared/services/auth-service';
 import { Inventory } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
+import { UserService } from './_shared/services/user-service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,28 @@ import { BookFlight } from './book-flight/book-flight';
 export class App {
   protected readonly title = signal('tfg');
   private router = inject(Router);
-  authService = inject(AuthService);
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+
+  // check on instantiation of App if user is logged in
+  // to let angular know even when the page is refreshed
+  constructor() {
+    this.authService.checkSession().subscribe({
+      next: (res) => {
+        const savedEmail = localStorage.getItem('email');
+        if (savedEmail) {
+          this.userService.setEmail(savedEmail);}
+
+        this.authService.setAuthenticatedTrue();
+        console.log(res);
+        console.log(this.userService.getEmail());
+      },
+      error: (err) => {
+        console.log("App constructor:", err);
+        this.authService.setAuthenticatedFalse();
+      }
+    })
+  }
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
@@ -28,21 +50,12 @@ export class App {
   // If a session exists, clicking on the profile picture should also show ProfileDropdown
   // Otherwise (including errors), show Login
   handleProfileClick() {
-    this.authService.checkSession().subscribe({
-      next: (res) => {
-        if (res.ok) {
-          this.navigateToProfile();
-        } else {
-          this.navigateToLogin();
-        }
-      },
-      error: (res) => {
-        console.log(res);
-        this.navigateToLogin();
-      }
-    })
+    if (this.authService.isAuthenticated()) {
+      this.navigateToProfile()
+    } else {
+      this.navigateToLogin();
+    }
   }
-
 
   navigateToLogin() {
     this.router.navigate([{ outlets: 

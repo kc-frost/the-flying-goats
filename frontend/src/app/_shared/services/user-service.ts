@@ -5,20 +5,19 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private http: HttpClient) {}
+  private email: string = "none_set"
 
-  private username: string = ""
+  // loadUserDetails(data: any) {
+  //   var userData = JSON.parse(JSON.stringify(data));
+  //   this.setUsername(userData['username']);
+  // }
 
-  loadUserDetails(user: any) {
-    this.setUsername(user.username);
+  setEmail(email: string) {
+    this.email = email;
   }
 
-  setUsername(username: string) {
-    this.username = username;
-  }
-
-  getUsername() {
-    return this.username;
+  getEmail() {
+    return this.email;
   }
 
 }

@@ -14,6 +14,7 @@ export class Login {
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
 
   // This is a quicker way to instantiate a FormGroup
   // Each item in the Group is a FormControl (look at login.html and notice the 'formControlName' property)
@@ -30,6 +31,18 @@ export class Login {
   onSubmit() {
     this.authService.login(this.userProfile.value).subscribe({
       next: (res) => {
+        // THIS IS HOW WE GET THE CURRENT USER'S EMAIL
+        // this is bad implementation, but it works with our time constraint.
+        // the only issue is that due to timing, you'll have to click on the dropdown for it to load
+        // WILL REPLACE AFTER SPRINT 3
+        
+        var email = this.userProfile.get('email')?.value!;
+        localStorage.setItem('email', email);
+        this.userService.setEmail(email);
+        
+        if (this.userProfile.get('email')?.value == "admin@gmail.com") {
+          this.authService.setAdminTrue();
+        }
         this.authService.setAuthenticatedTrue();
         this.showProfileDropdown();
       },

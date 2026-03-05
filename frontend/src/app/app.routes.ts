@@ -34,7 +34,7 @@ export const routes: Routes = [
     {
         path: 'profile',
         component: ProfilePage,
-        canActivate: [userAuthGuard]
+        canActivate: [userAuthGuard],
     },
     // dropdown outlet
     {
