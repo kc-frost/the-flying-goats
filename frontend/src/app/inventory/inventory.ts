@@ -5,25 +5,25 @@ import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { BASE_URL } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
+import { OnInit } from "@angular/core";
 
 type InventoryRow = {
   itemID: number;
   quantity: number;
   isAvailable: boolean;
-  equipmentName: string;
-  type: "equipment" | "transportation" | "Misc";
-  equipmentID: number | null;
-  transportationID: number | null;
-  transportName?: string | null;
+  itemName: string;
+  type: "equipment" | "transportation" | "misc";
+  itemDescription: string;
 };
 
 @Component({
   selector: "app-inventory",
+  standalone: true,
   imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: "./inventory.html",
   styleUrls: ["./inventory.css"],
 })
-export class Inventory {
+export class Inventory implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   // This forces immediate change detection after we send a get request (later when getInventory is claled)
@@ -35,19 +35,17 @@ export class Inventory {
   // Object that gets sent to backend when additem is called
   newItem: {
     itemID: number | null;
-    equipmentName: string;
+    itemName: string;
     quantity: number | null;
-    type: "equipment" | "transportation";
-    equipmentID: number | null;
-    transportationID: number | null;
+    type: "equipment" | "transportation" | "misc";
+    itemDescription: string;
   } = {
     // default values for newItem, these get reset whenever add modal is closed/displayed when opened freshly
     itemID: null,
-    equipmentName: "",
+    itemName: "",
     quantity: null,
     type: "equipment",
-    equipmentID: null,
-    transportationID: null,
+    itemDescription: ""
   };
 
   // When the component is initialized, get inventory from backend and populate items with it
@@ -80,11 +78,10 @@ export class Inventory {
 
     this.newItem = {
       itemID: null,
-      equipmentName: "",
+      itemName: "",
       quantity: null,
       type: "equipment",
-      equipmentID: null,
-      transportationID: null,
+      itemDescription: ""
     };
   }
 
@@ -99,15 +96,15 @@ export class Inventory {
         itemID: this.newItem.itemID,
         quantity: this.newItem.quantity,
         type: this.newItem.type,
-        equipmentID: this.newItem.equipmentID,
-        transportationID: this.newItem.transportationID,
-        equipmentName: this.newItem.equipmentName,
+        itemName: this.newItem.itemName,
+        itemDescription: this.newItem.itemDescription
       })
       .subscribe(() => {
         this.getInventory();
         this.closeAddModal();
       });
   }
+
   deleteItem(itemID: number) {
     // post request to APIIIIIII
     this.http
