@@ -2,6 +2,7 @@ import { Component, inject} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../_shared/services/auth-service';
+import { UserService } from '../../_shared/services/user-service';
 
 @Component({
   selector: 'app-login',
@@ -26,12 +27,11 @@ export class Login {
   });
 
   // Sends a POST request with the body being the value of the form userProfile
-
   onSubmit() {
     this.authService.login(this.userProfile.value).subscribe({
       next: (res) => {
-        console.log(res)
-        this.showProfileDropdown()
+        this.authService.setAuthenticatedTrue();
+        this.showProfileDropdown();
       },
       error: (err) => {
         console.log(err)

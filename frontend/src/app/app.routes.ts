@@ -7,6 +7,7 @@ import { ProfilePage } from './profile-page/profile-page/profile-page';
 import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdown';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
+import { userAuthGuard } from './_shared/guards/user-auth-guard';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -28,10 +29,12 @@ export const routes: Routes = [
     {
         path: 'book-flight',
         component: BookFlight,
+        canActivate: [userAuthGuard]
     },
     {
         path: 'profile',
-        component: ProfilePage
+        component: ProfilePage,
+        canActivate: [userAuthGuard]
     },
     // dropdown outlet
     {

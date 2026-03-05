@@ -9,9 +9,6 @@ import { BookFlight } from './book-flight/book-flight';
   imports: [RouterOutlet, RouterLink, Inventory, BookFlight],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  host: {
-    'document:click': 'onClick()'
-  },
 })
 
 export class App {

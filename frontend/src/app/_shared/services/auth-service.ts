@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from '../../../_environments/environment';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +8,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class AuthService {
   constructor(private http: HttpClient) {}
   
+  authenticated: boolean = false
+
+  isAuthenticated() {
+    return this.authenticated;
+  }
   // returns blueprint for the request
   // does not actually send it yet
   checkSession() {
@@ -39,8 +43,19 @@ export class AuthService {
   }
 
   logout() {
+    // can only do this here because login doesn't know whether it pushes through or not yet
+    // here, we already know the user is logged in
+    this.setAuthenticatedFalse()
     return this.http.get(`${environment.api_url}/api/logout`,
       { observe: 'response'}
     )
+  }
+
+  setAuthenticatedTrue() {
+    this.authenticated = true;
+  }
+
+  setAuthenticatedFalse() {
+    this.authenticated = false;
   }
 }
