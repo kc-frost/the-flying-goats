@@ -24,11 +24,15 @@ def check_session():
     """
     if current_user.is_authenticated:
         return jsonify({
-            "authenticated": True
+            "authenticated": True,
+            "isAdmin": current_user.isAdmin,
+            "username": current_user.username
         }), 200
     else:
         return jsonify({
-            "authenticated": False
+            "authenticated": False,
+            "isAdmin": False,
+            "username": "null"
         }), 401
 
 @bp.route('/test')
