@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { UserService } from '../../_shared/services/user-service';
 
 @Component({
@@ -10,5 +10,4 @@ import { UserService } from '../../_shared/services/user-service';
 export class ProfilePage {
   userService = inject(UserService);
   staticProfileImage = "/profile/static-profile-image.svg";
-
 }

@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './_shared/services/auth-service';
 import { Inventory } from './inventory/inventory';
@@ -17,6 +17,7 @@ export class App {
   private router = inject(Router);
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   // check on instantiation of App if user is logged in
   // to let angular know even when the page is refreshed
@@ -25,7 +26,9 @@ export class App {
       next: (res) => {
         const savedEmail = localStorage.getItem('email');
         if (savedEmail) {
-          this.userService.setEmail(savedEmail);}
+          this.userService.setEmail(savedEmail);
+          this.cdr.detectChanges();
+        }
 
         this.authService.setAuthenticatedTrue();
         console.log(res);
