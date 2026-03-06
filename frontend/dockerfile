@@ -12,6 +12,6 @@ RUN npm run build -- --configuration production
 # Serve with nginx
 FROM nginx:alpine
 
-COPY --from=build /app/dist/the-flying-goats /usr/share/nginx/html
+COPY --from=build /app/dist/tfg /usr/share/nginx/html
 
 EXPOSE 80
