@@ -18,7 +18,8 @@ bp = Blueprint("auth", __name__)
 
 @bp.get('/check-session')
 def check_session():
-    """Check if a session exists, implying a logged-in user
+    """A general check if a session exists, implying a logged-in user.
+    Use check-authenticated for route protection
 
     Returns:
         Tuple(bool, int): If user is authenticated, and an HTTP status code
@@ -36,19 +37,43 @@ def check_session():
             "username": "null"
         }), 401
 
-@bp.route('/test')
+@bp.route('/check-authenticated')
 @login_required
-def test():
-    return {
-        "message": "You're logged in"
-    }
+def check_authenticated():
+    """This checks if a user can access a route that requires
+    authentication
 
-@bp.route('/admin')
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.is_authenticated):
+        return jsonify({
+            "userID": current_user.email
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not logged in"
+        }), 401
+
+@bp.route('/check-admin')
 @admin_required
-def admin():
-    return jsonify({
-        "message": "you're an admin!"
-    }), 200
+def check_admin():
+    """This checks if a user can access a route that requires admin
+    permissions
+
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.isAdmin):
+        return jsonify({
+            "userID": current_user.email
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not an admin"
+        }), 403
 
 @bp.route('/logout')
 @login_required
