@@ -21,7 +21,7 @@
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES (1,1,'TP1001',101),(2,2,'TP1002',103),(3,1,'TP1003',105),(4,2,'TP1004',101),(5,1,'TP1005',103),(6,2,'TP1006',105);
+INSERT INTO `booking` VALUES (1,1,'TP1001',101,NULL),(2,2,'TP1002',103,NULL),(3,1,'TP1003',105,NULL),(4,2,'TP1001',102,NULL),(5,1,'TP1002',104,NULL),(6,2,'TP1003',106,NULL);
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -41,7 +41,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `flight` WRITE;
 /*!40000 ALTER TABLE `flight` DISABLE KEYS */;
-INSERT INTO `flight` VALUES ('TP1001','Goated67Plane','A1','Austin'),('TP1002','SkyRam900','A2','Dallas'),('TP1003','HornetJet11','B1','Houston'),('TP1004','Nimbus220','B2','San Antonio'),('TP1005','CrownCruiser','C1','Denver'),('TP1006','AtlasSprint','C2','Chicago');
+INSERT INTO `flight` VALUES ('TP1001','Goated67Plane','A1','Miami','Austin'),('TP1002','SkyRam900','A2','Austin','Dallas'),('TP1003','HornetJet11','B1','Dallas','Houston'),('TP1004','Nimbus220','B2','Houston','San Antonio'),('TP1005','CrownCruiser','C1','Austin','Denver'),('TP1006','AtlasSprint','C2','Denver','Chicago');
 /*!40000 ALTER TABLE `flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -77,11 +77,11 @@ UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET character_set_client  = utf8mb3 */ ;
+/*!50003 SET character_set_results = utf8mb3 */ ;
+/*!50003 SET collation_connection  = utf8mb3_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `transportAndEquipmentInsert` AFTER INSERT ON `item` FOR EACH ROW begin
 	if (new.type = "equipment")
@@ -140,7 +140,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `planeseat` WRITE;
 /*!40000 ALTER TABLE `planeseat` DISABLE KEYS */;
-INSERT INTO `planeseat` VALUES (101,'TP1001','Economy'),(102,'TP1001','First Class'),(103,'TP1002','Economy'),(104,'TP1002','First Class'),(105,'TP1003','Economy'),(106,'TP1003','Goat Class');
+INSERT INTO `planeseat` VALUES (101,'TP1001',1),(103,'TP1002',1),(105,'TP1003',1),(102,'TP1001',2),(104,'TP1002',2),(106,'TP1003',3);
 /*!40000 ALTER TABLE `planeseat` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -150,7 +150,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `planestatusenums` WRITE;
 /*!40000 ALTER TABLE `planestatusenums` DISABLE KEYS */;
-INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL);
+INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL),(7,'Grounded',NULL);
 /*!40000 ALTER TABLE `planestatusenums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,7 +160,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `positionenums` WRITE;
 /*!40000 ALTER TABLE `positionenums` DISABLE KEYS */;
-INSERT INTO `positionenums` VALUES (1,'Flight Attendent'),(2,'Pilot'),(3,'Co-Pilot'),(4,'Security'),(5,'Unassigned'),(6,'Unassigned');
+INSERT INTO `positionenums` VALUES (1,'Flight Attendent'),(2,'Pilot'),(3,'Co-Pilot'),(4,'Security'),(5,'Unassigned');
 /*!40000 ALTER TABLE `positionenums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,17 +200,17 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'5127997308','Alan','Gascon','McTails','alangascon@gmail.com','password123',0),(2,'5123005252','Maria','Valentine','ValesMom','mariavalentine@gmail.com','password234',1),(3,'5125550101','Kai','Cairo','kcfrost','kaicairo@tfg.com','password345',1),(4,'5125550102','Richard','Walker','rich93147','richardwalker@tfg.com','password456',1),(5,'5125550103','Erin','Choi','ErinCo','erin.choi@tfg.com','password567',1),(6,'5125550104','Omar','Singh','OmarSec','omar.singh@tfg.com','password678',0),(7,'5125550105','Tess','Nguyen','TessFA','tess.nguyen@tfg.com','password789',0),(8,'5125550106','Luis','Martinez','LuisOps','luis.martinez@tfg.com','password890',0);
+INSERT INTO `users` VALUES (1,'5127997308','Alan','Gascon','McTails','alangascon@gmail.com','password123',0,NULL,NULL),(2,'5123005252','Maria','Valentine','ValesMom','mariavalentine@gmail.com','password234',1,NULL,NULL),(3,'5125550101','Kai','Cairo','kcfrost','kaicairo@tfg.com','password345',1,NULL,NULL),(4,'5125550102','Richard','Walker','rich93147','richardwalker@tfg.com','password456',1,NULL,NULL),(5,'5125550103','Erin','Choi','ErinCo','erin.choi@tfg.com','password567',1,NULL,NULL),(6,'5125550104','Omar','Singh','OmarSec','omar.singh@tfg.com','password678',0,NULL,NULL),(7,'5125550105','Tess','Nguyen','TessFA','tess.nguyen@tfg.com','password789',0,NULL,NULL),(8,'5125550106','Luis','Martinez','LuisOps','luis.martinez@tfg.com','password890',0,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET character_set_client  = utf8mb3 */ ;
+/*!50003 SET character_set_results = utf8mb3 */ ;
+/*!50003 SET collation_connection  = utf8mb3_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createStaff` AFTER INSERT ON `users` FOR EACH ROW begin
     if new.isStaff = true 
@@ -242,4 +242,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-04 17:19:29
+-- Dump completed on 2026-03-06  5:12:37

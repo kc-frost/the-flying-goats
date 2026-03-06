@@ -6,6 +6,7 @@ create table flight(
 IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
 gate varchar(2),
+origin varchar(255),
 destination varchar(255)
 );
 
@@ -34,7 +35,9 @@ lname varchar(255) not null,
 username varchar(255) not null,
 email varchar(255) not null,
 password varchar(255) not null,
-isStaff boolean default false
+isStaff boolean default false,
+bio text,
+registeredDate datetime
 -- maybe add passport or some sorta identification?
 );
 
@@ -58,7 +61,8 @@ price double
 create table planeSeat(
 seatNumber int,
 flightID varchar(7) references flight(IATA),
-class varchar(255) references flightClass(className),
+classID int,
+constraint fk_class_id foreign key (classID) references flightclass(classID),
 primary key(seatNumber, flightID)
 );
 
@@ -67,7 +71,8 @@ create table booking(
 bookingNumber int primary key auto_increment,
 userID int references users(userID),
 flightID varchar(7) references flight(IATA),
-seat int references planeSeat(seatNumber)
+seat int references planeSeat(seatNumber),
+bookingDate datetime
 );
 
 create table item (
@@ -81,9 +86,6 @@ create table equipment(
 itemID int primary key,
 equipmentName varchar(255),
 equipmentDescription text,
--- Forgot to add, including in the contraints is "on delete cascase". This means that, upon a deletion from ITEM, not equipment or the other tables, this deletion cascades down to those tables
--- This is important to note cause if you delete from equipment it will STILL exist on item. Not two ways. This is intentional, since item is a sort of hub for everything, and you can
--- imagine it as a master archive of everything. 
 constraint fk_equipment_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
@@ -150,3 +152,26 @@ begin
     end if;
 end//
 delimiter ;
+
+
+-- TFG Views --
+-- view for staff count per position
+create view staffCountPerPosition as select
+pe.position, 
+count(s.staffID) as positionCount
+from positionEnums pe
+left join staff s using(positionID)
+group by pe.positionID;
+
+-- Creating a view so that I can display item names and stuff like that instead of just ids,
+-- avoiding overflooding of the python file for no reason
+
+create view inventoryNames as
+select
+-- inventory
+i.itemID, i.quantity,
+(i.quantity > 0) as isAvailable,
+-- item joins
+it.type, it.itemName
+from inventory i
+join item it on it.itemID = i.itemID;
