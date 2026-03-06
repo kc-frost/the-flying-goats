@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "backend/src/main.py"]
+CMD ["python", "src/main.py"]
