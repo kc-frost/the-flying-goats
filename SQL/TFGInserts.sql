@@ -102,3 +102,4 @@ insert into inventory(itemID, quantity) values
 
 select * from planeStatusEnums;
 select * from schedule;
+select * from booking;
