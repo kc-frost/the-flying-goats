@@ -27,6 +27,37 @@ export class ProfilePage {
   userService = inject(UserService);
   staticProfileImage = "/profile/static-profile-image.svg";
 
+  today = new Date();
+  selectedTab: 'past' | 'current' | 'future' = 'past'
+
+  getReservations() {
+    if (this.selectedTab === 'past') return this.getPastReservations();
+    if (this.selectedTab === 'current') return this.getCurrentReservations();
+    return this.getFutureReservations();
+  }
+  getPastReservations() {
+    return this.arrayOfReservations
+    .filter(r => new Date(r.departureDate) < this.today)
+    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+  }
+  
+  getCurrentReservations() {
+    return this.arrayOfReservations
+    .filter(r => {
+      const dep = new Date(r.departureDate);
+      const arr = new Date(r.arrivalDate);
+      return dep <= this.today && arr >= this.today;
+    })
+    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+  }
+  
+  getFutureReservations() {
+    return this.arrayOfReservations
+    .filter(r => new Date(r.departureDate) > this.today)
+    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+  }
+
+
   formatDate(date: string): string {
     var enteredDate = new Date(date);
     var formattedDate = new Intl.DateTimeFormat("en-GB", 
@@ -99,6 +130,24 @@ export class ProfilePage {
       seatClass: "Economy",
       seatNumber: "",
       username: "admin"
+    },
+    {
+      id: 2,
+      arrivalDate: "2026-02-27T00:02",
+      departureDate: "2026-01-23T20:58",
+      destination: "Japan",
+      flightID: "JPN987",
+      origin: "Austin",
+      reservationDate: "Thu Jan 05 2026",
+      seatClass: "Economy",
+      seatNumber: "",
+      username: "admin"
     }
   ];
+
+  constructor() {
+    this.arrayOfReservations.sort((a, b) => {
+  return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
+});
+  }
 }
