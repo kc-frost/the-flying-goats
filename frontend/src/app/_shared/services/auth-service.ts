@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../_environments/environment';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +25,7 @@ export class AuthService {
   // {"authenticated": true/false,
   //  "isAdmin": true/false,
   //  "username": current_user.username | "null"}
-  checkSession() {
+  getUserSummary() {
     return this.http.get(`${environment.api_url}/api/check-session`,
       {withCredentials: true}
     );
