@@ -3,7 +3,7 @@ import { Component, inject } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { BASE_URL } from "../../_environments/environment";
+import { environment } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 import { OnInit } from "@angular/core";
 
@@ -57,7 +57,7 @@ export class Inventory implements OnInit {
   getInventory() {
     // get request to backend API ENDPOINTTTTT
     this.http
-      .get<InventoryRow[]>(`${BASE_URL}/api/inventory`)
+      .get<InventoryRow[]>(`${environment.api_url}/api/inventory`)
       .subscribe((rows) => {
         this.items = rows;
         // What I was talking about before on updating inventory, needed cause I had a weird bug appear and never go away for some reason
@@ -92,7 +92,7 @@ export class Inventory implements OnInit {
     }
     // post request to backend
     this.http
-      .post(`${BASE_URL}/api/inventory/add`, {
+      .post(`${environment.api_url}/api/inventory/add`, {
         itemID: this.newItem.itemID,
         quantity: this.newItem.quantity,
         type: this.newItem.type,
@@ -108,7 +108,7 @@ export class Inventory implements OnInit {
   deleteItem(itemID: number) {
     // post request to APIIIIIII
     this.http
-      .post(`${BASE_URL}/api/inventory/delete`, {
+      .post(`${environment.api_url}/api/inventory/delete`, {
         itemID: itemID,
       })
       .subscribe(() => {
