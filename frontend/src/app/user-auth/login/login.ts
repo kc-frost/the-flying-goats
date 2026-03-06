@@ -42,6 +42,9 @@ export class Login {
         if (this.userProfile.get('email')?.value == "admin@gmail.com") {
           this.authService.setAdminTrue();
         }
+
+        // IMPORTANT, especially for booking reservations
+        alert("Please refresh to make sure username is correct in local storage!")
         this.authService.setAuthenticatedTrue();
         this.showProfileDropdown();
       },
