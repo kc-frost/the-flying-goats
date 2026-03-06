@@ -89,35 +89,16 @@ constaints/checks/validations for inventory is handled in my sql (hopefully)
 """
 @bp.post("/inventory/add")
 def addItemToInventory():
-    data = request.get_json()
-    itemID = data["itemID"]
-    quantity = data["quantity"]
-    equipmentName = data["equipmentName"]
-    equipmentID = data.get("equipmentID")
-    transportationID = data.get("transportationID")
-
     conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        insert into item(itemID, equipmentName, equipmentID, transportationID) values
-        (%s,%s,%s,%s)
-        """,
-        (itemID, equipmentName, equipmentID, transportationID)
-    )
-
-    cursor.execute(
-        """
-        insert into inventory(itemID, quantity) values
-        (%s,%s)
-        """,
-        (itemID, quantity)
-    )
-
-    conn.commit()
-
-    return jsonify({"success": True})
+    data = request.json
+    result = insert_into_inventory(conn, data)
+    if result.get("success"):
+        return jsonify({"success": True})
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
 
 @bp.post("/inventory/delete")
 def deleteItemFromInventory():

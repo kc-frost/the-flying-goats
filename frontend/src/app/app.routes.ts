@@ -5,6 +5,7 @@ import { Login } from './user-auth/login/login';
 import { Register } from './user-auth/register/register';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
+import { ViewAppointments } from './view-appointments/view-appointments';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -57,6 +58,11 @@ export const routes: Routes = [
         path: 'book-flight',
         component: BookFlight,
     },
+    {
+        path: 'view-appointments',
+        component: ViewAppointments
+
+    }
 ];
 
 export default routes;

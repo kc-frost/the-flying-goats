@@ -59,38 +59,35 @@ for the inventory items and is what is going to receive inventory. This finds th
 
 def find_inventory(conn):
     with conn.cursor() as cursor:
-        cursor.execute("select * from `inventoryNames`")
+        cursor.execute("select * from inventoryNames")
         result = cursor.fetchall()
     return result
 
 """ 
-now THIS is what we use for inserting into inventory. I know I'm doing view inventory and inventory logic, but
-just INCASE you touch inventory, look at this for insertions.
+inserting into both inventory and item, and with how I did the sql structure, into respective tables as well.
 """
 def insert_into_inventory(conn, data):
 
-    inventoryQuery = """
-    insert into inventory (itemID, quantity) values
-    (%s, %s)
-    on duplicate key update quantity = quantity + values(quantity)
+    itemInsertQuery = """
+    insert into item(itemID, itemName, itemDescription, type) values (%s, %s, %s, %s);
     """
-    itemQuery = """
-    insert ignore into item(itemID, equipmentID, transportationID, equipmentName, type) values
-    (%s, %s, %s, %s, %s)
+    inventoryQuery = """
+    insert into inventory(itemID, quantity) values (%s, %s)
+    on duplicate key update quantity = quantity + values(quantity);
     """
 
     with conn.cursor() as cursor:
         try:
-            cursor.execute(inventoryQuery, (
-                data['itemID'],
-                data['quantity']
-            ))
-            cursor.execute(itemQuery, (
-                data['itemID'],
-                data.get('equipmentID'),
-                data.get('transportationID'),
-                data['equipmentName'],
+            cursor.execute(itemInsertQuery, (
+                data.get("itemID"), # Incase itemID isn't given, auto increment kicks in, so it's an optional field
+                data['itemName'],
+                data['itemDescription'],
                 data['type']
+            ))
+
+            cursor.execute(inventoryQuery, (
+                data.get("itemID") or cursor.lastrowid, # If itemID isn't given, we use the auto incremented id instead from item
+                data['quantity']
             ))
             conn.commit()
         except Exception as e:
@@ -109,14 +106,13 @@ def delete_from_inventory(conn, itemID):
             conn.rollback()
             return {"success": False,
                     "error": str(e)}
-    
     return {"success": True}
 """
 Instead of isAvailable being a table attribute before, I decided to make it query function so
 that it could be applied universally and changed in real time without need for updating db.
 """
 def isAvailable(conn, itemID):
-    query = "select isAvailable from `inventory` where itemID=%s"
+    query = "select isAvailable from inventoryNames where itemID=%s"
     with conn.cursor() as cursor:
         cursor.execute(query, (itemID,))
         result = cursor.fetchone()

@@ -23,7 +23,7 @@
                <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
                </button>
                <div class="item-card">
-                  <h2> FUCK YOU TYPESCRIPT FUCK YOU FUCK YOU FUCK YOU FUCK YOU</h2>
+                  <h2> {{item.itemName}}</h2>
                </div>
                <div class="item-forms">
                   <div class="input-fields">
@@ -37,6 +37,10 @@
                   <div class="input-fields">
                      <span class="field-name">Is Available</span>
                      <input class="field-input" [value]="item.isAvailable" readonly />
+                  </div>
+                  <div class="input-fields">
+                     <span class="field-name">Type</span>
+                     <input class="field-input" [value]="item.type" readonly />
                   </div>
                </div>
             </section>
@@ -72,6 +76,7 @@
                   <select class="field-input" [(ngModel)]="newItem.type">
                   <option value="equipment">equipment</option>
                   <option value="transportation">transportation</option>
+                  <option value="misc">misc</option>
                   </select>
                </div>
                <div class="input-fields">
@@ -80,19 +85,15 @@
                </div>
                <div class="input-fields">
                   <span class="field-name">Item Name</span>
-                  <input class="field-input" [(ngModel)]="newItem.equipmentName" />
+                  <input class="field-input" [(ngModel)]="newItem.itemName" />
                </div>
                <div class="input-fields">
                   <span class="field-name">Quantity</span>
                   <input class="field-input" type="number" [(ngModel)]="newItem.quantity" />
                </div>
-               <div class="input-fields" *ngIf="newItem.type === 'equipment'">
-                  <span class="field-name">Equipment ID</span>
-                  <input class="field-input" type="number" [(ngModel)]="newItem.equipmentID" />
-               </div>
-               <div class="input-fields" *ngIf="newItem.type === 'transportation'">
-                  <span class="field-name">Transportation ID</span>
-                  <input class="field-input" type="number" [(ngModel)]="newItem.transportationID" />
+               <div class="input-fields">
+                  <span class="field-name">Item Description</span>
+                  <input class="field-input" [(ngModel)]="newItem.itemDescription" />
                </div>
                <div class="add-actions">
                   <button type="button" (click)="addItem()">Add Item</button>

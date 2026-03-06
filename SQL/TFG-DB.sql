@@ -81,6 +81,9 @@ create table equipment(
 itemID int primary key,
 equipmentName varchar(255),
 equipmentDescription text,
+-- Forgot to add, including in the contraints is "on delete cascase". This means that, upon a deletion from ITEM, not equipment or the other tables, this deletion cascades down to those tables
+-- This is important to note cause if you delete from equipment it will STILL exist on item. Not two ways. This is intentional, since item is a sort of hub for everything, and you can
+-- imagine it as a master archive of everything. 
 constraint fk_equipment_item foreign key (itemID) references item(itemID) on delete cascade
 );
 

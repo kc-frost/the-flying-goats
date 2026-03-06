@@ -20,3 +20,5 @@ i.itemID, i.quantity,
 it.type, it.itemName
 from inventory i
 join item it on it.itemID = i.itemID;
+
+select * from inventoryNames;
