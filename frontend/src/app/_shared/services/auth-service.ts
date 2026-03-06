@@ -13,12 +13,14 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  setAdminTrue() { localStorage.setItem('isAdmin', 'true'); }
+
+  setAdminFalse() { localStorage.setItem('isAdmin', 'false')};
+  
+  isAdmin() { return localStorage.getItem('isAdmin') === 'true'; }
+  
   isAuthenticated() {
     return this.authenticated;
-  }
-
-  isAdmin() {
-    return this.admin
   }
  
   // Expected JSON response:
@@ -56,25 +58,13 @@ export class AuthService {
     // can only do this here because login doesn't know whether it pushes through or not yet
     // here, we already know the user is logged in
     this.setAuthenticatedFalse()
-    this.setAdminFalse()
+    // this.setAdminFalse()
     return this.http.get(`${environment.api_url}/api/logout`,
       { observe: 'response'}
     )
   }
 
-  setAuthenticatedTrue() {
-    this.authenticated = true;
-  }
+  setAuthenticatedTrue() { this.authenticated = true;}
 
-  setAuthenticatedFalse() {
-    this.authenticated = false;
-  }
-
-  setAdminTrue() {
-    this.admin = true;
-  }
-
-  setAdminFalse() {
-    this.admin = false;
-  }
+  setAuthenticatedFalse() { this.authenticated = false;}
 }
