@@ -1,7 +1,25 @@
 from typing import Any
+from db import get_connection
 from .security import get_hashed_password
 
-def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
+def check_ifadmin(email: str) -> bool:
+    """THIS IS NOT THE FINAL IMPLEMENTATION. Does a simple check if
+    the user is an admin
+
+    Args:
+        email (str): User email
+        password (str): User password
+
+    Returns:
+        bool: If user is an admin or not
+    """
+
+    if email == "admin@gmail.com":
+        return True
+    else:
+        return False
+    
+def find_user(email: str, password: str) -> dict[str, Any] | None:
     """Query the database if a user with the passed argument exists.
     Expected to be used for login/register validation.
 
@@ -13,15 +31,17 @@ def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
     Returns:
         dict[str, Any] | None: An existing user's email and password, if it exists
     """
+    conn = get_connection()
+
     true_password = get_hashed_password(password)
     with conn.cursor() as cursor:
-        query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
+        query = "SELECT `username`, `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
         cursor.execute(query, (email, true_password))
         result = cursor.fetchone()
 
     return result
 
-def insert_user(data: dict, conn) -> dict:
+def insert_user(data: dict) -> dict:
     """Insert a new user into the database
 
     Args:
@@ -31,8 +51,9 @@ def insert_user(data: dict, conn) -> dict:
     Returns:
         dict: Contains success state, and an error messsage if the insert failed
     """
+    conn = get_connection()
+    
     hashed_password = get_hashed_password(data['password'])
-
     query = "INSERT INTO `users`(phoneNumber, fname, lname, username, email, password) VALUES (%s, %s, %s, %s, %s, %s)"    
     with conn.cursor() as cursor:
         try:

@@ -1,10 +1,14 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './login/login';
-import { Register } from './register/register';
+import { Login } from './user-auth/login/login';
+import { Register } from './user-auth/register/register';
+import { ProfilePage } from './profile-page/profile-page/profile-page';
+import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdown';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
+import { userAuthGuard } from './_shared/guards/user-auth-guard';
+import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -18,26 +22,23 @@ import { BookFlight } from './book-flight/book-flight';
 // (This is what we use for Login/Register)
 
 export const routes: Routes = [
+    // main router
     {
         path: '',
         component: Home,
     },
-    
-    // this autoloads login, but now '' is always gonna be redirected
-    // to 'login'.
-    // eventually, turn dropdown into a clickable dropdown
+    // logged in views
     {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
+        path: 'book-flight',
+        component: BookFlight,
+        canActivate: [userAuthGuard]
     },
     {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
+        path: 'profile',
+        component: ProfilePage,
+        canActivate: [userAuthGuard],
     },
+    // dropdown outlet
     {
         path: 'login',
         outlet: 'dropdown',
@@ -49,13 +50,17 @@ export const routes: Routes = [
         component: Register,
     },
     {
+        path: 'profile-page',
+        outlet: 'dropdown',
+        component: ProfileDropdown
+    },
+    
+    // modal outlet
+    {
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-    },
-    {
-        path: 'book-flight',
-        component: BookFlight,
+        canActivate: [userAuthGuard],
     },
 ];
 

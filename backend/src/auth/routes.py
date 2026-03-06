@@ -1,7 +1,9 @@
-from flask import jsonify, request, Blueprint, session
-from db import get_connection
-from .service import find_user, insert_user
+from flask import jsonify, request, Blueprint
+from flask_login import login_user, login_required, current_user, logout_user
+from .service import find_user, insert_user, check_ifadmin
 from .validators import validate_email, validate_password
+from .security import admin_required
+from _models.user import User
 
 # This is where you setup the Blueprint on the respective roues file.
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
@@ -12,6 +14,51 @@ bp = Blueprint("auth", __name__)
 # @app.route()
 # This would also require us to import app from main
 # With Blueprints, you can replace "app" with the name of the bp VARIABLE
+
+@bp.get('/check-session')
+def check_session():
+    """Check if a session exists, implying a logged-in user
+
+    Returns:
+        Tuple(bool, int): If user is authenticated, and an HTTP status code
+    """
+    if current_user.is_authenticated:
+        return jsonify({
+            "authenticated": True,
+            "isAdmin": current_user.isAdmin,
+            "username": current_user.username
+        }), 200
+    else:
+        return jsonify({
+            "authenticated": False,
+            "isAdmin": False,
+            "username": "null"
+        }), 401
+
+@bp.route('/test')
+@login_required
+def test():
+    return {
+        "message": "You're logged in"
+    }
+
+@bp.route('/admin')
+@admin_required
+def admin():
+    return jsonify({
+        "message": "you're an admin!"
+    }), 200
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    
+    # Redirect handled by Angular
+    return jsonify({
+        "message": "Logged out"
+    }), 200
+
 @bp.post('/login')
 def login():
     # obtain request data
@@ -20,11 +67,13 @@ def login():
     email = data['email']
     password = data['password']
 
-    conn = get_connection()
-    result = find_user(email, password, conn)
-
+    result = find_user(email, password)
     if result is not None:
-        # user exists
+        is_admin = check_ifadmin(result['email'])
+        user: User = User(result['username'], result['email'], is_admin)
+
+        login_user(user)
+        # user exist
         return jsonify({
             "success": True,
             "message": "You're logged in!"
@@ -43,11 +92,9 @@ def register():
     email = data['email']
     password = data['password']
 
-    conn = get_connection()
-
     # check for:
     # if user already exists
-    user_exist = find_user(email, password, conn)
+    user_exist = find_user(email, password)
     if user_exist is not None:
         return jsonify({
             "success": False,
@@ -65,7 +112,7 @@ def register():
         }), 400
 
     # assuming all checks passed
-    result = insert_user(data=data, conn=conn)
+    result = insert_user(data=data)
 
     if result.get("success"):
         return jsonify({

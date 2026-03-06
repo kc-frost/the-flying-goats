@@ -54,9 +54,10 @@ input:focus {
     width: 100px;
     height: 50px;
     font-family: var(--body-font);
-    font-weight:900
-}
+    font-weight:900;
 
-.submit-btn:hover {
-    background-color:#c2c2c2
+    &:hover {
+        cursor:pointer;
+        background-color:#c2c2c2;
+    }
 }

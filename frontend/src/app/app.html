@@ -4,7 +4,7 @@
     <!-- Brand Details -->
     <section class="brand-group">
       <nav>
-        <a routerLink=''>
+        <a routerLink='' (click)="toggleExpanded()">
           <img class="brand-logo" src="/brand/plane-logo.svg" alt="An image of a paper plane with a trail marking its path"/>
         </a>
       </nav>
@@ -24,16 +24,27 @@
             <img src="/header/navlink/navlink-arrow.svg" />
           </div>
       </section>
+
+      <!-- JUST FOR TESTING -->
+      <section class="nav-link">
+          <a href="http://localhost:5000/api/test"> LoggedIn Users only </a>
+      </section>
+      <section class="nav-link">
+          <a href="http://localhost:5000/api/admin"> Admin Users only </a>
+      </section>
     </nav>
 
     <!-- User Profile -->
     <section class="dropdown">
-      <img class="profile-dropdown" 
-        [src]="toggleExpanded()? defaultImg : clickedImg" 
-        alt="A flat image of a person" 
-        (click)="toggleExpanded()" />
+      <p>Login/Register</p>
+      <a (click)="handleProfileClick()">
+        <img class="profile-dropdown" 
+          [src]="isExpanded ? clickedImg : defaultImg" 
+          alt="A flat image of a person" 
+          (click)="toggleExpanded()" />
+      </a>
       <div class="dropdown-content" 
-        [style.display]="toggleExpanded() ? 'block' : 'none'">
+        [style.display]="isExpanded ? 'block' : 'none'">
         <!-- See login.ts (goToRegister()) for more details
         on what this does -->
         <!-- Keywords: Secondary (named) outlet [angular] -->

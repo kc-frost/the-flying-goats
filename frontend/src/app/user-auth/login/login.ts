@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../../_environments/environment';
+import { AuthService } from '../../_shared/services/auth-service';
+import { UserService } from '../../_shared/services/user-service';
 
 @Component({
   selector: 'app-login',
@@ -12,8 +12,9 @@ import { environment } from '../../../_environments/environment';
 })
 export class Login {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient);
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
 
   // This is a quicker way to instantiate a FormGroup
   // Each item in the Group is a FormControl (look at login.html and notice the 'formControlName' property)
@@ -26,18 +27,48 @@ export class Login {
     ]
   });
 
-  // Sends a POST request with the body being the value of the form userProfile 
+  // Sends a POST request with the body being the value of the form userProfile
   onSubmit() {
-    this.http.post(`${environment.api_url}/api/login`,
-      this.userProfile.value).subscribe((response) => {
-      console.log(response);
+    this.authService.login(this.userProfile.value).subscribe({
+      next: (res) => {
+        // THIS IS HOW WE GET THE CURRENT USER'S EMAIL
+        // this is bad implementation, but it works with our time constraint.
+        // WILL REPLACE AFTER SPRINT 3
+        
+        var email = this.userProfile.get('email')?.value!;
+        localStorage.setItem('email', email);
+        this.userService.setEmail(email);
+        
+        if (this.userProfile.get('email')?.value == "admin@gmail.com") {
+          this.authService.setAdminTrue();
+        }
+
+        // IMPORTANT, especially for booking reservations
+        alert("Please refresh to make sure username is correct in local storage!")
+        this.authService.setAuthenticatedTrue();
+        this.showProfileDropdown();
+      },
+      error: (err) => {
+        console.log(err)
+      }
     })
-  };
+  }
 
   // When the Register button is pressed (see: login.html), 
   // programatically navigate to Register. Note the syntax.
   goToRegister() {
     this.router.navigate([{ outlets: 
-      { dropdown: ['register'] } }]);
+      { dropdown: ['register'] } }], 
+    {
+      skipLocationChange: true
+    });
+  }
+
+  showProfileDropdown() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['profile-page'] } }], 
+    {
+      skipLocationChange: true
+    });
   }
 }

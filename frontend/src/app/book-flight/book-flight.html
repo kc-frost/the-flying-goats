@@ -1,1 +1,63 @@
-<p>book-flight works!</p>
+<section class="main">
+  <h1> Book a Flight </h1>
+  <hr>
+  <section class="form">
+    <form [formGroup]="newFlightDetails" (ngSubmit)="onSubmit()" id="newFlightDetails">
+      <div class="form-item">
+        <label for="origin">Where are you flying from?</label>
+        <select name="origin" id="origin" formControlName="origin">
+          <option>--Select a city--</option>
+          <option>Austin</option>
+        </select>
+      </div>
+      
+      <div class="form-item">
+        <label for="departureDate">When do you want to fly?</label>
+        <input type="datetime-local" id="departureDate" formControlName="departureDate"
+        min="2026-02-01T15:00"
+        max="2026-04-31T18:00" />
+
+        <div class="alert-warning">
+          @if (newFlightDetails.hasError('departBeforeToday')) {
+            <p>Date has to be after today.</p>
+          }
+          @if (newFlightDetails.hasError('leaveAfterArrive')) {
+            <p>Date has to be after return date.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label for="arrivalDate">When do you want to go back?</label>
+        <input type="datetime-local" id="arrivalDate" formControlName="arrivalDate"
+        min="2026-02-01T15:00"
+        max="2026-04-31T18:00" />
+
+        <div class="alert-warning">
+          @if (newFlightDetails.hasError('arriveBeforeToday')) {
+            <p>Date has to be after today.</p>
+          }
+        </div>
+      </div>
+      
+      <div class="form-item">
+        <label for="destination">Where do you want to go?</label>
+        <select name="destination" id="destination" formControlName="destination">
+          <option>--Select a city--</option>
+          <option>Paris</option>
+          <option>Japan</option>
+        </select>
+      </div>
+      <h1> Available Flights</h1>
+      <select name="flightID" id="flightID" formControlName="flightID">
+        <option>--Select a city--</option>
+        @for (flight of availableFlights; track flight) {
+          <option>{{flight.code}}</option>
+        }
+      </select>
+    </form>
+  </section>
+
+  <button form="newFlightDetails" type="submit" (click)="printResults()" [disabled]="!newFlightDetails.valid">Confirm Details</button>
+
+</section>
