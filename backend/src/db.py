@@ -13,13 +13,12 @@ def get_connection():
     # database login credentials
     # .env NEEDS to be on the same level as t his file
     load_dotenv()
-    import os
 
-    host = os.getenv("DB_HOST")
-    user = os.getenv("DB_USER")
-    password = os.getenv("DB_PASSWORD")
-    database = os.getenv("DB_NAME")
-    port = int(os.getenv("DB_PORT", "3306"))
+    HOST = os.getenv("DB_HOST")
+    USER = os.getenv("DB_USER")
+    PASSWORD = os.getenv("DB_PASSWORD")
+    DATABASE = os.getenv("DB_NAME")
+    PORT = int(os.getenv("DB_PORT", "3306"))
 
     # ensures all database variables are properly instantiated
     # before establishing a connection
@@ -32,6 +31,7 @@ def get_connection():
         password=PASSWORD,
         host=HOST,
         database=DATABASE,
+        port=PORT,
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor
         )
