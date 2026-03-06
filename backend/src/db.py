@@ -13,10 +13,13 @@ def get_connection():
     # database login credentials
     # .env NEEDS to be on the same level as t his file
     load_dotenv()
-    USER = os.getenv("USER") or ""
-    PASSWORD = os.getenv("PASSWORD") or ""
-    HOST = os.getenv("HOST") or ""
-    DATABASE = os.getenv("DATABASE") or ""
+    import os
+
+    host = os.getenv("DB_HOST")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    database = os.getenv("DB_NAME")
+    port = int(os.getenv("DB_PORT", "3306"))
 
     # ensures all database variables are properly instantiated
     # before establishing a connection
