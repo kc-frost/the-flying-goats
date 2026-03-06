@@ -22,9 +22,19 @@ export class App {
   // check on instantiation of App if user is logged in
   // to let angular know even when the page is refreshed
   constructor() {
-    this.authService.checkSession().subscribe({
+    this.authService.getUserSummary().subscribe({
       next: (res) => {
+        // this basically obtains username and email
+        // fix after sprint 3
         const savedEmail = localStorage.getItem('email');
+        var savedUsername = localStorage.getItem('username');
+
+        // update 'username' if it's either nonexistent or doesn't match (a different user is logged in)
+        var newUsername = JSON.parse(JSON.stringify(res))['username']
+        if (savedUsername == null || savedUsername != newUsername) {
+          localStorage.setItem('username', newUsername)
+        }
+
         if (savedEmail) {
           this.userService.setEmail(savedEmail);
           this.cdr.detectChanges();
@@ -32,7 +42,6 @@ export class App {
 
         this.authService.setAuthenticatedTrue();
         console.log(res);
-        console.log(this.userService.getEmail());
       },
       error: (err) => {
         console.log("App constructor:", err);

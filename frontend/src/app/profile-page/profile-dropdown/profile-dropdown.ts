@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../_shared/services/auth-service';
 import { UserService } from '../../_shared/services/user-service';
@@ -22,6 +22,7 @@ export class ProfileDropdown {
 
   backToLogin() {
     this.authService.logout().subscribe();
+    localStorage.clear()
     this.router.navigate([{ outlets: {
       dropdown: ['login']
     }}], { skipLocationChange: true});
