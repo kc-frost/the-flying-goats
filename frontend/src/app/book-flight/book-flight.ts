@@ -1,7 +1,8 @@
 import {Component, inject} from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../_shared/services/user-service';
 import { AuthService } from '../_shared/services/auth-service';
+import { invalidDateValidator } from './utils/invalid-date-validator';
 
 interface Flights {
   id: string,
@@ -18,17 +19,31 @@ export class BookFlight {
   private formBuilder = inject(FormBuilder);
   private authService = inject(AuthService);
 
+  // some fields don't have a validator because they are automatically filled in (for now)
   newFlightDetails = this.formBuilder.group({
     reservationDate: [''],
-    flightID: [''],
-    username: [''],
-    origin: [''],
-    destination: [''],
-    departureDate: [''],
-    arrivalDate: [''],
-    seatNumber: [''],
+    flightID: ['',
+      [Validators.required]
+    ],
+    username: [''
+    ],
+    origin: ['',
+      [Validators.required]
+    ],
+    destination: ['',
+      [Validators.required]
+    ],
+    departureDate: ['',
+      [Validators.required]
+    ],
+    arrivalDate: ['',
+      [Validators.required]
+    ],
+    seatNumber: ['',],
     seatClass: ['Economy'],
-  })
+  },
+  { validators: invalidDateValidator}
+);
 
 
   onSubmit() {

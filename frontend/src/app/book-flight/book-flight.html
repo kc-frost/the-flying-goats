@@ -1,61 +1,63 @@
 <section class="main">
-    <h1> Where are you flying from?</h1>
-    <mat-form-field>
-    <mat-label>Pick a destination</mat-label>
-    <mat-select>
-        @for (origin of origins; track origin) {
-        <mat-option [value]="origin.value">{{origin.viewValue}}</mat-option>
+  <h1> Book a Flight </h1>
+  <hr>
+  <section class="form">
+    <form [formGroup]="newFlightDetails" (ngSubmit)="onSubmit()" id="newFlightDetails">
+      <div class="form-item">
+        <label for="origin">Where are you flying from?</label>
+        <select name="origin" id="origin" formControlName="origin">
+          <option>--Select a city--</option>
+          <option>Austin</option>
+        </select>
+      </div>
+      
+      <div class="form-item">
+        <label for="departureDate">When do you want to fly?</label>
+        <input type="datetime-local" id="departureDate" formControlName="departureDate"
+        min="2026-02-01T15:00"
+        max="2026-04-31T18:00" />
+
+        <div class="alert-warning">
+          @if (newFlightDetails.hasError('departBeforeToday')) {
+            <p>Date has to be after today.</p>
+          }
+          @if (newFlightDetails.hasError('leaveAfterArrive')) {
+            <p>Date has to be after return date.</p>
+          }
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label for="arrivalDate">When do you want to go back?</label>
+        <input type="datetime-local" id="arrivalDate" formControlName="arrivalDate"
+        min="2026-02-01T15:00"
+        max="2026-04-31T18:00" />
+
+        <div class="alert-warning">
+          @if (newFlightDetails.hasError('arriveBeforeToday')) {
+            <p>Date has to be after today.</p>
+          }
+        </div>
+      </div>
+      
+      <div class="form-item">
+        <label for="destination">Where do you want to go?</label>
+        <select name="destination" id="destination" formControlName="destination">
+          <option>--Select a city--</option>
+          <option>Paris</option>
+          <option>Japan</option>
+        </select>
+      </div>
+      <h1> Available Flights</h1>
+      <select name="flightID" id="flightID" formControlName="flightID">
+        <option>--Select a city--</option>
+        @for (flight of availableFlights; track flight) {
+          <option>{{flight.code}}</option>
         }
-    </mat-select>
-    </mat-form-field>
+      </select>
+    </form>
+  </section>
 
-    <h1>When do you want to leave?</h1>
-    <mat-form-field>
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-        <input matStartDate formControlName="start" placeholder="Start date">
-        <input matEndDate formControlName="end" placeholder="End date">
-    </mat-date-range-input>
-    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-
-    @if (range.controls.start.hasError('matStartDateInvalid')) {
-        <mat-error>Invalid start date</mat-error>
-    }
-    @if (range.controls.end.hasError('matEndDateInvalid')) {
-        <mat-error>Invalid end date</mat-error>
-    }
-    </mat-form-field>
-
-    <p>Selected range: {{range.value | json}}</p>
-
-    <h1> Where do you want to go?</h1>
-    <mat-form-field>
-    <mat-label>Destination</mat-label>
-    <mat-select [(ngModel)]="selectedDest" name="food">
-      @for (city of cities; track city) {
-        <mat-option [value]="city.value">{{city.viewValue}}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <p> Selected food: {{selectedDest}} </p>
-
-    <h1> Pick a flight </h1>
-    <mat-form-field>
-    <mat-label>Pick a destination</mat-label>
-    <mat-select>
-        @for (flight of jp_flights; track flight) {
-        <mat-option [value]="flight.value">{{flight.viewValue}}</mat-option>
-        }
-    </mat-select>
-    </mat-form-field>
-
-    <section>
-  <div class="example-label">Confirm Details</div>
-  <div class="example-button-row">
-    <button matButton="elevated">Book your flight</button>
-  </div>
-</section>
+  <button form="newFlightDetails" type="submit" (click)="printResults()" [disabled]="!newFlightDetails.valid">Confirm Details</button>
 
 </section>
