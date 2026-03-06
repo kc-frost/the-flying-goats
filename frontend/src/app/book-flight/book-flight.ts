@@ -1,7 +1,9 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../_shared/services/auth-service';
 import { invalidDateValidator } from './utils/invalid-date-validator';
+import { environment } from '../../_environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 interface Flights {
   id: string,
@@ -16,8 +18,9 @@ interface Flights {
 })
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
-  private authService = inject(AuthService);
-
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  
   // some fields don't have a validator because they are automatically filled in (for now)
   newFlightDetails = this.formBuilder.group({
     reservationDate: [''],
@@ -44,19 +47,31 @@ export class BookFlight {
   { validators: invalidDateValidator}
 );
 
-
+  
   onSubmit() {
+    this.http.post(`${environment.api_url}`, this.newFlightDetails.value);
   }
 
   printResults() {
     var deptDate = this.newFlightDetails.get('departureDate')?.value
     console.log(this.newFlightDetails.value);
   }
+
+  validateUserAccess() {
+    this.http.get(`${environment.api_url}/api/check-authenticated`).subscribe({
+      error: () => {
+        this.router.navigate([''])
+      }
+    })
+  }
+
   availableFlights!: Flights[]
   currentDate: Date
   currentUser!: string
   
   constructor() {
+    this.validateUserAccess();
+    
     this.availableFlights = []
     this.currentDate = new Date();
     this.currentUser = localStorage.getItem('username')!
