@@ -1,6 +1,5 @@
 import {Component, inject} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../_shared/services/user-service';
 import { AuthService } from '../_shared/services/auth-service';
 import { invalidDateValidator } from './utils/invalid-date-validator';
 

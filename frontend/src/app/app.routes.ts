@@ -8,6 +8,7 @@ import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdow
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
+import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -26,6 +27,7 @@ export const routes: Routes = [
         path: '',
         component: Home,
     },
+    // logged in views
     {
         path: 'book-flight',
         component: BookFlight,
@@ -58,6 +60,7 @@ export const routes: Routes = [
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
+        canActivate: [userAuthGuard],
     },
 ];
 
