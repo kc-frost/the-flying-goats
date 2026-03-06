@@ -30,11 +30,14 @@ export class ProfilePage {
   today = new Date();
   selectedTab: 'past' | 'current' | 'future' = 'past'
 
+  // assumption: all returned reservations from the database will automatically be made by the current logged in user
+  // main helper function to return reservations
   getReservations() {
     if (this.selectedTab === 'past') return this.getPastReservations();
     if (this.selectedTab === 'current') return this.getCurrentReservations();
     return this.getFutureReservations();
   }
+
   getPastReservations() {
     return this.arrayOfReservations
     .filter(r => new Date(r.departureDate) < this.today)
@@ -145,9 +148,10 @@ export class ProfilePage {
     }
   ];
 
+  // sorts RESERVATION DATE in descending order
   constructor() {
     this.arrayOfReservations.sort((a, b) => {
-  return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
-});
+      return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
+    });
   }
 }
