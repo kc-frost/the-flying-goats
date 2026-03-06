@@ -78,6 +78,40 @@
                     </tr>
                 </table>
                 </details>
+                @for (reservation of arrayOfReservations; track $index) {
+                    <details open>
+                        <summary> {{formatDate(reservation.reservationDate)}}</summary>
+                        <table>
+                        <tr>
+                            <th>Date</th>
+                            <th>Flight Number</th>
+                            <th>Departing</th>
+                            <th>Arriving</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>{{formatDate(reservation.departureDate)}}</p>
+                                <p>{{formatTime(reservation.departureDate)}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.flightID}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.origin}}</p>
+                                <p>{{formatDate(reservation.departureDate)}}</p>
+                                <p>{{formatTime(reservation.departureDate)}}</p>
+                                <p>Manila - Ninoy Aquino International Airport Terminal 1</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.destination}}</p>
+                                <p>{{formatDate(reservation.arrivalDate)}}</p>
+                                <p>{{formatTime(reservation.arrivalDate)}}</p>
+                                <p>Changi Airport - Terminal 1</p>
+                            </td>
+                        </tr>
+                    </table>
+                    </details>
+                }
                 
             </div>
             <div id="current">
