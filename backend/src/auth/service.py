@@ -111,6 +111,20 @@ def delete_from_inventory(conn, itemID):
                     "error": str(e)}
     
     return {"success": True}
+
+def update_inventory(conn, itemID):
+    updateQuery = "Update from 'inventory' where itemID=%s"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(updateQuery, (itemID,))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"success": False,
+                    "error": str(e)}
+        return{"success": True}
+
+
 """
 Instead of isAvailable being a table attribute before, I decided to make it query function so
 that it could be applied universally and changed in real time without need for updating db.
