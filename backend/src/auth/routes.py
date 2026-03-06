@@ -49,7 +49,7 @@ def check_authenticated():
     """
     if (current_user.is_authenticated):
         return jsonify({
-            "userID": current_user.email
+            "userID": current_user.id
         }), 200
     else:
         return jsonify({
