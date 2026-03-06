@@ -16,7 +16,7 @@ liftOff datetime,
 landing datetime
 );
 
-create table planeStatusEnums(
+create table planestatusenums(
 psEnumID int primary key,
 status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
 ICAO varchar(4)
@@ -41,7 +41,7 @@ registeredDate datetime
 -- maybe add passport or some sorta identification?
 );
 
-create table positionEnums (
+create table positionenums (
 positionID int primary key auto_increment, 
 position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned"
 );
@@ -52,13 +52,13 @@ email varchar(255) references users(email),
 positionID int default 5 references positionEnums(positionID) 
 );
 
-create table flightClass(
+create table flightclass(
 classID int auto_increment primary key,
 className varchar(255) not null,
 price double
 );
 
-create table planeSeat(
+create table planeseat(
 seatNumber int,
 flightID varchar(7) references flight(IATA),
 classID int,
@@ -96,14 +96,14 @@ transportDescription text,
 constraint fk_transportation_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
-create table miscellaneousItem(
+create table miscellaneousitem(
 itemID int primary key,
 itemName varchar(255),
 itemDescription text,
 constraint fk_miscellaneous_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
-create table parkingLot(
+create table parkinglot(
 lot char(1) primary key,
 lotSpace int 
 );
@@ -122,7 +122,7 @@ constraint fk_inventory_item foreign key (itemID) references item(itemID) on del
 
 -- triggers
 delimiter //
-create trigger transportAndEquipmentInsert
+create trigger transportandequipmentinsert
 after insert on item
 for each row
 begin
@@ -141,7 +141,7 @@ begin
 	end if;
 end//
 
-create trigger createStaff
+create trigger createstaff
 after insert on users
 for each row
 begin
@@ -156,7 +156,7 @@ delimiter ;
 
 -- TFG Views --
 -- view for staff count per position
-create view staffCountPerPosition as select
+create view staffcountperposition as select
 pe.position, 
 count(s.staffID) as positionCount
 from positionEnums pe
@@ -166,7 +166,7 @@ group by pe.positionID;
 -- Creating a view so that I can display item names and stuff like that instead of just ids,
 -- avoiding overflooding of the python file for no reason
 
-create view inventoryNames as
+create view inventorynames as
 select
 -- inventory
 i.itemID, i.quantity,
