@@ -1,0 +1,64 @@
+<section class="main">
+    <section class="profile-view">
+        <section class="info">
+            <img [src]="staticProfileImage" />
+            <h2> {{ userService.getEmail() }} </h2>
+        </section>
+        <hr>
+        <section class="bio">
+            @if (isEditing) {
+                <label for="userBio">Enter a new bio!</label>
+                <textarea id="userBio" [formControl]="userBio"></textarea>
+                <button (click)="saveBio()">Save</button>
+            } @else {
+                <p>{{userBio.value}}</p>
+                <button class="update"(click)="updateBio()">Update Bio</button>
+            }
+        </section>
+    </section>
+
+    <section class="reservation-view">
+        <section class="tab">
+            <button (click)="selectedTab = 'past'">Past</button>
+            <button (click)="selectedTab = 'current'">Current</button>
+            <button (click)="selectedTab = 'future'">Future</button>
+        </section>
+        <section class="content">
+            @for (reservation of getReservations(); track reservation.bookingNumber) {
+                <details>
+                    <summary> {{formatDate(reservation.reservationDate)}}</summary>
+                    <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>{{formatDate(reservation.liftOffDate)}}</p>
+                            <p>{{formatTime(reservation.liftOffDate)}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.flightID}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.origin}}</p>
+                            <p>{{formatDate(reservation.liftOffDate)}}</p>
+                            <p>{{formatTime(reservation.liftOffDate)}}</p>
+                            <p>Manila - Ninoy Aquino International Airport Terminal 1</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.destination}}</p>
+                            <p>{{formatDate(reservation.arrivingDate)}}</p>
+                            <p>{{formatTime(reservation.arrivingDate)}}</p>
+                            <p>Changi Airport - Terminal 1</p>
+                        </td>
+                    </tr>
+                </table>
+                </details>
+            }
+                
+        </section>
+    </section>
+</section>

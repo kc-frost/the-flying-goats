@@ -1,11 +1,10 @@
 import { HttpClient } from "@angular/common/http";
-import { Component, inject } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { BASE_URL } from "../../_environments/environment";
+import { environment } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
-import { OnInit } from "@angular/core";
 
 type InventoryRow = {
   itemID: number;
@@ -14,6 +13,7 @@ type InventoryRow = {
   itemName: string;
   type: "equipment" | "transportation" | "misc";
   itemDescription: string;
+  isReadOnly: boolean;
 };
 
 @Component({
@@ -26,13 +26,10 @@ type InventoryRow = {
 export class Inventory implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
-  // This forces immediate change detection after we send a get request (later when getInventory is claled)
   private cdr = inject(ChangeDetectorRef);
 
-  // Row that inventory items get added to that we cycle through in html with ngFor
   items: InventoryRow[] = [];
 
-  // Object that gets sent to backend when additem is called
   newItem: {
     itemID: number | null;
     itemName: string;
@@ -40,7 +37,6 @@ export class Inventory implements OnInit {
     type: "equipment" | "transportation" | "misc";
     itemDescription: string;
   } = {
-    // default values for newItem, these get reset whenever add modal is closed/displayed when opened freshly
     itemID: null,
     itemName: "",
     quantity: null,
@@ -48,32 +44,34 @@ export class Inventory implements OnInit {
     itemDescription: ""
   };
 
-  // When the component is initialized, get inventory from backend and populate items with it
-  ngOnInit() {
+  showAddModal = false;
+
+  ngOnInit(): void {
     this.getInventory();
   }
 
-  // Literally read the name
-  getInventory() {
-    // get request to backend API ENDPOINTTTTT
+  getInventory(): void {
     this.http
-      .get<InventoryRow[]>(`${BASE_URL}/api/inventory`)
-      .subscribe((rows) => {
-        this.items = rows;
-        // What I was talking about before on updating inventory, needed cause I had a weird bug appear and never go away for some reason
-        this.cdr.detectChanges();
+      .get<Omit<InventoryRow, "isReadOnly">[]>(`${BASE_URL}/api/inventory`)
+      .subscribe({
+        next: (rows) => {
+          this.items = rows.map((row) => ({
+            ...row,
+            isReadOnly: true
+          }));
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          alert("Error loading inventory.");
+        }
       });
   }
 
-  // lil boolean to get toggled to show/hide add item modal
-  showAddModal = false;
-
-  addModalShowButton() {
+  addModalShowButton(): void {
     this.showAddModal = true;
   }
 
-  // This is the part that resets add modal parameters back to default ones
-  closeAddModal() {
+  closeAddModal(): void {
     this.showAddModal = false;
 
     this.newItem = {
@@ -85,43 +83,75 @@ export class Inventory implements OnInit {
     };
   }
 
-  addItem() {
-    // if itemID or no quantity is there, don't send shit back
+  addItem(): void {
     if (this.newItem.itemID == null || this.newItem.quantity == null) {
       return;
     }
-    // post request to backend
+
     this.http
-      .post(`${BASE_URL}/api/inventory/add`, {
+      .post(`${environment.api_url}/api/inventory/add`, {
         itemID: this.newItem.itemID,
         quantity: this.newItem.quantity,
         type: this.newItem.type,
         itemName: this.newItem.itemName,
         itemDescription: this.newItem.itemDescription
       })
-      .subscribe(() => {
-        this.getInventory();
-        this.closeAddModal();
+      .subscribe({
+        next: () => {
+          this.getInventory();
+          this.closeAddModal();
+        },
+        error: () => {
+          alert("Error adding inventory item.");
+        }
       });
   }
 
-  deleteItem(itemID: number) {
-    // post request to APIIIIIII
+  deleteItem(itemID: number): void {
     this.http
-      .post(`${BASE_URL}/api/inventory/delete`, {
+      .post(`${environment.api_url}/api/inventory/delete`, {
         itemID: itemID,
       })
-      .subscribe(() => {
-        this.getInventory();
+      .subscribe({
+        next: () => {
+          this.getInventory();
+        },
+        error: () => {
+          alert("Error deleting inventory item.");
+        }
       });
   }
 
-  closeModal() {
+  closeModal(): void {
     this.router.navigate([{ outlets: { modal: null } }]);
+  }
+
+  enableEditing(item: InventoryRow): void {
+    item.isReadOnly = false;
+    this.cdr.detectChanges();
+  }
+
+  saveChanges(item: InventoryRow): void {
+    this.http
+      .post(`${BASE_URL}/api/inventory/edit`, {
+        itemID: item.itemID,
+        quantity: item.quantity,
+        type: item.type,
+        itemName: item.itemName,
+        itemDescription: item.itemDescription
+      })
+      .subscribe({
+        next: () => {
+          item.isReadOnly = true;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          alert("Error updating inventory item. Please try again.");
+        }
+      });
   }
 }
 
-// redirect function for inventory modal
 export const inventoryModalRedirect: CanMatchFn = () => {
   const router = inject(Router);
   return router.createUrlTree([{ outlets: { modal: ["Inventory"] } }]);

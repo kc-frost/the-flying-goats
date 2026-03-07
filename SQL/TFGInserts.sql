@@ -1,6 +1,7 @@
 use TFG;
 
-insert into planeStatusEnums (psEnumID, status, ICAO) values
+-- plane status enums inserts
+insert into planestatusenums (psEnumID, status, ICAO) values
 (1, "On Time", null),
 (2, "Delayed", null),
 (3, "Boarding", null),
@@ -9,7 +10,8 @@ insert into planeStatusEnums (psEnumID, status, ICAO) values
 (6, "Landing", null),
 (7, "Grounded", null);
 
-insert into plane(ICAO, statusID) values
+-- plane inserts
+insert into plane (ICAO, statusID) values
 ("A676", 1),
 ("B212", 2),
 ("C909", 3),
@@ -17,15 +19,17 @@ insert into plane(ICAO, statusID) values
 ("E777", 5),
 ("F101", 6);
 
-insert into flight(IATA, planeName, gate, origin, destination) values
-("TP1001", "Goated67Plane", "A1", "Miami", "Austin"),
-("TP1002", "SkyRam900", "A2", "Austin", "Dallas"),
-("TP1003", "HornetJet11", "B1", "Dallas", "Houston"),
-("TP1004", "Nimbus220", "B2", "Houston", "San Antonio"),
-("TP1005", "CrownCruiser", "C1", "Austin", "Denver"),
-("TP1006", "AtlasSprint", "C2", "Denver", "Chicago");
+-- flight inserts
+insert into flight (IATA, planeName, gate, origin, destination) values
+("TP1001", "Goated67Plane", "A1", "Austin", "Dallas"),
+("TP1002", "SkyRam900", "A2", "Austin", "Houston"),
+("TP1003", "HornetJet11", "B1", "Austin", "San Antonio"),
+("TP1004", "Nimbus220", "B2", "Austin", "Denver"),
+("TP1005", "CrownCruiser", "C1", "Austin", "Chicago"),
+("TP1006", "AtlasSprint", "C2", "Austin", "Phoenix");
 
-insert into schedule(flight, liftOff, landing) values
+-- schedule inserts
+insert into schedule (flight, liftOff, landing) values
 ("TP1001", "2026-03-10 10:06:07", "2026-03-10 12:00:00"),
 ("TP1002", "2026-03-10 13:30:00", "2026-03-10 15:05:00"),
 ("TP1003", "2026-03-11 09:15:00", "2026-03-11 10:25:00"),
@@ -33,48 +37,64 @@ insert into schedule(flight, liftOff, landing) values
 ("TP1005", "2026-03-12 07:00:00", "2026-03-12 09:55:00"),
 ("TP1006", "2026-03-12 19:20:00", "2026-03-12 22:35:00");
 
-insert into users(phoneNumber, fname, lname, username, email, password, isStaff) values
-("5127997308", "Alan", "Gascon", "McTails", "alangascon@gmail.com", "password123", false),
-("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", "password234", true),
-("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", "password345", true),
-("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", "password456", true),
-("5125550103", "Erin", "Choi", "ErinCo", "erin.choi@tfg.com", "password567", true),
-("5125550104", "Omar", "Singh", "OmarSec", "omar.singh@tfg.com", "password678", false),
-("5125550105", "Tess", "Nguyen", "TessFA", "tess.nguyen@tfg.com", "password789", false),
-("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", "password890", false);
+-- users inserts
+insert into users (phoneNumber, fname, lname, username, email, password, isStaff, registeredDate) values
+("5127997308", "Alan", "Gascon", "McTails", "alangascon@gmail.com", "password123", 0, "2026-03-01 09:00:00"),
+("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", "password234", 1, "2026-03-01 09:15:00"),
+("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", "password345", 1, "2026-03-01 09:30:00"),
+("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", "password456", 1, "2026-03-01 09:45:00"),
+("5125550103", "Erin", "Choi", "ErinCo", "erin.choi@tfg.com", "password567", 1, "2026-03-01 10:00:00"),
+("5125550104", "Omar", "Singh", "OmarSec", "omar.singh@tfg.com", "password678", 0, "2026-03-01 10:15:00"),
+("5125550105", "Tess", "Nguyen", "TessFA", "tess.nguyen@tfg.com", "password789", 0, "2026-03-01 10:30:00"),
+("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", "password890", 0, "2026-03-01 10:45:00");
 
-insert into positionEnums(position) values
+select * from users;
+select * from staff;
+
+-- position enums inserts
+insert into positionenums (position) values
 ("Flight Attendent"),
 ("Pilot"),
 ("Co-Pilot"),
 ("Security"),
 ("Unassigned");
 
+-- staff updates
 update staff set positionID = 1 where staffID = 2;
 update staff set positionID = 2 where staffID = 3;
 update staff set positionID = 3 where staffID = 4;
 update staff set positionID = 4 where staffID = 5;
 
-insert into flightClass(className, price) values
+-- flight class inserts
+insert into flightclass (className, price) values
 ("Economy", 100.00),
 ("First Class", 200.00),
 ("Goat Class", 10000.00);
 
-insert into planeSeat(seatNumber, flightID, classID) values
+-- plane seat inserts
+-- classID: 1 = Economy, 2 = First Class, 3 = Goat Class
+insert into planeseat (seatNumber, flightID, classID) values
 (101, "TP1001", 1),
 (102, "TP1001", 2),
 (103, "TP1002", 1),
 (104, "TP1002", 2),
 (105, "TP1003", 1),
-(106, "TP1003", 3);
+(106, "TP1003", 3),
+(107, "TP1004", 1),
+(108, "TP1004", 2),
+(109, "TP1005", 1),
+(110, "TP1005", 2),
+(111, "TP1006", 1),
+(112, "TP1006", 3);
 
-insert into booking(userID, flightID, seat) values
-(1, "TP1001", 101),
-(2, "TP1002", 103),
-(1, "TP1003", 105),
-(2, "TP1001", 102),
-(1, "TP1002", 104),
-(2, "TP1003", 106);
+-- booking inserts
+insert into booking (userID, flightID, seat, bookingDate) values
+(1, "TP1001", 101, "2026-03-01 12:00:00"),
+(2, "TP1002", 103, "2026-03-01 12:10:00"),
+(1, "TP1003", 105, "2026-03-01 12:20:00"),
+(2, "TP1004", 107, "2026-03-01 12:30:00"),
+(1, "TP1005", 109, "2026-03-01 12:40:00"),
+(2, "TP1006", 111, "2026-03-01 12:50:00");
 
 insert into parkingLot(lot, lotSpace) values
 ("A", 100),
@@ -100,6 +120,4 @@ insert into inventory(itemID, quantity) values
 (5, 1),
 (6, 18);
 
-select * from planeStatusEnums;
-select * from schedule;
-select * from booking;
+select * from item;

@@ -1,7 +1,26 @@
 from typing import Any
+from db import get_connection
 from .security import get_hashed_password
+from datetime import datetime
 
-def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
+def check_ifadmin(email: str) -> bool:
+    """THIS IS NOT THE FINAL IMPLEMENTATION. Does a simple check if
+    the user is an admin
+
+    Args:
+        email (str): User email
+        password (str): User password
+
+    Returns:
+        bool: If user is an admin or not
+    """
+
+    if email == "admin@gmail.com":
+        return True
+    else:
+        return False
+    
+def find_user(email: str, password: str) -> dict[str, Any] | None:
     """Query the database if a user with the passed argument exists.
     Expected to be used for login/register validation.
 
@@ -13,15 +32,17 @@ def find_user(email: str, password: str, conn) -> dict[str, Any] | None:
     Returns:
         dict[str, Any] | None: An existing user's email and password, if it exists
     """
+    conn = get_connection()
+
     true_password = get_hashed_password(password)
     with conn.cursor() as cursor:
-        query = "SELECT `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
+        query = "SELECT `username`, `email`, `password` FROM `users` WHERE `email`=%s AND `password`=%s"
         cursor.execute(query, (email, true_password))
         result = cursor.fetchone()
 
     return result
 
-def insert_user(data: dict, conn) -> dict:
+def insert_user(data: dict) -> dict:
     """Insert a new user into the database
 
     Args:
@@ -31,8 +52,9 @@ def insert_user(data: dict, conn) -> dict:
     Returns:
         dict: Contains success state, and an error messsage if the insert failed
     """
+    conn = get_connection()
+    
     hashed_password = get_hashed_password(data['password'])
-
     query = "INSERT INTO `users`(phoneNumber, fname, lname, username, email, password) VALUES (%s, %s, %s, %s, %s, %s)"    
     with conn.cursor() as cursor:
         try:
@@ -59,6 +81,7 @@ for the inventory items and is what is going to receive inventory. This finds th
 
 def find_inventory(conn):
     with conn.cursor() as cursor:
+        cursor.execute("select * from inventorynames")
         cursor.execute("select * from inventorynames")
         result = cursor.fetchall()
     return result
@@ -96,25 +119,48 @@ def insert_into_inventory(conn, data):
 
     return {"success": True}
 
-def delete_from_inventory(conn, itemID):
+def delete_from_inventory(conn, data):
     deleteQuery = "delete from `inventory` where itemID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(deleteQuery, (itemID,))
+            cursor.execute(deleteQuery, (data['itemID'],))
             conn.commit()
         except Exception as e:
             conn.rollback()
             return {"success": False,
                     "error": str(e)}
     return {"success": True}
+
+"""
+Updates both item itself, and inventory quantity.
+"""
+def update_inventory(conn, data):
+    inventoryQuery = "Update inventory set quantity = %s where itemID=%s"
+    itemQuery = "Update item set type = %s where itemID = %s"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(inventoryQuery, 
+                           (data['quantity'], 
+                            data['itemID']))
+            cursor.execute(itemQuery, 
+                           (data['type'], 
+                            data['itemID']))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"success": False,
+                    "error": str(e)}
+        return{"success": True}
+
+
 """
 Instead of isAvailable being a table attribute before, I decided to make it query function so
 that it could be applied universally and changed in real time without need for updating db.
 """
-def isAvailable(conn, itemID):
+def isAvailable(conn, data):
     query = "select isAvailable from inventorynames where itemID=%s"
     with conn.cursor() as cursor:
-        cursor.execute(query, (itemID,))
+        cursor.execute(query, (data['itemID'],))
         result = cursor.fetchone()
     return result
 
@@ -122,23 +168,61 @@ def isAvailable(conn, itemID):
 
 """ For now we're going to ASSUME that the user exists becauseee I don't wanna prevent insertion onto reservation based on "user doesn't exist" when we only got like 2 users and such, and I don't know how users is lookin
 So I'ma add that validation later (tomorrow), I'll explain more through messages"""
-def get_reservations(conn, data):
+def get_reservations(conn):
     # user_id = data['userID']
     # userExistsQuery = "select * from `users` where userID=%s"
     # with conn.cursor() as cursor:
     #     cursor.execute(userExistsQuery, (user_id,))
     #     userExists = cursor.fetchone()
-    
+
+    """ 
+    getting data from reservationticket view 
     """
-    This checks whether userID is even being passed in data/through the json. This is NOT checking whether it exists in users. I commented some code up there, but will keep in commented until we get this working and connected first,
-    cause honestly I have no idea if it works, I threw it together in like 5 minutes with other functions as reference. I'm too goated.
+    query = """ 
+    select * from reservationticket
     """
-    query = "select * from `booking` where userID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query, (data['userID'],))
+            cursor.execute(query)
             result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
         except Exception as e:
-            return {"success": False,
+            return {"success": False, 
                     "error": str(e)}
     return {"success": True, "data": result}
+
+def book_a_flight(data: dict):
+    booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")
+
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute("SELECT userID FROM users WHERE email = %s", (data['username'],))
+            user = cursor.fetchone()
+            if user is None:
+                return {"error": "User not found"}
+            query = "INSERT INTO booking(userID, flightID, seat, bookingDate) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (
+                user['userID'],
+                data['flightID'],
+                data['seatNumber'],
+                booking_date
+            ))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"error": str(e)}
+
+def get_user_data(conn):
+    query = "select * from userreservationsummary"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
