@@ -21,7 +21,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-cors = CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+cors = CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:4200", "http://159.65.100.137"]}})
 
 # TODO: THIS IS BADLY PLACED, but figuring out where to properly place it is trickier. will do post sprint 3
 @login_manager.user_loader
