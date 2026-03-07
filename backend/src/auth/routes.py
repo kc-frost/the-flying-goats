@@ -1,7 +1,11 @@
-from flask import jsonify, request, Blueprint, session
+from flask import jsonify, request, Blueprint
+from flask_login import login_user, login_required, current_user, logout_user
 from db import get_connection
+from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory, check_ifadmin, book_a_flight
 from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory
 from .validators import validate_email, validate_password
+from .security import admin_required
+from _models.user import User
 
 # This is where you setup the Blueprint on the respective roues file.
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
@@ -12,6 +16,76 @@ bp = Blueprint("auth", __name__)
 # @app.route()
 # This would also require us to import app from main
 # With Blueprints, you can replace "app" with the name of the bp VARIABLE
+
+@bp.get('/check-session')
+def check_session():
+    """A general check if a session exists, implying a logged-in user.
+    Use check-authenticated for route protection
+
+    Returns:
+        Tuple(bool, int): If user is authenticated, and an HTTP status code
+    """
+    if current_user.is_authenticated:
+        return jsonify({
+            "authenticated": True,
+            "isAdmin": current_user.isAdmin,
+            "username": current_user.username
+        }), 200
+    else:
+        return jsonify({
+            "authenticated": False,
+            "isAdmin": False,
+            "username": "null"
+        }), 401
+
+@bp.route('/check-authenticated')
+@login_required
+def check_authenticated():
+    """This checks if a user can access a route that requires
+    authentication
+
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.is_authenticated):
+        return jsonify({
+            "userID": current_user.id
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not logged in"
+        }), 401
+
+@bp.route('/check-admin')
+@admin_required
+def check_admin():
+    """This checks if a user can access a route that requires admin
+    permissions
+
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.isAdmin):
+        return jsonify({
+            "userID": current_user.email
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not an admin"
+        }), 403
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    
+    # Redirect handled by Angular
+    return jsonify({
+        "message": "Logged out"
+    }), 200
+
 @bp.post('/login')
 def login():
     # obtain request data
@@ -20,11 +94,13 @@ def login():
     email = data['email']
     password = data['password']
 
-    conn = get_connection()
-    result = find_user(email, password, conn)
-
+    result = find_user(email, password)
     if result is not None:
-        # user exists
+        is_admin = check_ifadmin(result['email'])
+        user: User = User(result['username'], result['email'], is_admin)
+
+        login_user(user)
+        # user exist
         return jsonify({
             "success": True,
             "message": "You're logged in!"
@@ -43,11 +119,9 @@ def register():
     email = data['email']
     password = data['password']
 
-    conn = get_connection()
-
     # check for:
     # if user already exists
-    user_exist = find_user(email, password, conn)
+    user_exist = find_user(email, password)
     if user_exist is not None:
         return jsonify({
             "success": False,
@@ -65,7 +139,7 @@ def register():
         }), 400
 
     # assuming all checks passed
-    result = insert_user(data=data, conn=conn)
+    result = insert_user(data=data)
 
     if result.get("success"):
         return jsonify({
@@ -170,6 +244,30 @@ def makeReservation():
         "success": True,
         "message": "Reservation successfully made"
     }), 201
+
+@bp.route('/available-flights', methods=['GET'])
+def get_available_flights():
+    departure_date = request.args.get('departureDate')
+    arrival_date = request.args.get('arrivalDate')
+    cursor = get_connection().cursor()
+
+    cursor.execute("""
+        SELECT flight FROM schedule
+        WHERE DATE(liftOff) = %s AND DATE(landing) = %s
+    """, (departure_date, arrival_date))
+
+    rows = cursor.fetchall()
+    flights = [{"id": row['flight'], "code": row['flight']} for row in rows]
+    return jsonify(flights), 200
+
+@bp.route("/book-flight", methods=["POST"])
+@login_required
+def book_flight():
+    data = request.get_json()
+    result = book_a_flight(data)
+    if result and "error" in result:
+        return jsonify(result), 500
+    return jsonify({"message": "booking confirmed"}), 200
     
 @bp.post("/inventory/edit")
 def editInventory():

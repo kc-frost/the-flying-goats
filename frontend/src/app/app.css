@@ -58,13 +58,23 @@ img.brand-logo {
 
 /* For: profile picture and dropdown effect */
 .dropdown {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-left: auto;
     margin-right: 2.5%;
     position: relative;
+
+    gap: 10px;
     
     /* Important to ensure it's on top of everything */
     z-index:10;
 
+    & p {
+        font-weight:600;
+        font-size:larger;
+    }
+    
     & .dropdown-content {
         color:black
     }
@@ -75,11 +85,12 @@ img.brand-logo {
     position: absolute;
     right: 0;
     top: 100%;
-    background-color: #f9f9f9;
     min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     border-radius: 20px;
     overflow: hidden;
+    z-index: 4;
+
 }
 
 .profile-dropdown {
@@ -87,6 +98,7 @@ img.brand-logo {
     height: 50px;
 
     &:hover {
+        cursor: pointer;
         content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
     }
 }
