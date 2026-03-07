@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../_environments/environment';
+import { BASE_URL } from '../../../_environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +26,7 @@ export class AuthService {
   //  "isAdmin": true/false,
   //  "username": current_user.username | "null"}
   getUserSummary() {
-    return this.http.get(`${environment.api_url}/api/check-session`,
+    return this.http.get(`${BASE_URL}/api/check-session`,
       {withCredentials: true}
     );
   }
@@ -36,7 +36,7 @@ export class AuthService {
       'Content-Type': 'application/json'
     };
     
-    return this.http.post(`${environment.api_url}/api/login`,
+    return this.http.post(`${BASE_URL}/api/login`,
       userProfile,
       { headers: _headers, observe: 'response'}
     );
@@ -47,7 +47,7 @@ export class AuthService {
       'Content-Type': 'application/json'
     };
 
-    return this.http.post(`${environment.api_url}/api/register`, newUserProfile,
+    return this.http.post(`${BASE_URL}/api/register`, newUserProfile,
       { headers: _headers, observe: 'response'}
     )
   }
@@ -57,7 +57,7 @@ export class AuthService {
     // here, we already know the user is logged in
     this.setAuthenticatedFalse()
     // this.setAdminFalse()
-    return this.http.get(`${environment.api_url}/api/logout`,
+    return this.http.get(`${BASE_URL}/api/logout`,
       { observe: 'response'}
     )
   }
