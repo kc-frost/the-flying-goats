@@ -1,6 +1,7 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
-from .service import find_user, insert_user, check_ifadmin
+from db import get_connection
+from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory, check_ifadmin, book_a_flight
 from .validators import validate_email, validate_password
 from .security import admin_required
 from _models.user import User
@@ -17,7 +18,8 @@ bp = Blueprint("auth", __name__)
 
 @bp.get('/check-session')
 def check_session():
-    """Check if a session exists, implying a logged-in user
+    """A general check if a session exists, implying a logged-in user.
+    Use check-authenticated for route protection
 
     Returns:
         Tuple(bool, int): If user is authenticated, and an HTTP status code
@@ -35,19 +37,43 @@ def check_session():
             "username": "null"
         }), 401
 
-@bp.route('/test')
+@bp.route('/check-authenticated')
 @login_required
-def test():
-    return {
-        "message": "You're logged in"
-    }
+def check_authenticated():
+    """This checks if a user can access a route that requires
+    authentication
 
-@bp.route('/admin')
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.is_authenticated):
+        return jsonify({
+            "userID": current_user.id
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not logged in"
+        }), 401
+
+@bp.route('/check-admin')
 @admin_required
-def admin():
-    return jsonify({
-        "message": "you're an admin!"
-    }), 200
+def check_admin():
+    """This checks if a user can access a route that requires admin
+    permissions
+
+    Returns:
+        Tuple(JSON, int): A userID if successful, error if not. Then an
+        HTTP status code.
+    """
+    if (current_user.isAdmin):
+        return jsonify({
+            "userID": current_user.email
+        }), 200
+    else:
+        return jsonify({
+            "error": "you're not an admin"
+        }), 403
 
 @bp.route('/logout')
 @login_required
@@ -124,3 +150,134 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
+
+@bp.get("/inventory")
+def getInventory():
+    conn = get_connection()
+    result = find_inventory(conn)
+    return jsonify(result)
+
+"""
+constaints/checks/validations for inventory is handled in my sql (hopefully)
+"""
+@bp.post("/inventory/add")
+def addItemToInventory():
+    data = request.get_json()
+    itemID = data["itemID"]
+    quantity = data["quantity"]
+    equipmentName = data["equipmentName"]
+    equipmentID = data.get("equipmentID")
+    transportationID = data.get("transportationID")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        insert into item(itemID, equipmentName, equipmentID, transportationID) values
+        (%s,%s,%s,%s)
+        """,
+        (itemID, equipmentName, equipmentID, transportationID)
+    )
+
+    cursor.execute(
+        """
+        insert into inventory(itemID, quantity) values
+        (%s,%s)
+        """,
+        (itemID, quantity)
+    )
+
+    conn.commit()
+
+    return jsonify({"success": True})
+
+@bp.post("/inventory/delete")
+def deleteItemFromInventory():
+    conn = get_connection()
+    data = request.json
+    itemID = data['itemID']
+    result = delete_from_inventory(conn, itemID)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Item deleted from inventory FOREVER" #Items are NOT deleted from item, only from inventory
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+# def update inventory(conn, data):
+
+# Reservation logic
+@bp.get("/reservations")
+def viewReservations():
+    query = "select * from 'booking'"
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchall()
+    return jsonify(result)
+
+@bp.post("/reservations/make")
+def makeReservation():
+
+    """
+    We're taking booking args, meaing:
+    
+    bookingNumber int primary key auto_increment,
+    userID int references users(userID),
+    flightID varchar(7) references flight(IATA),
+    seat int references planeSeat(seatNumber)
+
+    """
+    data = request.json
+
+    # BookingID is auto increment, unlike inventory it's not needed here
+    userID = data['userID']
+    flightID = data['flightID']
+    seat = data['seat']
+
+    conn = get_connection()
+    # Right now this assumes user exists in users, flight exists, and seat exists. Wednesday, gunna add more validation and checks, but for now just wanna get it working
+    query = "insert into booking (userID, flightID, seat) values (%s, %s, %s)"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (userID, flightID, seat))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 500
+    return jsonify({
+        "success": True,
+        "message": "Reservation successfully made"
+    }), 201
+
+@bp.route('/available-flights', methods=['GET'])
+def get_available_flights():
+    departure_date = request.args.get('departureDate')
+    arrival_date = request.args.get('arrivalDate')
+    cursor = get_connection().cursor()
+
+    cursor.execute("""
+        SELECT flight FROM schedule
+        WHERE DATE(liftOff) = %s AND DATE(landing) = %s
+    """, (departure_date, arrival_date))
+
+    rows = cursor.fetchall()
+    flights = [{"id": row['flight'], "code": row['flight']} for row in rows]
+    return jsonify(flights), 200
+
+@bp.route("/book-flight", methods=["POST"])
+@login_required
+def book_flight():
+    data = request.get_json()
+    result = book_a_flight(data)
+    if result and "error" in result:
+        return jsonify(result), 500
+    return jsonify({"message": "booking confirmed"}), 200

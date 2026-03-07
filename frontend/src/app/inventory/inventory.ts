@@ -1,75 +1,128 @@
-import { Component, inject } from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {CanMatchFn, Router} from "@angular/router";
-import {CommonModule} from '@angular/common';
+import { HttpClient } from "@angular/common/http";
+import { Component, inject } from "@angular/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { Router, CanMatchFn } from "@angular/router";
+import { CommonModule } from "@angular/common";
+import { environment } from "../../_environments/environment";
+import { ChangeDetectorRef } from "@angular/core";
+import { OnInit } from "@angular/core";
+
+type InventoryRow = {
+  itemID: number;
+  quantity: number;
+  isAvailable: boolean;
+  itemName: string;
+  type: "equipment" | "transportation" | "misc";
+  itemDescription: string;
+};
 
 @Component({
-  selector: 'app-inventory',
-  imports: [ReactiveFormsModule, CommonModule],
-  templateUrl: './inventory.html',
-  styleUrl: './inventory.css',
+  selector: "app-inventory",
+  standalone: true,
+  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  templateUrl: "./inventory.html",
+  styleUrls: ["./inventory.css"],
 })
-// For forms/entering info
-export class Inventory {
-  // Grouping the items into an array to paste in more cards
-  // I wanna catch the data into objects OR arrays, depends on how I feel later
-  // Either way, this is test data and should look like this when adding data later
-  // Only a test data
-  items = [
-  {
-    id: 1,
-    name: 'test',
-    total: 100,
-    reserved: 30,
-    available: 70
-  },
-  {
-    id: 2,
-    name: 'TA agents',
-    total: 50,
-    reserved: 10,
-    available: 40
-  },
-    {
-    id: 3,
-    name: 'Planes',
-    total: 10,
-    reserved: 10,
-    available: 5
-  }
-];
+export class Inventory implements OnInit {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  // This forces immediate change detection after we send a get request (later when getInventory is claled)
+  private cdr = inject(ChangeDetectorRef);
 
-// temp delete item logic until I get the db connected
-// just for showcasing, will def change when I get data later
-deleteItem(index: number) {
-  this.items.splice(index, 1);
-}
+  // Row that inventory items get added to that we cycle through in html with ngFor
+  items: InventoryRow[] = [];
 
-addItem() {
-  const newItem = {
-    id: this.items.length + 1,
-    name: 'New Item',
-    total: 0,
-    reserved: 0,
-    available: 0
+  // Object that gets sent to backend when additem is called
+  newItem: {
+    itemID: number | null;
+    itemName: string;
+    quantity: number | null;
+    type: "equipment" | "transportation" | "misc";
+    itemDescription: string;
+  } = {
+    // default values for newItem, these get reset whenever add modal is closed/displayed when opened freshly
+    itemID: null,
+    itemName: "",
+    quantity: null,
+    type: "equipment",
+    itemDescription: ""
   };
 
-  this.items.push(newItem);
-}
+  // When the component is initialized, get inventory from backend and populate items with it
+  ngOnInit() {
+    this.getInventory();
+  }
 
-// This, when clicked rerouts back to home.
-// Basically the opposite/undoes the router that you have for login.
-  constructor(private router: Router) {}
+  // Literally read the name
+  getInventory() {
+    // get request to backend API ENDPOINTTTTT
+    this.http
+      .get<InventoryRow[]>(`${environment.api_url}/api/inventory`)
+      .subscribe((rows) => {
+        this.items = rows;
+        // What I was talking about before on updating inventory, needed cause I had a weird bug appear and never go away for some reason
+        this.cdr.detectChanges();
+      });
+  }
+
+  // lil boolean to get toggled to show/hide add item modal
+  showAddModal = false;
+
+  addModalShowButton() {
+    this.showAddModal = true;
+  }
+
+  // This is the part that resets add modal parameters back to default ones
+  closeAddModal() {
+    this.showAddModal = false;
+
+    this.newItem = {
+      itemID: null,
+      itemName: "",
+      quantity: null,
+      type: "equipment",
+      itemDescription: ""
+    };
+  }
+
+  addItem() {
+    // if itemID or no quantity is there, don't send shit back
+    if (this.newItem.itemID == null || this.newItem.quantity == null) {
+      return;
+    }
+    // post request to backend
+    this.http
+      .post(`${environment.api_url}/api/inventory/add`, {
+        itemID: this.newItem.itemID,
+        quantity: this.newItem.quantity,
+        type: this.newItem.type,
+        itemName: this.newItem.itemName,
+        itemDescription: this.newItem.itemDescription
+      })
+      .subscribe(() => {
+        this.getInventory();
+        this.closeAddModal();
+      });
+  }
+
+  deleteItem(itemID: number) {
+    // post request to APIIIIIII
+    this.http
+      .post(`${environment.api_url}/api/inventory/delete`, {
+        itemID: itemID,
+      })
+      .subscribe(() => {
+        this.getInventory();
+      });
+  }
 
   closeModal() {
     this.router.navigate([{ outlets: { modal: null } }]);
   }
 }
 
-// This creates a sort of catcher/guard that makes any directs to inventory redirect to the modal I'ma make.
+// redirect function for inventory modal
 export const inventoryModalRedirect: CanMatchFn = () => {
   const router = inject(Router);
-  // Redirects inventory to modal:inventory
-  return router.createUrlTree([{outlets: {modal: ["Inventory"]}}])
-}
-
+  return router.createUrlTree([{ outlets: { modal: ["Inventory"] } }]);
+};

@@ -21,10 +21,20 @@ export class ProfileDropdown {
   }
 
   backToLogin() {
-    this.authService.logout().subscribe();
-    localStorage.clear()
-    this.router.navigate([{ outlets: {
-      dropdown: ['login']
-    }}], { skipLocationChange: true});
+    this.authService.logout().subscribe({
+      next: () => {
+        localStorage.clear()
+        this.router.navigate(['']);
+
+        // commented but not deleted
+        // for preservation of database, i'd rather we have a little jank to our dropdown
+        // than prioritize visuals
+        // ideally, will fix it
+
+        // this.router.navigate([{ outlets: {
+        //   dropdown: ['login']
+        // }}], { skipLocationChange: true});
+      }
+    });
   }
 }

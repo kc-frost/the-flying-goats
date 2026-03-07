@@ -60,7 +60,7 @@ export const routes: Routes = [
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-        canActivate: [userAuthGuard],
+        canActivate: [userAuthGuard, adminAuthGuard],
     },
 ];
 
