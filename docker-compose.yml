@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: richard93147/tfg-frontend:latest
+    image: richard93147/tfg-frontend:v2
     container_name: goats-frontend
     ports:
       - "80:80"
