@@ -49,8 +49,19 @@ export class BookFlight {
 
   
   onSubmit() {
-    this.http.post(`${environment.api_url}`, this.newFlightDetails.value);
-  }
+  this.http.post(
+    `${environment.api_url}/api/book-flight`, 
+    this.newFlightDetails.value,
+    { withCredentials: true }
+  ).subscribe({
+    next: () => {
+      alert("Booking received!")
+    },
+    error: (err) => {
+      console.log(err);
+    }
+  });
+}
 
   printResults() {
     var deptDate = this.newFlightDetails.get('departureDate')?.value
@@ -68,6 +79,9 @@ export class BookFlight {
   availableFlights!: Flights[]
   currentDate: Date
   currentUser!: string
+
+  // temporarily hardcode everyone to have seat 1
+  seatNumber = "1";
   
   constructor() {
     this.validateUserAccess();
@@ -78,63 +92,79 @@ export class BookFlight {
     
     this.newFlightDetails.valueChanges.subscribe({
       next: (changes) => {
-        this.updateFlights(changes.departureDate!, changes.destination!);
+        this.updateFlights(changes.departureDate!, changes.arrivalDate!);
       }
     })
   
     this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
     this.newFlightDetails.get("username")?.setValue(this.currentUser);
+    this.newFlightDetails.get("seatNumber")?.setValue(this.seatNumber);
   }
 
-  // get destination and time of departure date
-  updateFlights(time: string, destination: string) {
-    var deptHours = new Date(time).getHours()
-    var destination = destination
-    var timeSlot = ""
-    if (deptHours >= 0 && deptHours < 12) timeSlot = "morning";
-    else if (deptHours >= 12 && deptHours < 18 ) timeSlot = "afternoon";
-    else if (deptHours >= 18 && deptHours <=23) timeSlot = "evening";
+  updateFlights(departureDate: string, arrivalDate: string) {
+  if (!departureDate || !arrivalDate) return;
+
+  const dept = new Date(departureDate).toISOString().split('T')[0];
+  const arr = new Date(arrivalDate).toISOString().split('T')[0];
+
+  this.http.get<Flights[]>(
+    `${environment.api_url}/api/available-flights`,
+    { params: { departureDate: dept, arrivalDate: arr }, withCredentials: true }
+  ).subscribe({
+    next: (flights) => this.availableFlights = flights,
+    error: (err) => console.log(err)
+  });
+}
+
+  // // get destination and time of departure date
+  // updateFlights(time: string, destination: string) {
+  //   var deptHours = new Date(time).getHours()
+  //   var destination = destination
+  //   var timeSlot = ""
+  //   if (deptHours >= 0 && deptHours < 12) timeSlot = "morning";
+  //   else if (deptHours >= 12 && deptHours < 18 ) timeSlot = "afternoon";
+  //   else if (deptHours >= 18 && deptHours <=23) timeSlot = "evening";
   
   
-    this.availableFlights = this.flightsByTimeAndDest[timeSlot][destination];
-  }
+  //   this.availableFlights = this.flightsByTimeAndDest[timeSlot][destination];
+  // }
 
   // hardcoded flights
   flightsByTimeAndDest: any = {
     morning: {
     Paris: [
-      { id: 'morning-paris-1', code: 'PRS123' },
-      { id: 'morning-paris-2', code: 'PRS345' },
-      { id: 'morning-paris-3', code: 'PRS678' },
+      { id: 'morning-paris-1', code: 'TP1002' },
+      { id: 'morning-paris-2', code: 'TP1003' },
+      { id: 'morning-paris-3', code: 'TP1004' },
     ],
     Japan: [
-      { id: 'morning-japan-1', code: 'JPN123' },
-      { id: 'morning-japan-2', code: 'JPN345' },
-      { id: 'morning-japan-3', code: 'JPN678' },
+      { id: 'morning-japan-1', code: 'TP1006' },
+      { id: 'morning-japan-2', code: 'TP1005' },
+      { id: 'morning-japan-3', code: 'TP1004' },
     ]
   },
   afternoon: {
     Paris: [
-      { id: 'afternoon-paris-1', code: 'PRS231' },
-      { id: 'afternoon-paris-2', code: 'PRS453' },
-      { id: 'afternoon-paris-3', code: 'PRS786' },
+      { id: 'afternoon-paris-1', code: 'TP1007' },
+      { id: 'afternoon-paris-2', code: 'TP1003' },
+      { id: 'afternoon-paris-3', code: 'TP1002' },
     ],
     Japan: [
-      { id: 'afternoon-japan-1', code: 'JPN231' },
-      { id: 'afternoon-japan-2', code: 'JPN453' },
-      { id: 'afternoon-japan-3', code: 'JPN786' },
+      { id: 'afternoon-japan-1', code: 'TP1007' },
+      { id: 'afternoon-japan-2', code: 'TP1006' },
+      { id: 'afternoon-japan-3', code: 'TP1005' },
     ]
   },
   evening: {
     Paris: [
-      { id: 'evening-paris-1', code: 'PRS321' },
-      { id: 'evening-paris-2', code: 'PRS654' },
-      { id: 'evening-paris-3', code: 'PRS987' },
+      { id: 'evening-paris-1', code: 'TP1001' },
+      { id: 'evening-paris-2', code: 'TP1004' },
+      { id: 'evening-paris-3', code: 'TP1007' },
     ],
     Japan: [
-      { id: 'evening-japan-1', code: 'JPN321' },
-      { id: 'evening-japan-2', code: 'JPN654' },
-      { id: 'evening-japan-3', code: 'JPN987' },
+      { id: 'evening-japan-1', code: 'TP1003' },
+      { id: 'evening-japan-2', code: 'TP1001' },
+      { id: 'evening-japan-3', code: 'TP1002' },
     ]
   }
 };

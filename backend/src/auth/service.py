@@ -1,6 +1,7 @@
 from typing import Any
 from db import get_connection
 from .security import get_hashed_password
+from datetime import datetime
 
 def check_ifadmin(email: str) -> bool:
     """THIS IS NOT THE FINAL IMPLEMENTATION. Does a simple check if
@@ -167,3 +168,26 @@ def get_reservations(conn, data):
             return {"success": False,
                     "error": str(e)}
     return {"success": True, "data": result}
+
+def book_a_flight(data: dict):
+    booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")
+
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute("SELECT userID FROM users WHERE email = %s", (data['username'],))
+            user = cursor.fetchone()
+            if user is None:
+                return {"error": "User not found"}
+            query = "INSERT INTO booking(userID, flightID, seat, bookingDate) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (
+                user['userID'],
+                data['flightID'],
+                data['seatNumber'],
+                booking_date
+            ))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"error": str(e)}
