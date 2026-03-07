@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { UserService } from '../../_shared/services/user-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -24,6 +24,7 @@ interface Reservation {
   styleUrl: './profile-page.css',
 })
 export class ProfilePage {
+  private cdr = inject(ChangeDetectorRef);
   userService = inject(UserService);
   staticProfileImage = "/profile/static-profile-image.svg";
 
@@ -34,6 +35,7 @@ export class ProfilePage {
   // sorts RESERVATION DATE in descending order
   constructor(private http: HttpClient) {
     this.loadReservations();
+    this.loadBio();
 
   }
 
@@ -124,12 +126,39 @@ export class ProfilePage {
   isEditing = false;
   userBio = new FormControl('');
 
-  saveBio() {
-    this.userBio.setValue(this.userBio.value);
-    this.isEditing = false;
-  }
+loadBio() {
+  this.http.get<{bio: string}>(`${environment.api_url}/api/get-bio`, { withCredentials: true })
+  .subscribe({
+    next: (data) => {
+      // console.log('bio response:', data);
+      this.userBio.setValue(data.bio ?? '');
+      this.cdr.detectChanges();
+    },
+    error: (err) => console.log(err)
+  });
+}
 
-  updateBio() {
-    this.isEditing = true;
-  }
+saveBio() {
+  this.http.post(
+    `${environment.api_url}/api/save-bio`, 
+    { bio: this.userBio.value }, 
+    { withCredentials: true }
+  ).subscribe({
+    next: () => this.isEditing = false,
+    error: (err) => console.log(err)
+  });
+}
+
+updateBio() {
+  this.isEditing = true;
+}
+
+  // saveBio() {
+  //   this.userBio.setValue(this.userBio.value);
+  //   this.isEditing = false;
+  // }
+
+  // updateBio() {
+  //   this.isEditing = true;
+  // }
 }
