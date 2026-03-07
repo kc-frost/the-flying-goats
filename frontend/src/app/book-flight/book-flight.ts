@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { invalidDateValidator } from './utils/invalid-date-validator';
-import { environment } from '../../_environments/environment';
+import { BASE_URL } from "../../_environments/environment";
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -50,7 +50,7 @@ export class BookFlight {
   
   onSubmit() {
   this.http.post(
-    `${environment.api_url}/api/book-flight`, 
+    `${BASE_URL}/api/book-flight`, 
     this.newFlightDetails.value,
     { withCredentials: true }
   ).subscribe({
@@ -69,7 +69,7 @@ export class BookFlight {
   }
 
   validateUserAccess() {
-    this.http.get(`${environment.api_url}/api/check-authenticated`).subscribe({
+    this.http.get(`${BASE_URL}/api/check-authenticated`).subscribe({
       error: () => {
         this.router.navigate([''])
       }
@@ -108,7 +108,7 @@ export class BookFlight {
   const arr = new Date(arrivalDate).toISOString().split('T')[0];
 
   this.http.get<Flights[]>(
-    `${environment.api_url}/api/available-flights`,
+    `${BASE_URL}/api/available-flights`,
     { params: { departureDate: dept, arrivalDate: arr }, withCredentials: true }
   ).subscribe({
     next: (flights) => this.availableFlights = flights,
