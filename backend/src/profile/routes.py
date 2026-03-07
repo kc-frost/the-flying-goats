@@ -36,16 +36,3 @@ def get_user_reservations():
             return jsonify(rows), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 400
-
-# @bp.route("/get-user-reservations")
-# @login_required
-# def get_reservations():
-#     username = current_user.username
-#     all_reservations = get_user_reservations(username)
-
-#     if all_reservations is None:
-#         return jsonify({
-#             "message": "no reservations"
-#         }), 400
-#     else:
-#         return jsonify(all_reservations), 200
