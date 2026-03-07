@@ -81,7 +81,7 @@ export class BookFlight {
   currentUser!: string
 
   // temporarily hardcode everyone to have seat 1
-  seatNumber = "1";
+  seatNumber = "110";
   
   constructor() {
     this.validateUserAccess();

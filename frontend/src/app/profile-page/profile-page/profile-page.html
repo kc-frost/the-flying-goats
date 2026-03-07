@@ -24,7 +24,7 @@
             <button (click)="selectedTab = 'future'">Future</button>
         </section>
         <section class="content">
-            @for (reservation of getReservations(); track reservation.id) {
+            @for (reservation of getReservations(); track reservation.bookingNumber) {
                 <details>
                     <summary> {{formatDate(reservation.reservationDate)}}</summary>
                     <table>
@@ -36,22 +36,22 @@
                     </tr>
                     <tr>
                         <td>
-                            <p>{{formatDate(reservation.departureDate)}}</p>
-                            <p>{{formatTime(reservation.departureDate)}}</p>
+                            <p>{{formatDate(reservation.liftOffDate)}}</p>
+                            <p>{{formatTime(reservation.liftOffDate)}}</p>
                         </td>
                         <td>
                             <p>{{reservation.flightID}}</p>
                         </td>
                         <td>
                             <p>{{reservation.origin}}</p>
-                            <p>{{formatDate(reservation.departureDate)}}</p>
-                            <p>{{formatTime(reservation.departureDate)}}</p>
+                            <p>{{formatDate(reservation.liftOffDate)}}</p>
+                            <p>{{formatTime(reservation.liftOffDate)}}</p>
                             <p>Manila - Ninoy Aquino International Airport Terminal 1</p>
                         </td>
                         <td>
                             <p>{{reservation.destination}}</p>
-                            <p>{{formatDate(reservation.arrivalDate)}}</p>
-                            <p>{{formatTime(reservation.arrivalDate)}}</p>
+                            <p>{{formatDate(reservation.arrivingDate)}}</p>
+                            <p>{{formatTime(reservation.arrivingDate)}}</p>
                             <p>Changi Airport - Terminal 1</p>
                         </td>
                     </tr>

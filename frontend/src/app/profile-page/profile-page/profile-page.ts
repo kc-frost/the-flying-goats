@@ -1,13 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { UserService } from '../../_shared/services/user-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../_environments/environment';
 
 interface Reservation {
-  id: number;
+  bookingNumber: number;
   reservationDate: string;
   flightID: string;
-  departureDate: string;
-  arrivalDate: string;
+  liftOffDate: string;
+  arrivingDate: string;
   username: string;
   seatNumber: string;
   seatClass: string;
@@ -27,12 +29,30 @@ export class ProfilePage {
 
   today = new Date();
   selectedTab: 'past' | 'current' | 'future' = 'past'
+  userReservations: Reservation[] = [];
 
   // sorts RESERVATION DATE in descending order
-  constructor() {
-    this.arrayOfReservations.sort((a, b) => {
-      return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
-    });
+  constructor(private http: HttpClient) {
+    this.loadReservations();
+    // this.arrayOfReservations.sort((a, b) => {
+    //   return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
+    // });
+
+  }
+
+  loadReservations() {
+    this.http.get<Reservation[]>(`${environment.api_url}/api/get-user-reservations`, {withCredentials: true})
+    .subscribe({
+      next: (data) => {
+        this.userReservations = data;
+        this.userReservations.sort((a, b) =>
+          new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime()
+        );
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   // assumption: all returned reservations from the database will automatically be made by the current logged in user
@@ -46,25 +66,25 @@ export class ProfilePage {
   // the three succeeding functions get reservations based on time relative to today 
 
   getPastReservations() {
-    return this.arrayOfReservations
-    .filter(r => new Date(r.departureDate) < this.today)
-    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+    return this.userReservations
+    .filter(r => new Date(r.liftOffDate) < this.today)
+    .sort((a, b) => new Date(a.liftOffDate).getTime() - new Date(b.liftOffDate).getTime());
   }
   
   getCurrentReservations() {
-    return this.arrayOfReservations
+    return this.userReservations
     .filter(r => {
-      const dep = new Date(r.departureDate);
-      const arr = new Date(r.arrivalDate);
+      const dep = new Date(r.liftOffDate);
+      const arr = new Date(r.arrivingDate);
       return dep <= this.today && arr >= this.today;
     })
-    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+    .sort((a, b) => new Date(a.liftOffDate).getTime() - new Date(b.liftOffDate).getTime());
   }
   
   getFutureReservations() {
-    return this.arrayOfReservations
-    .filter(r => new Date(r.departureDate) > this.today)
-    .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
+    return this.userReservations
+    .filter(r => new Date(r.liftOffDate) > this.today)
+    .sort((a, b) => new Date(a.liftOffDate).getTime() - new Date(b.liftOffDate).getTime());
   }
 
   // formatting of dates and time
@@ -103,57 +123,57 @@ export class ProfilePage {
     return hour12Time.concat(" / " + hour24Time);
   }
   
-  testReservation: Reservation = {
-    id: 1,
-    arrivalDate: "2026-03-07T20:25",
-    departureDate: "2026-03-06T20:25",
-    destination: "Paris",
-    flightID: "PRS321",
-    origin: "Austin",
-    reservationDate: "Thu Mar 05 2026",
-    seatClass: "Economy", 
-    seatNumber: "",
-    username: "admin",
-  }
+  // testReservation: Reservation = {
+  //   id: 1,
+  //   arrivalDate: "2026-03-07T20:25",
+  //   departureDate: "2026-03-06T20:25",
+  //   destination: "Paris",
+  //   flightID: "PRS321",
+  //   origin: "Austin",
+  //   reservationDate: "Thu Mar 05 2026",
+  //   seatClass: "Economy", 
+  //   seatNumber: "",
+  //   username: "admin",
+  // }
 
-  arrayOfReservations: Reservation[] = [
-    {
-      id: 1,
-      arrivalDate: "2026-03-07T20:25",
-      departureDate: "2026-03-06T20:25",
-      destination: "Paris",
-      flightID: "PRS321",
-      origin: "Austin",
-      reservationDate: "Thu Mar 05 2026",
-      seatClass: "Economy", 
-      seatNumber: "",
-      username: "admin",
-    },
-    {
-      id: 2,
-      arrivalDate: "2026-03-27T00:02",
-      departureDate: "2026-03-23T20:58",
-      destination: "Japan",
-      flightID: "JPN987",
-      origin: "Austin",
-      reservationDate: "Thu Mar 05 2026",
-      seatClass: "Economy",
-      seatNumber: "",
-      username: "admin",
-    },
-    {
-      id: 2,
-      arrivalDate: "2026-02-27T00:02",
-      departureDate: "2026-01-23T20:58",
-      destination: "Japan",
-      flightID: "JPN987",
-      origin: "Austin",
-      reservationDate: "Thu Jan 05 2026",
-      seatClass: "Economy",
-      seatNumber: "",
-      username: "admin",
-    }
-  ];
+  // arrayOfReservations: Reservation[] = [
+  //   {
+  //     id: 1,
+  //     arrivalDate: "2026-03-07T20:25",
+  //     departureDate: "2026-03-06T20:25",
+  //     destination: "Paris",
+  //     flightID: "PRS321",
+  //     origin: "Austin",
+  //     reservationDate: "Thu Mar 05 2026",
+  //     seatClass: "Economy", 
+  //     seatNumber: "",
+  //     username: "admin",
+  //   },
+  //   {
+  //     id: 2,
+  //     arrivalDate: "2026-03-27T00:02",
+  //     departureDate: "2026-03-23T20:58",
+  //     destination: "Japan",
+  //     flightID: "JPN987",
+  //     origin: "Austin",
+  //     reservationDate: "Thu Mar 05 2026",
+  //     seatClass: "Economy",
+  //     seatNumber: "",
+  //     username: "admin",
+  //   },
+  //   {
+  //     id: 2,
+  //     arrivalDate: "2026-02-27T00:02",
+  //     departureDate: "2026-01-23T20:58",
+  //     destination: "Japan",
+  //     flightID: "JPN987",
+  //     origin: "Austin",
+  //     reservationDate: "Thu Jan 05 2026",
+  //     seatClass: "Economy",
+  //     seatNumber: "",
+  //     username: "admin",
+  //   }
+  // ];
 
   // bio logic
   isEditing = true;
