@@ -66,7 +66,7 @@ CREATE TABLE `equipment` (
 
 LOCK TABLES `equipment` WRITE;
 /*!40000 ALTER TABLE `equipment` DISABLE KEYS */;
-INSERT INTO `equipment` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.'),(123,'tesarsfads','12');
+INSERT INTO `equipment` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.');
 /*!40000 ALTER TABLE `equipment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,7 +144,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,5),(2,25),(3,3),(4,2),(5,1),(123,21);
+INSERT INTO `inventory` VALUES (1,10),(2,25),(3,3),(4,2),(5,1),(6,18);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,7 +177,7 @@ CREATE TABLE `item` (
   `itemDescription` text,
   `type` enum('equipment','transportation','misc') NOT NULL,
   PRIMARY KEY (`itemID`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,7 +186,7 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
-INSERT INTO `item` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.','transportation'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.','equipment'),(3,'Baggage Tug','Vehicle used to transport luggage carts between terminals and aircraft.','transportation'),(4,'Passenger Shuttle','Ground shuttle used to move passengers between terminals and gates.','transportation'),(5,'Lost & Found Bin','Storage container used for temporarily holding lost passenger items.','misc'),(6,'Cleaning Supplies','General cleaning materials used by maintenance staff throughout the airport.','misc'),(123,'tesarsfads','12','equipment');
+INSERT INTO `item` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.','equipment'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.','equipment'),(3,'Baggage Tug','Vehicle used to transport luggage carts between terminals and aircraft.','transportation'),(4,'Passenger Shuttle','Ground shuttle used to move passengers between terminals and gates.','transportation'),(5,'Lost & Found Bin','Storage container used for temporarily holding lost passenger items.','misc'),(6,'Cleaning Supplies','General cleaning materials used by maintenance staff throughout the airport.','misc');
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -341,7 +341,7 @@ CREATE TABLE `planestatusenums` (
 
 LOCK TABLES `planestatusenums` WRITE;
 /*!40000 ALTER TABLE `planestatusenums` DISABLE KEYS */;
-INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL);
+INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL),(7,'Grounded',NULL);
 /*!40000 ALTER TABLE `planestatusenums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -640,4 +640,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-07  2:19:24
+-- Dump completed on 2026-03-07  2:22:29
