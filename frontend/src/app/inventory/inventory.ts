@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { environment } from "../../_environments/environment";
+import { BASE_URL } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 
 type InventoryRow = {
@@ -89,7 +89,7 @@ export class Inventory implements OnInit {
     }
 
     this.http
-      .post(`${environment.api_url}/api/inventory/add`, {
+      .post(`${BASE_URL}/api/inventory/add`, {
         itemID: this.newItem.itemID,
         quantity: this.newItem.quantity,
         type: this.newItem.type,
@@ -109,7 +109,7 @@ export class Inventory implements OnInit {
 
   deleteItem(itemID: number): void {
     this.http
-      .post(`${environment.api_url}/api/inventory/delete`, {
+      .post(`${BASE_URL}/api/inventory/delete`, {
         itemID: itemID,
       })
       .subscribe({

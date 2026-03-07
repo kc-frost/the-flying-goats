@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { UserService } from '../../_shared/services/user-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../_environments/environment';
+import { BASE_URL } from "../../../_environments/environment";
 
 interface Reservation {
   bookingNumber: number;
@@ -40,7 +40,7 @@ export class ProfilePage {
   }
 
   loadReservations() {
-    this.http.get<Reservation[]>(`${environment.api_url}/api/get-user-reservations`, {withCredentials: true})
+    this.http.get<Reservation[]>(`${BASE_URL}/api/get-user-reservations`, {withCredentials: true})
     .subscribe({
       next: (data) => {
         this.userReservations = data;
@@ -127,7 +127,7 @@ export class ProfilePage {
   userBio = new FormControl('');
 
 loadBio() {
-  this.http.get<{bio: string}>(`${environment.api_url}/api/get-bio`, { withCredentials: true })
+  this.http.get<{bio: string}>(`${BASE_URL}/api/get-bio`, { withCredentials: true })
   .subscribe({
     next: (data) => {
       // console.log('bio response:', data);
@@ -140,7 +140,7 @@ loadBio() {
 
 saveBio() {
   this.http.post(
-    `${environment.api_url}/api/save-bio`, 
+    `${BASE_URL}/api/save-bio`, 
     { bio: this.userBio.value }, 
     { withCredentials: true }
   ).subscribe({
