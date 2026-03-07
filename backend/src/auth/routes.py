@@ -1,6 +1,6 @@
 from flask import jsonify, request, Blueprint, session
 from db import get_connection
-from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory, update_inventory
+from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory
 from .validators import validate_email, validate_password
 
 # This is where you setup the Blueprint on the respective roues file.
@@ -185,3 +185,15 @@ def editInventory():
             "success": False,
             "message": result.get("error")
          }), 500
+
+@bp.get('/users')
+def users_data():
+    conn = get_connection()
+    result = get_user_data(conn)
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500

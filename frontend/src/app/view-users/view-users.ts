@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, inject } from "@angular/core";
 import { BASE_URL } from "../../_environments/environment";
+import { ChangeDetectorRef } from "@angular/core";
 
 type UserInfo = {
   userID: number;
@@ -21,6 +22,7 @@ type UserInfo = {
 })
 export class ViewUsers implements OnInit {
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   users: UserInfo[] = [];
 
@@ -29,6 +31,17 @@ export class ViewUsers implements OnInit {
   }
 
   getUsers(): void {
-    this.http.get<UserInfo[]>(`${BASE_URL}/api/users`).subscribe({
-      next: (data) => {
-}
+    this.http
+          .get<UserInfo[]>(`${BASE_URL}/api/users`)
+          .subscribe({
+            next: (data) => {
+              console.log("users received:", data);
+              this.users = data;
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error("error loading users:", err);
+            },
+          });
+      }
+  }

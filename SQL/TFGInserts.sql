@@ -121,3 +121,5 @@ insert into inventory (itemID, quantity) values
 (4, 2),
 (5, 1),
 (6, 18);
+
+select * from item;

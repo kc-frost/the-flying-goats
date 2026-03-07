@@ -167,3 +167,15 @@ def get_reservations(conn):
         except Exception as e:
             return {"success": False, 
                     "error": str(e)}
+
+def get_user_data(conn):
+    query = "select * from userreservationsummary"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
