@@ -1,6 +1,6 @@
 services:
   backend:
-    image: richard93147/tfg-backend:latest
+    image: richard93147/tfg-backend:v2
     container_name: goats-backend
     ports:
       - "5000:5000"
