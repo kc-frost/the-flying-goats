@@ -119,6 +119,15 @@ export class Inventory implements OnInit {
   closeModal() {
     this.router.navigate([{ outlets: { modal: null } }]);
   }
+
+  isReadOnly = true;
+  enableEditing(itemID: number) {
+    this.http.post(`${BASE_URL}/api/inventory/edit`, {
+       itemID: itemID 
+      }).subscribe(() => {
+        this.isReadOnly = !this.isReadOnly;
+    })
+  }
 }
 
 // redirect function for inventory modal

@@ -22,21 +22,34 @@
                   >
                <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
                </button>
+            <button
+               type="button"
+               class="inv-edit-btn"
+               aria-label="Edit"
+               title="Edit item"
+               (click)= "enableEditing(item.itemID)"
+            >
+            <img src="/editIcon/pencilIcon.png" alt="Edit" />
+            </button>
                <div class="item-card">
                   <h2> {{item.itemName}}</h2>
                </div>
                <div class="item-forms">
                   <div class="input-fields">
                      <span class="field-name">Item ID</span>
-                     <input class="field-input" [value]="item.itemID" readonly />
+                     <input class="field-input" [value]="item.itemID" readonly=[isReadOnly]/>
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Total Quantity</span>
-                     <input class="field-input" [value]="item.quantity" readonly />
+                     <input class="field-input" [value]="item.quantity" readonly=[isReadOnly]/>
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Is Available</span>
-                     <input class="field-input" [value]="item.isAvailable" readonly />
+                     <input class="field-input" [value]="item.isAvailable" readonly=[isReadOnly]/>
+                  </div>
+                  <div class="input-fields">
+                     <span class="field-name">Type</span>
+                     <input class="field-input" [value]="item.type" [readonly]="isReadOnly"/>
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Type</span>
