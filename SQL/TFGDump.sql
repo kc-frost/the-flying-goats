@@ -144,7 +144,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,10),(2,25),(3,3),(4,2),(5,1),(123,21);
+INSERT INTO `inventory` VALUES (1,5),(2,25),(3,3),(4,2),(5,1),(123,21);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -186,17 +186,17 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
-INSERT INTO `item` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.','equipment'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.','equipment'),(3,'Baggage Tug','Vehicle used to transport luggage carts between terminals and aircraft.','transportation'),(4,'Passenger Shuttle','Ground shuttle used to move passengers between terminals and gates.','transportation'),(5,'Lost & Found Bin','Storage container used for temporarily holding lost passenger items.','misc'),(6,'Cleaning Supplies','General cleaning materials used by maintenance staff throughout the airport.','misc'),(123,'tesarsfads','12','equipment');
+INSERT INTO `item` VALUES (1,'Metal Detector','Primary security screening device used at entry checkpoints.','transportation'),(2,'First Aid Kit','Emergency medical kit stored for handling minor injuries and health incidents.','equipment'),(3,'Baggage Tug','Vehicle used to transport luggage carts between terminals and aircraft.','transportation'),(4,'Passenger Shuttle','Ground shuttle used to move passengers between terminals and gates.','transportation'),(5,'Lost & Found Bin','Storage container used for temporarily holding lost passenger items.','misc'),(6,'Cleaning Supplies','General cleaning materials used by maintenance staff throughout the airport.','misc'),(123,'tesarsfads','12','equipment');
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb3 */ ;
-/*!50003 SET character_set_results = utf8mb3 */ ;
-/*!50003 SET collation_connection  = utf8mb3_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `transportandequipmentinsert` AFTER INSERT ON `item` FOR EACH ROW begin
 	if (new.type = "equipment")
@@ -341,7 +341,7 @@ CREATE TABLE `planestatusenums` (
 
 LOCK TABLES `planestatusenums` WRITE;
 /*!40000 ALTER TABLE `planestatusenums` DISABLE KEYS */;
-INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL),(7,'Grounded',NULL);
+INSERT INTO `planestatusenums` VALUES (1,'On Time',NULL),(2,'Delayed',NULL),(3,'Boarding',NULL),(4,'Taxiing',NULL),(5,'Airborne',NULL),(6,'Landing',NULL);
 /*!40000 ALTER TABLE `planestatusenums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -482,6 +482,23 @@ INSERT INTO `transportation` VALUES (3,'Baggage Tug','Vehicle used to transport 
 UNLOCK TABLES;
 
 --
+-- Temporary view structure for view `userreservationsummary`
+--
+
+DROP TABLE IF EXISTS `userreservationsummary`;
+/*!50001 DROP VIEW IF EXISTS `userreservationsummary`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `userreservationsummary` AS SELECT 
+ 1 AS `userID`,
+ 1 AS `email`,
+ 1 AS `registerLengthDays`,
+ 1 AS `totalReservations`,
+ 1 AS `totalPastReservations`,
+ 1 AS `totalFutureReservations`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `users`
 --
 
@@ -515,11 +532,11 @@ UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb3 */ ;
-/*!50003 SET character_set_results = utf8mb3 */ ;
-/*!50003 SET collation_connection  = utf8mb3_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaff` AFTER INSERT ON `users` FOR EACH ROW begin
     if new.isStaff = true 
@@ -595,6 +612,24 @@ DELIMITER ;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `userreservationsummary`
+--
+
+/*!50001 DROP VIEW IF EXISTS `userreservationsummary`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `userreservationsummary` AS select `u`.`userID` AS `userID`,`u`.`email` AS `email`,(to_days(curdate()) - to_days(cast(`u`.`registeredDate` as date))) AS `registerLengthDays`,count(`b`.`bookingNumber`) AS `totalReservations`,sum((case when (`s`.`liftOff` < now()) then 1 else 0 end)) AS `totalPastReservations`,sum((case when (`s`.`liftOff` >= now()) then 1 else 0 end)) AS `totalFutureReservations` from ((`users` `u` left join `booking` `b` on((`u`.`userID` = `b`.`userID`))) left join `schedule` `s` on((`b`.`flightID` = `s`.`flight`))) group by `u`.`userID`,`u`.`email`,`u`.`registeredDate` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -605,4 +640,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-06 21:38:59
+-- Dump completed on 2026-03-07  2:19:24
