@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from db import get_connection
 from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory, check_ifadmin, book_a_flight
+from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory
 from .validators import validate_email, validate_password
 from .security import admin_required
 from _models.user import User
@@ -162,35 +163,16 @@ constaints/checks/validations for inventory is handled in my sql (hopefully)
 """
 @bp.post("/inventory/add")
 def addItemToInventory():
-    data = request.get_json()
-    itemID = data["itemID"]
-    quantity = data["quantity"]
-    equipmentName = data["equipmentName"]
-    equipmentID = data.get("equipmentID")
-    transportationID = data.get("transportationID")
-
     conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        insert into item(itemID, equipmentName, equipmentID, transportationID) values
-        (%s,%s,%s,%s)
-        """,
-        (itemID, equipmentName, equipmentID, transportationID)
-    )
-
-    cursor.execute(
-        """
-        insert into inventory(itemID, quantity) values
-        (%s,%s)
-        """,
-        (itemID, quantity)
-    )
-
-    conn.commit()
-
-    return jsonify({"success": True})
+    data = request.json
+    result = insert_into_inventory(conn, data)
+    if result.get("success"):
+        return jsonify({"success": True})
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
 
 @bp.post("/inventory/delete")
 def deleteItemFromInventory():
@@ -214,13 +196,18 @@ def deleteItemFromInventory():
 # Reservation logic
 @bp.get("/reservations")
 def viewReservations():
-    query = "select * from 'booking'"
     conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        result = cursor.fetchall()
-    return jsonify(result)
+    result = get_reservations(conn)
 
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+
+# move this to service properly in the next sprint
 @bp.post("/reservations/make")
 def makeReservation():
 
@@ -281,3 +268,30 @@ def book_flight():
     if result and "error" in result:
         return jsonify(result), 500
     return jsonify({"message": "booking confirmed"}), 200
+    
+@bp.post("/inventory/edit")
+def editInventory():
+    conn = get_connection()
+    data = request.json
+    result = update_inventory(conn, data)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Inventory successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500
+
+@bp.get('/users')
+def users_data():
+    conn = get_connection()
+    result = get_user_data(conn)
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500

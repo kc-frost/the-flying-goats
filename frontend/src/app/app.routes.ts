@@ -9,6 +9,8 @@ import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
 import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
+import { ViewAppointments } from './view-appointments/view-appointments';
+import { ViewUsers } from './view-users/view-users';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -62,6 +64,14 @@ export const routes: Routes = [
         component: Inventory,
         canActivate: [userAuthGuard, adminAuthGuard],
     },
+    {
+        path: 'view-appointments',
+        component: ViewAppointments
+    },
+    {
+        path: 'view-users',
+        component: ViewUsers
+    }
 ];
 
 export default routes;
