@@ -40,6 +40,16 @@ export const routes: Routes = [
         component: ProfilePage,
         canActivate: [userAuthGuard],
     },
+    {
+        path: 'view-appointments',
+        component: ViewAppointments,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
+    {
+        path: 'view-users',
+        component: ViewUsers,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
     // dropdown outlet
     {
         path: 'login',
