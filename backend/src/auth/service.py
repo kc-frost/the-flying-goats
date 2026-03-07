@@ -53,13 +53,13 @@ def insert_user(data: dict, conn) -> dict:
     return {"success": True}
 
 """
-This specifically searches from the view inventoryNames NOT inventory, because inventory is the container
+This specifically searches from the view inventorynames NOT inventory, because inventory is the container
 for the inventory items and is what is going to receive inventory. This finds the names and such for display.
 """
 
 def find_inventory(conn):
     with conn.cursor() as cursor:
-        cursor.execute("select * from inventoryNames")
+        cursor.execute("select * from inventorynames")
         result = cursor.fetchall()
     return result
 
@@ -112,7 +112,7 @@ Instead of isAvailable being a table attribute before, I decided to make it quer
 that it could be applied universally and changed in real time without need for updating db.
 """
 def isAvailable(conn, itemID):
-    query = "select isAvailable from inventoryNames where itemID=%s"
+    query = "select isAvailable from inventorynames where itemID=%s"
     with conn.cursor() as cursor:
         cursor.execute(query, (itemID,))
         result = cursor.fetchone()
