@@ -1,6 +1,6 @@
 from flask import jsonify, request, Blueprint, session
 from db import get_connection
-from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory
+from .service import delete_from_inventory, find_user, get_reservations, insert_into_inventory, insert_user, find_inventory, update_inventory
 from .validators import validate_email, validate_password
 
 # This is where you setup the Blueprint on the respective roues file.
@@ -122,13 +122,18 @@ def deleteItemFromInventory():
 # Reservation logic
 @bp.get("/reservations")
 def viewReservations():
-    query = "select * from 'booking'"
     conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        result = cursor.fetchall()
-    return jsonify(result)
+    result = get_reservations(conn)
 
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+
+# move this to service properly in the next sprint
 @bp.post("/reservations/make")
 def makeReservation():
 
@@ -166,3 +171,17 @@ def makeReservation():
         "message": "Reservation successfully made"
     }), 201
     
+@bp.post("/inventory/edit")
+def editInventory():
+    conn = get_connection()
+    data = request.json
+    result = update_inventory(conn, data)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Inventory successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500

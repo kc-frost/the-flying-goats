@@ -59,7 +59,7 @@ for the inventory items and is what is going to receive inventory. This finds th
 
 def find_inventory(conn):
     with conn.cursor() as cursor:
-        cursor.execute("select * from inventoryNames")
+        cursor.execute("select * from inventorynames")
         result = cursor.fetchall()
     return result
 
@@ -96,11 +96,11 @@ def insert_into_inventory(conn, data):
 
     return {"success": True}
 
-def delete_from_inventory(conn, itemID):
+def delete_from_inventory(conn, data):
     deleteQuery = "delete from `inventory` where itemID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(deleteQuery, (itemID,))
+            cursor.execute(deleteQuery, (data['itemID'],))
             conn.commit()
         except Exception as e:
             conn.rollback()
@@ -108,11 +108,20 @@ def delete_from_inventory(conn, itemID):
                     "error": str(e)}
     return {"success": True}
 
-def update_inventory(conn, itemID):
-    updateQuery = "Update from 'inventory' where itemID=%s"
+"""
+Updates both item itself, and inventory quantity.
+"""
+def update_inventory(conn, data):
+    inventoryQuery = "Update inventory set quantity = %s where itemID=%s"
+    itemQuery = "Update item set type = %s where itemID = %s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(updateQuery, (itemID,))
+            cursor.execute(inventoryQuery, 
+                           (data['quantity'], 
+                            data['itemID']))
+            cursor.execute(itemQuery, 
+                           (data['type'], 
+                            data['itemID']))
             conn.commit()
         except Exception as e:
             conn.rollback()
@@ -125,10 +134,10 @@ def update_inventory(conn, itemID):
 Instead of isAvailable being a table attribute before, I decided to make it query function so
 that it could be applied universally and changed in real time without need for updating db.
 """
-def isAvailable(conn, itemID):
+def isAvailable(conn, data):
     query = "select isAvailable from inventoryNames where itemID=%s"
     with conn.cursor() as cursor:
-        cursor.execute(query, (itemID,))
+        cursor.execute(query, (data['itemID'],))
         result = cursor.fetchone()
     return result
 
@@ -136,23 +145,25 @@ def isAvailable(conn, itemID):
 
 """ For now we're going to ASSUME that the user exists becauseee I don't wanna prevent insertion onto reservation based on "user doesn't exist" when we only got like 2 users and such, and I don't know how users is lookin
 So I'ma add that validation later (tomorrow), I'll explain more through messages"""
-def get_reservations(conn, data):
+def get_reservations(conn):
     # user_id = data['userID']
     # userExistsQuery = "select * from `users` where userID=%s"
     # with conn.cursor() as cursor:
     #     cursor.execute(userExistsQuery, (user_id,))
     #     userExists = cursor.fetchone()
-    
+
+    """ 
+    getting data from reservationticket view 
     """
-    This checks whether userID is even being passed in data/through the json. This is NOT checking whether it exists in users. I commented some code up there, but will keep in commented until we get this working and connected first,
-    cause honestly I have no idea if it works, I threw it together in like 5 minutes with other functions as reference. I'm too goated.
+    query = """ 
+    select * from reservationticket
     """
-    query = "select * from `booking` where userID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query, (data['userID'],))
+            cursor.execute(query)
             result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
         except Exception as e:
-            return {"success": False,
+            return {"success": False, 
                     "error": str(e)}
-    return {"success": True, "data": result}

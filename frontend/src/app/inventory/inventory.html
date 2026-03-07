@@ -8,7 +8,7 @@
          <header class="inv-header">
             <h1>Manage &amp; View Inventory</h1>
             <button type="button" class="inv-close-btn" (click)="closeModal()">
-            <img src="/xButton/maybe-virus.svg" alt="red X" />
+               <img src="/xButton/maybe-virus.svg" alt="red X" />
             </button>
          </header>
          <div class="inv-body">
@@ -18,53 +18,45 @@
                   class="inv-delete-btn"
                   aria-label="Delete"
                   (click)="deleteItem(item.itemID)"
-                  title="Delete item"
-                  >
-               <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
+                  title="Delete item">
+                  <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
                </button>
-            <button
-               type="button"
-               class="inv-edit-btn"
-               aria-label="Edit"
-               title="Edit item"
-               (click)= "enableEditing(item.itemID)"
-            >
-            <img src="/editIcon/pencilIcon.png" alt="Edit" />
-            </button>
+               <button
+                  type="button"
+                  class="inv-edit-btn"
+                  aria-label="Edit"
+                  title="Edit item"
+                  (click)="enableEditing(item)">
+                  <img src="/editIcon/pencilIcon.png" alt="Edit" />
+               </button>
                <div class="item-card">
-                  <h2> {{item.itemName}}</h2>
+                  <h2>{{ item.itemName }}</h2>
                </div>
                <div class="item-forms">
                   <div class="input-fields">
                      <span class="field-name">Item ID</span>
-                     <input class="field-input" [value]="item.itemID" readonly=[isReadOnly]/>
+                     <input class="field-input" [value]="item.itemID" [readonly]="true" />
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Total Quantity</span>
-                     <input class="field-input" [value]="item.quantity" readonly=[isReadOnly]/>
+                     <input class="field-input" [(ngModel)]="item.quantity" [readonly]="item.isReadOnly" (blur)="!item.isReadOnly && saveChanges(item)"/>
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Is Available</span>
-                     <input class="field-input" [value]="item.isAvailable" readonly=[isReadOnly]/>
+                     <input class="field-input" [value]="item.isAvailable" [readonly]="true" />
                   </div>
                   <div class="input-fields">
                      <span class="field-name">Type</span>
-                     <input class="field-input" [value]="item.type" [readonly]="isReadOnly"/>
+                     <input class="field-input" [(ngModel)]="item.type" [readonly]="true"/>
                   </div>
                   <div class="input-fields">
-                     <span class="field-name">Type</span>
-                     <input class="field-input" [value]="item.type" readonly />
+                     <span class="field-name">Description</span>
+                     <input class="field-input" [(ngModel)]="item.itemDescription" [readonly]="item.isReadOnly" (blur)="!item.isReadOnly && saveChanges(item)"/>
                   </div>
                </div>
             </section>
             <div class="add-btn">
-               <button
-                  type="button"
-                  class="inv-add-btn"
-                  aria-label="Add"
-                  (click)="addModalShowButton()"
-                  title="Add Item"
-                  >
+               <button type="button" class="inv-add-btn" aria-label="Add" (click)="addModalShowButton()" title="Add Item">
                   <div class="btn-img">
                      <img src="/addItem/greenPlus.png" alt="PlusSign" />
                   </div>
@@ -80,16 +72,16 @@
             <header class="add-header">
                <h2>Add Inventory Item</h2>
                <button type="button" class="inv-close-btn" (click)="closeAddModal()">
-               <img src="/xButton/maybe-virus.svg" alt="Close" />
+                  <img src="/xButton/maybe-virus.svg" alt="Close" />
                </button>
             </header>
             <div class="add-body">
                <div class="input-fields">
                   <span class="field-name">Add</span>
                   <select class="field-input" [(ngModel)]="newItem.type">
-                  <option value="equipment">equipment</option>
-                  <option value="transportation">transportation</option>
-                  <option value="misc">misc</option>
+                     <option value="equipment">equipment</option>
+                     <option value="transportation">transportation</option>
+                     <option value="misc">misc</option>
                   </select>
                </div>
                <div class="input-fields">

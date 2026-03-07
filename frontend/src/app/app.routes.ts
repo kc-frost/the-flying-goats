@@ -6,6 +6,7 @@ import { Register } from './user-auth/register/register';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { ViewAppointments } from './view-appointments/view-appointments';
+import { ViewUsers } from './view-users/view-users';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -61,7 +62,10 @@ export const routes: Routes = [
     {
         path: 'view-appointments',
         component: ViewAppointments
-
+    },
+    {
+        path: 'view-users',
+        component: ViewUsers
     }
 ];
 
