@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { UserService } from '../../_shared/services/user-service';
-import { form } from '@angular/forms/signals';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 interface Reservation {
   id: number;
@@ -13,13 +13,11 @@ interface Reservation {
   seatClass: string;
   origin: string;
   destination: string;
-
-
 }
 
 @Component({
   selector: 'app-profile-page',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })
@@ -30,13 +28,22 @@ export class ProfilePage {
   today = new Date();
   selectedTab: 'past' | 'current' | 'future' = 'past'
 
+  // sorts RESERVATION DATE in descending order
+  constructor() {
+    this.arrayOfReservations.sort((a, b) => {
+      return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
+    });
+  }
+
   // assumption: all returned reservations from the database will automatically be made by the current logged in user
-  // main helper function to return reservations
+  // main function to return reservations
   getReservations() {
     if (this.selectedTab === 'past') return this.getPastReservations();
     if (this.selectedTab === 'current') return this.getCurrentReservations();
     return this.getFutureReservations();
   }
+
+  // the three succeeding functions get reservations based on time relative to today 
 
   getPastReservations() {
     return this.arrayOfReservations
@@ -60,7 +67,7 @@ export class ProfilePage {
     .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime());
   }
 
-
+  // formatting of dates and time
   formatDate(date: string): string {
     var enteredDate = new Date(date);
     var formattedDate = new Intl.DateTimeFormat("en-GB", 
@@ -106,7 +113,7 @@ export class ProfilePage {
     reservationDate: "Thu Mar 05 2026",
     seatClass: "Economy", 
     seatNumber: "",
-    username: "admin"
+    username: "admin",
   }
 
   arrayOfReservations: Reservation[] = [
@@ -120,7 +127,7 @@ export class ProfilePage {
       reservationDate: "Thu Mar 05 2026",
       seatClass: "Economy", 
       seatNumber: "",
-      username: "admin"
+      username: "admin",
     },
     {
       id: 2,
@@ -132,7 +139,7 @@ export class ProfilePage {
       reservationDate: "Thu Mar 05 2026",
       seatClass: "Economy",
       seatNumber: "",
-      username: "admin"
+      username: "admin",
     },
     {
       id: 2,
@@ -144,14 +151,20 @@ export class ProfilePage {
       reservationDate: "Thu Jan 05 2026",
       seatClass: "Economy",
       seatNumber: "",
-      username: "admin"
+      username: "admin",
     }
   ];
 
-  // sorts RESERVATION DATE in descending order
-  constructor() {
-    this.arrayOfReservations.sort((a, b) => {
-      return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
-    });
+  // bio logic
+  isEditing = true;
+  userBio = new FormControl('');
+
+  saveBio() {
+    this.userBio.setValue(this.userBio.value);
+    this.isEditing = false;
+  }
+
+  updateBio() {
+    this.isEditing = true;
   }
 }

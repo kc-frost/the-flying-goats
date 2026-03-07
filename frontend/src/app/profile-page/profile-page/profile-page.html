@@ -6,7 +6,14 @@
         </section>
         <hr>
         <section class="bio">
-            <p>Heres an example bio</p>
+            @if (isEditing) {
+                <label for="userBio">Enter a new bio!</label>
+                <textarea id="userBio" [formControl]="userBio"></textarea>
+                <button (click)="saveBio()">Save</button>
+            } @else {
+                <p>{{userBio.value}}</p>
+                <button class="update"(click)="updateBio()">Update Bio</button>
+            }
         </section>
     </section>
 
