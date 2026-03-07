@@ -14,14 +14,12 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   setAdminTrue() { localStorage.setItem('isAdmin', 'true'); }
-
   setAdminFalse() { localStorage.setItem('isAdmin', 'false')};
-  
   isAdmin() { return localStorage.getItem('isAdmin') === 'true'; }
-  
-  isAuthenticated() {
-    return this.authenticated;
-  }
+
+  setAuthenticatedTrue() { localStorage.setItem('authenticated', 'true'); }
+  setAuthenticatedFalse() { localStorage.setItem('authenticated', 'false'); }
+  isAuthenticated() { return localStorage.getItem('authenticated') === 'true'; }
  
   // Expected JSON response:
   // {"authenticated": true/false,
@@ -63,8 +61,4 @@ export class AuthService {
       { observe: 'response'}
     )
   }
-
-  setAuthenticatedTrue() { this.authenticated = true;}
-
-  setAuthenticatedFalse() { this.authenticated = false;}
 }

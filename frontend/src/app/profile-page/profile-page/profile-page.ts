@@ -34,9 +34,6 @@ export class ProfilePage {
   // sorts RESERVATION DATE in descending order
   constructor(private http: HttpClient) {
     this.loadReservations();
-    // this.arrayOfReservations.sort((a, b) => {
-    //   return new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime();
-    // });
 
   }
 
@@ -122,61 +119,9 @@ export class ProfilePage {
 
     return hour12Time.concat(" / " + hour24Time);
   }
-  
-  // testReservation: Reservation = {
-  //   id: 1,
-  //   arrivalDate: "2026-03-07T20:25",
-  //   departureDate: "2026-03-06T20:25",
-  //   destination: "Paris",
-  //   flightID: "PRS321",
-  //   origin: "Austin",
-  //   reservationDate: "Thu Mar 05 2026",
-  //   seatClass: "Economy", 
-  //   seatNumber: "",
-  //   username: "admin",
-  // }
-
-  // arrayOfReservations: Reservation[] = [
-  //   {
-  //     id: 1,
-  //     arrivalDate: "2026-03-07T20:25",
-  //     departureDate: "2026-03-06T20:25",
-  //     destination: "Paris",
-  //     flightID: "PRS321",
-  //     origin: "Austin",
-  //     reservationDate: "Thu Mar 05 2026",
-  //     seatClass: "Economy", 
-  //     seatNumber: "",
-  //     username: "admin",
-  //   },
-  //   {
-  //     id: 2,
-  //     arrivalDate: "2026-03-27T00:02",
-  //     departureDate: "2026-03-23T20:58",
-  //     destination: "Japan",
-  //     flightID: "JPN987",
-  //     origin: "Austin",
-  //     reservationDate: "Thu Mar 05 2026",
-  //     seatClass: "Economy",
-  //     seatNumber: "",
-  //     username: "admin",
-  //   },
-  //   {
-  //     id: 2,
-  //     arrivalDate: "2026-02-27T00:02",
-  //     departureDate: "2026-01-23T20:58",
-  //     destination: "Japan",
-  //     flightID: "JPN987",
-  //     origin: "Austin",
-  //     reservationDate: "Thu Jan 05 2026",
-  //     seatClass: "Economy",
-  //     seatNumber: "",
-  //     username: "admin",
-  //   }
-  // ];
 
   // bio logic
-  isEditing = true;
+  isEditing = false;
   userBio = new FormControl('');
 
   saveBio() {
