@@ -1,4 +1,4 @@
-.reservations-page {
+.users-page {
   min-height: 100vh;
   padding: 40px 24px;
   background-color: #f4f6f8;
@@ -8,26 +8,25 @@
   align-items: flex-start;
 }
 
-.reservations-container {
-  width: min(1300px, 100%);
+.users-container {
+  width: min(1200px, 100%);
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.reservations-header {
-  text-align: left;
-  padding-left: 20px;
+.users-header {
+  text-align: center;
+  padding: 0 20px;
 }
 
-.reservations-header h2 {
-  margin-left: 20px;
-  margin-bottom: 8px;
+.users-header h1 {
+  margin: 0 0 8px 0;
   font-size: 2rem;
   color: #192e56;
 }
 
-.reservations-card {
+.users-card {
   background: #eae9e9;
   border-radius: 20px;
   padding: 24px;
@@ -39,7 +38,7 @@
   overflow-x: auto;
 }
 
-.reservation-table {
+.users-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
@@ -47,7 +46,7 @@
   overflow: hidden;
 }
 
-.reservation-table caption {
+.users-table caption {
   caption-side: top;
   text-align: left;
   font-size: 1.3rem;
@@ -56,25 +55,25 @@
   color: #192e56;
 }
 
-.reservation-table th,
-.reservation-table td {
+.users-table th,
+.users-table td {
   padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid #d9d9d9;
   white-space: nowrap;
 }
 
-.reservation-table th {
+.users-table th {
   background-color: #192e56;
   color: white;
   font-weight: 700;
 }
 
-.reservation-table tbody tr:nth-child(even) {
+.users-table tbody tr:nth-child(even) {
   background-color: #f7f9fc;
 }
 
-.reservation-table tbody tr:hover {
+.users-table tbody tr:hover {
   background-color: #eef3f9;
 }
 

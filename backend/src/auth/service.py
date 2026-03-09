@@ -81,38 +81,35 @@ for the inventory items and is what is going to receive inventory. This finds th
 
 def find_inventory(conn):
     with conn.cursor() as cursor:
-        cursor.execute("select * from `inventoryNames`")
+        cursor.execute("select * from inventorynames")
         result = cursor.fetchall()
     return result
 
 """ 
-now THIS is what we use for inserting into inventory. I know I'm doing view inventory and inventory logic, but
-just INCASE you touch inventory, look at this for insertions.
+inserting into both inventory and item, and with how I did the sql structure, into respective tables as well.
 """
 def insert_into_inventory(conn, data):
 
-    inventoryQuery = """
-    insert into inventory (itemID, quantity) values
-    (%s, %s)
-    on duplicate key update quantity = quantity + values(quantity)
+    itemInsertQuery = """
+    insert into item(itemID, itemName, itemDescription, type) values (%s, %s, %s, %s);
     """
-    itemQuery = """
-    insert ignore into item(itemID, equipmentID, transportationID, equipmentName, type) values
-    (%s, %s, %s, %s, %s)
+    inventoryQuery = """
+    insert into inventory(itemID, quantity) values (%s, %s)
+    on duplicate key update quantity = quantity + values(quantity);
     """
 
     with conn.cursor() as cursor:
         try:
-            cursor.execute(inventoryQuery, (
-                data['itemID'],
-                data['quantity']
-            ))
-            cursor.execute(itemQuery, (
-                data['itemID'],
-                data.get('equipmentID'),
-                data.get('transportationID'),
-                data['equipmentName'],
+            cursor.execute(itemInsertQuery, (
+                data.get("itemID"), # Incase itemID isn't given, auto increment kicks in, so it's an optional field
+                data['itemName'],
+                data['itemDescription'],
                 data['type']
+            ))
+
+            cursor.execute(inventoryQuery, (
+                data.get("itemID") or cursor.lastrowid, # If itemID isn't given, we use the auto incremented id instead from item
+                data['quantity']
             ))
             conn.commit()
         except Exception as e:
@@ -121,26 +118,48 @@ def insert_into_inventory(conn, data):
 
     return {"success": True}
 
-def delete_from_inventory(conn, itemID):
+def delete_from_inventory(conn, data):
     deleteQuery = "delete from `inventory` where itemID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(deleteQuery, (itemID,))
+            cursor.execute(deleteQuery, (data['itemID'],))
             conn.commit()
         except Exception as e:
             conn.rollback()
             return {"success": False,
                     "error": str(e)}
-    
     return {"success": True}
+
+"""
+Updates both item itself, and inventory quantity.
+"""
+def update_inventory(conn, data):
+    inventoryQuery = "Update inventory set quantity = %s where itemID=%s"
+    itemQuery = "Update item set type = %s where itemID = %s"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(inventoryQuery, 
+                           (data['quantity'], 
+                            data['itemID']))
+            cursor.execute(itemQuery, 
+                           (data['type'], 
+                            data['itemID']))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"success": False,
+                    "error": str(e)}
+        return{"success": True}
+
+
 """
 Instead of isAvailable being a table attribute before, I decided to make it query function so
 that it could be applied universally and changed in real time without need for updating db.
 """
-def isAvailable(conn, itemID):
-    query = "select isAvailable from `inventory` where itemID=%s"
+def isAvailable(conn, data):
+    query = "select isAvailable from inventoryNames where itemID=%s"
     with conn.cursor() as cursor:
-        cursor.execute(query, (itemID,))
+        cursor.execute(query, (data['itemID'],))
         result = cursor.fetchone()
     return result
 
@@ -148,24 +167,27 @@ def isAvailable(conn, itemID):
 
 """ For now we're going to ASSUME that the user exists becauseee I don't wanna prevent insertion onto reservation based on "user doesn't exist" when we only got like 2 users and such, and I don't know how users is lookin
 So I'ma add that validation later (tomorrow), I'll explain more through messages"""
-def get_reservations(conn, data):
+def get_reservations(conn):
     # user_id = data['userID']
     # userExistsQuery = "select * from `users` where userID=%s"
     # with conn.cursor() as cursor:
     #     cursor.execute(userExistsQuery, (user_id,))
     #     userExists = cursor.fetchone()
-    
+
+    """ 
+    getting data from reservationticket view 
     """
-    This checks whether userID is even being passed in data/through the json. This is NOT checking whether it exists in users. I commented some code up there, but will keep in commented until we get this working and connected first,
-    cause honestly I have no idea if it works, I threw it together in like 5 minutes with other functions as reference. I'm too goated.
+    query = """ 
+    select * from reservationticket
     """
-    query = "select * from `booking` where userID=%s"
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query, (data['userID'],))
+            cursor.execute(query)
             result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
         except Exception as e:
-            return {"success": False,
+            return {"success": False, 
                     "error": str(e)}
     return {"success": True, "data": result}
 
@@ -191,3 +213,15 @@ def book_a_flight(data: dict):
         except Exception as e:
             conn.rollback()
             return {"error": str(e)}
+
+def get_user_data(conn):
+    query = "select * from userreservationsummary"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}

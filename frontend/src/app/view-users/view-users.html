@@ -1,0 +1,41 @@
+<main class="users-page">
+  <section class="users-container">
+    <header class="users-header">
+      <h2>View Users</h2>
+    </header>
+
+    <section class="users-card">
+      <div class="table-wrapper">
+        <table class="users-table">
+          <caption>User Summary</caption>
+
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Email</th>
+              <th>Registered (Days)</th>
+              <th>Total Reservations</th>
+              <th>Past Reservations</th>
+              <th>Future Reservations</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.userID }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.registerLengthDays }}</td>
+              <td>{{ user.totalReservations }}</td>
+              <td>{{ user.totalPastReservations }}</td>
+              <td>{{ user.totalFutureReservations }}</td>
+            </tr>
+
+            <tr *ngIf="users.length === 0">
+              <td colspan="6" class="empty-state">No users found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
