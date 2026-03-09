@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, 
 
 class User(UserMixin):
     """Used as a representation of a user, doesn't actually do anything
@@ -10,7 +10,8 @@ class User(UserMixin):
         these properties and methods
 
     """
-    def __init__(self, username: str, email: str, isAdmin: bool) -> None:
+    def __init__(self, user_id: str, username: str, email: str, isAdmin: bool) -> None:
+        self.id = user_id
+        self.email = email
         self.username = username
-        self.id = email
         self.isAdmin = isAdmin
