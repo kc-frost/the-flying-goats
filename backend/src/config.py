@@ -17,3 +17,10 @@ class Config:
     HOST = "0.0.0.0"
     PORT = 5000
     DEBUG = True
+
+    # for cors
+    CORS_WHITELISTED_ORIGINS = {
+        "http://localhost:4200",
+        "http://localhost",
+        "http://159.65.100.137"
+    }
