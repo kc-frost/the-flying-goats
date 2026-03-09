@@ -1,6 +1,6 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
-from db import get_connection
+from app.db import get_connection
 
 bp = Blueprint("profile", __name__)
 

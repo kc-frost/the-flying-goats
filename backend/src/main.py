@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 from flask_login import LoginManager
-from db import get_connection
+from app.db import get_connection
 from _models.user import User
 from auth.service import check_ifadmin
 

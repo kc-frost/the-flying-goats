@@ -1,5 +1,5 @@
 from typing import Any
-from db import get_connection
+from app.db import get_connection
 from .security import get_hashed_password
 from datetime import datetime
 

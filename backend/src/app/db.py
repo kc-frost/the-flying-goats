@@ -1,5 +1,4 @@
-from dotenv import load_dotenv
-import os
+from flask import current_app
 import pymysql.cursors
 
 def get_connection():
@@ -9,14 +8,10 @@ def get_connection():
     Returns:
         _type_: A object that's connected to the db and can do queries
     """
-
-    # database login credentials
-    # .env NEEDS to be on the same level as t his file
-    load_dotenv()
-    USER = os.getenv("USER") or ""
-    PASSWORD = os.getenv("PASSWORD") or ""
-    HOST = os.getenv("HOST") or ""
-    DATABASE = os.getenv("DATABASE") or ""
+    USER = current_app.config["USER"] or ""
+    PASSWORD = current_app.config["PASSWORD"] or ""
+    HOST = current_app.config["HOST"] or ""
+    DATABASE = current_app.config["DATABASE"] or ""
 
     # ensures all database variables are properly instantiated
     # before establishing a connection

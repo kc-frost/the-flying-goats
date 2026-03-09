@@ -1,4 +1,4 @@
-from db import get_connection
+from app.db import get_connection
 
 def get_user_reservations(username: str):
     conn = get_connection()
