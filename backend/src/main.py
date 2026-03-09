@@ -1,4 +1,4 @@
-import os
+from app import create_app
 from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
@@ -14,10 +14,10 @@ load_dotenv()
 from auth.routes import bp as authbp
 from profile.routes import bp as ppbp
 
-app = Flask(__name__)
+app = create_app()
 
-# check Flask docs on how to create this
-app.secret_key = os.getenv("SECRET_KEY")
+# # check Flask docs on how to create this
+# app.secret_key = os.getenv("SECRET_KEY")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
