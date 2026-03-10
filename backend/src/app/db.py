@@ -8,10 +8,10 @@ def get_connection():
     Returns:
         _type_: A object that's connected to the db and can do queries
     """
-    USER = current_app.config["USER"] or ""
-    PASSWORD = current_app.config["PASSWORD"] or ""
-    HOST = current_app.config["HOST"] or ""
-    DATABASE = current_app.config["DATABASE"] or ""
+    USER = current_app.config.get("USER", "")
+    PASSWORD = current_app.config.get("PASSWORD", "")
+    HOST = current_app.config.get("HOST", "")
+    DATABASE = current_app.config.get("DATABASE", "") 
 
     # ensures all database variables are properly instantiated
     # before establishing a connection
