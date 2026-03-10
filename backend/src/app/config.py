@@ -22,5 +22,7 @@ class Config:
     CORS_WHITELISTED_ORIGINS = [
         "http://localhost:4200",
         "http://localhost",
+        "http://127.0.0.1",
+        "http://127.0.0.1:4200",
         "http://159.65.100.137"
     ]
