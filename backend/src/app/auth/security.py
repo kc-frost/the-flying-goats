@@ -21,6 +21,7 @@ def get_hashed_password(password: str) -> str:
 
     return hashed_pass
 
+# this is a decorator function
 def admin_required(func):
     @wraps(func)
     def wrapped_func(*args, **kwargs):

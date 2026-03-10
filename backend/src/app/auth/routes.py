@@ -1,14 +1,13 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import get_connection
-from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, check_ifadmin, book_a_flight
+from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, if_admin, book_a_flight
 from .validators import validate_email, validate_password
 from .security import admin_required
 from app.models import User
 
-# This is where you setup the Blueprint on the respective roues file.
-# First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
-# Second param: __name__
+# first param: name of parent folder
+# second param: __name__
 bp = Blueprint("auth", __name__)
 
 # In a Flask project that doesn't have Blueprints, we would normally put
@@ -38,41 +37,37 @@ def check_session():
         }), 401
 
 @bp.route('/check-authenticated')
-@login_required
 def check_authenticated():
-    """This checks if a user can access a route that requires
-    authentication
+    """This checks if a user can access a route that requires authentication
 
     Returns:
-        Tuple(JSON, int): A userID if successful, error if not. Then an
-        HTTP status code.
+        Tuple(JSON, int): A userID if successful, error if not. Then an HTTP status code.
     """
-    if (current_user.is_authenticated):
+    is_authenticated = current_user.is_authenticated
+    if (is_authenticated):
         return jsonify({
-            "userID": current_user.id
+            "is_authenticated": is_authenticated
         }), 200
     else:
         return jsonify({
-            "error": "you're not logged in"
+            "is_authenticated": is_authenticated
         }), 401
 
 @bp.route('/check-admin')
-@admin_required
 def check_admin():
-    """This checks if a user can access a route that requires admin
-    permissions
+    """This checks if a user can access a route that requires admin permissions
 
     Returns:
-        Tuple(JSON, int): A userID if successful, error if not. Then an
-        HTTP status code.
+        Tuple(JSON, int): A userID if successful, error if not. Then an HTTP status code.
     """
-    if (current_user.isAdmin):
+    is_admin = current_user.is_admin
+    if is_admin:
         return jsonify({
-            "userID": current_user.email
+            "is_admin": is_admin
         }), 200
     else:
         return jsonify({
-            "error": "you're not an admin"
+            "is_admin": is_admin
         }), 403
 
 @bp.route('/logout')
@@ -95,10 +90,15 @@ def login():
 
     result = find_user(email, password)
     if result is not None:
-        is_admin = check_ifadmin(result['email'])
-        user: User = User(str(1), result['username'], result['email'], is_admin)
+        is_admin = if_admin(result['email'])
+        user = User(
+            str(result['userID']), 
+            result['username'], 
+            result['email'], 
+            is_admin)
 
         login_user(user)
+
         # user exist
         return jsonify({
             "success": True,
