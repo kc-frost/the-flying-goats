@@ -9,7 +9,7 @@ from app.db import get_connection
 from app import auth, profile
 
 from app.models import User
-
+from auth.service import if_admin
 
 def create_app(config_class=Config):
     """Instatiates app.
@@ -60,6 +60,9 @@ def load_user(user_id: str):
         cursor.execute(query, (user_id))
         result = cursor.fetchone()
 
-    # TODO: Update isAdmin() function. Default to False for now
     if result is not None:
-        return User(str(result['userID']), result['username'], result['email'], False)
+        return User(
+            str(result['userID']), 
+            result['username'], 
+            result['email'], 
+            if_admin(result['email']))
