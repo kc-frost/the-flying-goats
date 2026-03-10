@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, inject } from "@angular/core";
-import { BASE_URL } from "../../_environments/environment";
+import { environment } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 
 type UserInfo = {
@@ -32,7 +32,7 @@ export class ViewUsers implements OnInit {
 
   getUsers(): void {
     this.http
-          .get<UserInfo[]>(`${BASE_URL}/api/users`)
+          .get<UserInfo[]>(`${environment.api_url}/api/users`)
           .subscribe({
             next: (data) => {
               console.log("users received:", data);

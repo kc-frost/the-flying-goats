@@ -52,7 +52,7 @@ export class Inventory implements OnInit {
 
   getInventory(): void {
     this.http
-      .get<Omit<InventoryRow, "isReadOnly">[]>(`${BASE_URL}/api/inventory`)
+      .get<Omit<InventoryRow, "isReadOnly">[]>(`${environment.api_url}/api/inventory`)
       .subscribe({
         next: (rows) => {
           this.items = rows.map((row) => ({
@@ -133,7 +133,7 @@ export class Inventory implements OnInit {
 
   saveChanges(item: InventoryRow): void {
     this.http
-      .post(`${BASE_URL}/api/inventory/edit`, {
+      .post(`${environment.api_url}/api/inventory/edit`, {
         itemID: item.itemID,
         quantity: item.quantity,
         type: item.type,

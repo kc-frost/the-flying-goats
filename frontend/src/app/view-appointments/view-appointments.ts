@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
-import { BASE_URL } from "../../_environments/environment";
+import { environment } from "../../_environments/environment";
 
 type ReservationRow = {
   bookingNumber: number;
@@ -34,7 +34,7 @@ export class ViewAppointments implements OnInit {
   }
   getReservations(): void {
     this.http
-      .get<ReservationRow[]>(`${BASE_URL}/api/reservations`)
+      .get<ReservationRow[]>(`${environment.api_url}/api/reservations`)
       .subscribe({
         next: (data) => {
           console.log("reservations received:", data);

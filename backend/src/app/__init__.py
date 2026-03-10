@@ -41,7 +41,8 @@ def register_blueprints(app):
                   resources={r"/api/": {"origins": origins}})
     
     # blueprints
-    from app import auth, inventory, profile
+    # id appreciate it if we grouped it by public, logged-in, and admin routes, but if this gets out of order its nbd
+    from app import auth, profile, inventory, reservations
 
     # 'public' routes
     app.register_blueprint(auth.routes.bp, url_prefix="/api")
@@ -51,6 +52,7 @@ def register_blueprints(app):
 
     # admin routes
     app.register_blueprint(inventory.routes.bp, url_prefix="/admin")
+    app.register_blueprint(reservations.routes.bp, url_prefix="/admin")
 
 
 # utils
