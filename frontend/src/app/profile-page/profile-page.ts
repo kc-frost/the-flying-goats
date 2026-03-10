@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { UserService } from '../../_shared/services/user-service';
+import { UserService } from '../_shared/services/user-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../_environments/environment';
+import { environment } from '../../_environments/environment';
 
 interface Reservation {
   bookingNumber: number;
