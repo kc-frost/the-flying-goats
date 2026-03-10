@@ -66,3 +66,5 @@ def load_user(user_id: str):
             result['username'], 
             result['email'], 
             if_admin(result['email']))
+    else:
+        return None
