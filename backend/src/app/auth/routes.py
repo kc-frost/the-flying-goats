@@ -4,7 +4,7 @@ from app.db import get_connection
 from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, check_ifadmin, book_a_flight
 from .validators import validate_email, validate_password
 from .security import admin_required
-from _models.user import User
+from app.models import User
 
 # This is where you setup the Blueprint on the respective roues file.
 # First argument is the name of the Blueprint, but I think this matters more for if you're using Flask as more than just an API (which we are not)
@@ -96,7 +96,7 @@ def login():
     result = find_user(email, password)
     if result is not None:
         is_admin = check_ifadmin(result['email'])
-        user: User = User(result['username'], result['email'], is_admin)
+        user: User = User(str(1), result['username'], result['email'], is_admin)
 
         login_user(user)
         # user exist
