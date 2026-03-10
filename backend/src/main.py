@@ -9,8 +9,6 @@ from profile.routes import bp as ppbp
 
 app = create_app()
 
-cors = CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:4200"}})
-
 # What is a blueprint?
 # For our purporses, a blueprint allows us to point to a file that holds routes that contains endpoints for our API
 

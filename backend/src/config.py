@@ -19,8 +19,8 @@ class Config:
     DEBUG = True
 
     # for cors
-    CORS_WHITELISTED_ORIGINS = {
+    CORS_WHITELISTED_ORIGINS = [
         "http://localhost:4200",
         "http://localhost",
         "http://159.65.100.137"
-    }
+    ]

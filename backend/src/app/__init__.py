@@ -26,11 +26,19 @@ def create_app(config_class=Config):
     os.makedirs(app.instance_path, exist_ok=True)
 
     register_extensions(app)
+    register_blueprints(app)
 
     return app
 
 def register_extensions(app):
     login_manager.init_app(app)
+
+def register_blueprints(app):
+    origins = app.config.get("CORS_WHITELISTED_ORIGINS")
+    cors.init_app(app, supports_credentials=True,
+                  resources={r"/api/": {"origins": origins}})
+
+    
 
 
 # utils
