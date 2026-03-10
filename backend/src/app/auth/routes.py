@@ -151,15 +151,3 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
-
-@bp.get('/users')
-def users_data():
-    conn = get_connection()
-    result = get_user_data(conn)
-    if result.get("success"):
-        return jsonify(result["data"]), 200
-    else:
-        return jsonify({
-            "success": False,
-            "message": result.get("error")
-        }), 500

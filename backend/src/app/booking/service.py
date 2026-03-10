@@ -32,6 +32,7 @@ def book_a_flight(data: dict):
     
     with conn.cursor() as cursor:
         try:
+            # find user via email
             query = """
                 SELECT `userID`
                 FROM `users`
@@ -42,6 +43,7 @@ def book_a_flight(data: dict):
             if user is None:
                 return {"error": "User not found"}
             
+            # use userID to insert into booking
             query = """
                 INSERT INTO `booking`(userID, flightID, seat, bookingDate)
                 VALUES (%s, %s, %s, %s)
