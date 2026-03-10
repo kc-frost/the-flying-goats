@@ -16,7 +16,7 @@ bp = Blueprint("auth", __name__)
 # This would also require us to import app from main
 # With Blueprints, you can replace "app" with the name of the bp VARIABLE
 
-@bp.get('/check-session')
+@bp.route('/check-session', methods=['GET'])
 def check_session():
     """A general check if a session exists, implying a logged-in user.
     Use check-authenticated for route protection
@@ -37,7 +37,7 @@ def check_session():
             "username": "null"
         }), 401
 
-@bp.route('/check-authenticated')
+@bp.route('/check-authenticated', methods=['GET'])
 def check_authenticated():
     """This checks if a user can access a route that requires authentication
 
@@ -54,7 +54,7 @@ def check_authenticated():
             "is_authenticated": is_authenticated
         }), 401
 
-@bp.route('/check-admin')
+@bp.route('/check-admin', methods=['GET'])
 def check_admin():
     """This checks if a user can access a route that requires admin permissions
 
@@ -71,7 +71,7 @@ def check_admin():
             "is_admin": is_admin
         }), 403
 
-@bp.route('/logout')
+@bp.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
@@ -81,7 +81,7 @@ def logout():
         "message": "Logged out"
     }), 200
 
-@bp.post('/login')
+@bp.route('/login', methods=['POST'])
 def login():
     # obtain request data
     # transforms json into python dict
@@ -112,7 +112,7 @@ def login():
             "message": "User doesn't exist/Incorrect password"
         }), 400
 
-@bp.post('/register')
+@bp.route('/register', methods=['POST'])
 def register():
     # obtain data
     data = request.json

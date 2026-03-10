@@ -7,7 +7,7 @@ from .service import get_reservations
 
 # first param: name of parent folder
 # second param: __name__
-bp = Blueprint("reservations", __name__)
+bp = Blueprint("view_reservations", __name__)
 
 # Reservation logic
 @bp.get("/reservations")
