@@ -1,9 +1,11 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
+
 from app.db import get_connection
+from app.models import User
+
 from .service import find_user, get_reservations, get_user_data, if_admin, book_a_flight, insert_user
 from .validators import validate_email, validate_password
-from app.models import User
 
 # first param: name of parent folder
 # second param: __name__
