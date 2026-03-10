@@ -153,6 +153,21 @@ begin
 end//
 delimiter ;
 
+-- Use this to change default user vals if null. For example, right now this trigger
+-- checks if the upcoming insert of a user has no bio, and also automatically sets
+-- the registeredDate to the current date as of insertion. 
+create trigger defaultUserValsUponNull
+before insert on users
+for each row
+begin
+	if new.bio is null
+		then
+			set new.bio = "No bio";
+	end if;
+    
+    set new.registeredDate = CURDATE();
+end//
+
 
 -- TFG Views --
 -- view for staff count per position
