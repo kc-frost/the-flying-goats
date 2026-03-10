@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProfileDropdown } from './profile-dropdown';
+import { ProfileDropdown } from './profile';
 
 describe('ProfileDropdown', () => {
   let component: ProfileDropdown;
