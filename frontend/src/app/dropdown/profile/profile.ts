@@ -4,12 +4,12 @@ import { AuthService } from '../../_shared/services/auth-service';
 import { UserService } from '../../_shared/services/user-service';
 
 @Component({
-  selector: 'app-profile-dropdown',
+  selector: 'app-dropdown-profile',
   imports: [],
-  templateUrl: './profile-dropdown.html',
-  styleUrl: './profile-dropdown.css',
+  templateUrl: './profile.html',
+  styleUrl: './profile.css',
 })
-export class ProfileDropdown {
+export class DropdownProfile {
   private router = inject(Router);
   private authService = inject(AuthService);
   userService = inject(UserService);

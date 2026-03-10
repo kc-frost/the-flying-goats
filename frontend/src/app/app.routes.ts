@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './user-auth/login/login';
-import { Register } from './user-auth/register/register';
-import { ProfilePage } from './profile-page/profile-page/profile-page';
-import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdown';
+import { Login } from './dropdown/login/login';
+import { Register } from './dropdown/register/register';
+import { DropdownProfile } from './dropdown/profile/profile';
+import { ProfilePage } from './profile-page/profile-page';
 import { Inventory, inventoryModalRedirect } from './inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
@@ -64,7 +64,7 @@ export const routes: Routes = [
     {
         path: 'profile-page',
         outlet: 'dropdown',
-        component: ProfileDropdown
+        component: DropdownProfile
     },
     
     // modal outlet
