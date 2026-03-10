@@ -1,7 +1,5 @@
 import re
 
-# TODO (not immediate): Ensure that domains don't have hyphens as its
-# last character
 def validate_email(email: str) -> bool:
     """Validates email according to specified regex pattern
     Local Part (part before the @): 
