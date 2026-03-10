@@ -1,9 +1,8 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import get_connection
-from .service import find_user, get_reservations, get_user_data, if_admin, book_a_flight
+from .service import find_user, get_reservations, get_user_data, if_admin, book_a_flight, insert_user
 from .validators import validate_email, validate_password
-from .security import admin_required
 from app.models import User
 
 # first param: name of parent folder
@@ -226,21 +225,6 @@ def book_flight():
     if result and "error" in result:
         return jsonify(result), 500
     return jsonify({"message": "booking confirmed"}), 200
-    
-@bp.post("/inventory/edit")
-def editInventory():
-    conn = get_connection()
-    data = request.json
-    result = update_inventory(conn, data)
-    if result.get("success"):
-        return jsonify({
-            "success": True,
-            "message": "Inventory successfully updated"}), 200
-    else:
-        return jsonify({
-            "success": False,
-            "message": result.get("error")
-         }), 500
 
 @bp.get('/users')
 def users_data():

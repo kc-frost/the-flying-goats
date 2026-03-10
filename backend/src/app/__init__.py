@@ -5,11 +5,8 @@ from app.config import Config
 from app.extensions import cors, login_manager
 from app.db import get_connection
 
-# blueprints
-from app import auth, profile
-
 from app.models import User
-from auth.service import if_admin
+from app.auth import if_admin
 
 def create_app(config_class=Config):
     """Instatiates app.
@@ -43,8 +40,17 @@ def register_blueprints(app):
                   supports_credentials=True,
                   resources={r"/api/": {"origins": origins}})
     
+    # blueprints
+    from app import auth, inventory, profile
+
+    # 'public' routes
     app.register_blueprint(auth.routes.bp, url_prefix="/api")
+
+    # logged-in routes
     app.register_blueprint(profile.routes.bp, url_prefix="/api")
+
+    # admin routes
+    app.register_blueprint(inventory.routes.bp, url_prefix="/admin")
 
 
 # utils
@@ -57,7 +63,7 @@ def load_user(user_id: str):
             FROM `users`
             WHERE `userID` = %s
         """
-        cursor.execute(query, (user_id))
+        cursor.execute(query, (user_id,))
         result = cursor.fetchone()
 
     if result is not None:
@@ -66,5 +72,5 @@ def load_user(user_id: str):
             result['username'], 
             result['email'], 
             if_admin(result['email']))
-    else:
-        return None
+    
+    return None

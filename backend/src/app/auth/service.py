@@ -53,6 +53,44 @@ def find_user(email: str, password: str) -> dict[str, Any] | None:
 
     return result
 
+def insert_user(data: dict) -> dict:
+    """Insert a new user into the database
+
+    Args:
+        data (dict): The request in JSON format, received by the server
+        conn (_type_): A connection object that can communicate to the database
+
+    Returns:
+        dict: Contains success state, and an error messsage if the insert failed
+    """
+    conn = get_connection()
+    hashed_password = get_hashed_password(data['password'])
+    registered_date = datetime.now()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                INSERT INTO `users`(phoneNumber, fname, lname, username, email, password, registeredDate)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """ 
+            cursor.execute(query, (
+                data['phoneNum'],
+                data['firstName'],
+                data['lastName'],
+                data['username'],
+                data['email'],
+                hashed_password,
+                registered_date
+            ))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {
+                "error": str(e)
+                }
+    
+    return {"success": True}
+
 """ For now we're going to ASSUME that the user exists becauseee I don't wanna prevent insertion onto reservation based on "user doesn't exist" when we only got like 2 users and such, and I don't know how users is lookin
 So I'ma add that validation later (tomorrow), I'll explain more through messages"""
 def get_reservations(conn):
