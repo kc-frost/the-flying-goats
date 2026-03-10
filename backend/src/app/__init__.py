@@ -1,11 +1,15 @@
 import os
-from config import Config
 from flask import Flask
 
+from app.config import Config
 from app.extensions import cors, login_manager
 from app.db import get_connection
 
-from _models.user import User
+# blueprints
+from app import auth, profile
+
+from app.models import User
+
 
 def create_app(config_class=Config):
     """Instatiates app.
@@ -35,10 +39,12 @@ def register_extensions(app):
 
 def register_blueprints(app):
     origins = app.config.get("CORS_WHITELISTED_ORIGINS")
-    cors.init_app(app, supports_credentials=True,
+    cors.init_app(app, 
+                  supports_credentials=True,
                   resources={r"/api/": {"origins": origins}})
-
     
+    app.register_blueprint(auth.routes.bp, url_prefix="/api")
+    app.register_blueprint(profile.routes.bp, url_prefix="/api")
 
 
 # utils
