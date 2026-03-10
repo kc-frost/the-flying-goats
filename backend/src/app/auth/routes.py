@@ -4,7 +4,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 from app.db import get_connection
 from app.models import User
 
-from .service import find_user, get_user_data, if_admin, book_a_flight, insert_user
+from .service import find_user, get_user_data, if_admin, insert_user
 from .validators import validate_email, validate_password
 
 # first param: name of parent folder
@@ -151,30 +151,6 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
-
-@bp.route('/available-flights', methods=['GET'])
-def get_available_flights():
-    departure_date = request.args.get('departureDate')
-    arrival_date = request.args.get('arrivalDate')
-    cursor = get_connection().cursor()
-
-    cursor.execute("""
-        SELECT flight FROM schedule
-        WHERE DATE(liftOff) = %s AND DATE(landing) = %s
-    """, (departure_date, arrival_date))
-
-    rows = cursor.fetchall()
-    flights = [{"id": row['flight'], "code": row['flight']} for row in rows]
-    return jsonify(flights), 200
-
-@bp.route("/book-flight", methods=["POST"])
-@login_required
-def book_flight():
-    data = request.get_json()
-    result = book_a_flight(data)
-    if result and "error" in result:
-        return jsonify(result), 500
-    return jsonify({"message": "booking confirmed"}), 200
 
 @bp.get('/users')
 def users_data():

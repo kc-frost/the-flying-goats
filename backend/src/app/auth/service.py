@@ -91,29 +91,6 @@ def insert_user(data: dict) -> dict:
     
     return {"success": True}
 
-def book_a_flight(data: dict):
-    booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")
-
-    conn = get_connection()
-    
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute("SELECT userID FROM users WHERE email = %s", (data['username'],))
-            user = cursor.fetchone()
-            if user is None:
-                return {"error": "User not found"}
-            query = "INSERT INTO booking(userID, flightID, seat, bookingDate) VALUES (%s, %s, %s, %s)"
-            cursor.execute(query, (
-                user['userID'],
-                data['flightID'],
-                data['seatNumber'],
-                booking_date
-            ))
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return {"error": str(e)}
-
 def get_user_data(conn):
     query = "select * from userreservationsummary"
     with conn.cursor() as cursor:
