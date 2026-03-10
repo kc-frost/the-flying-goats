@@ -44,7 +44,7 @@ def find_user(email: str, password: str) -> dict[str, Any] | None:
             """
             cursor.execute(query, (email, true_password))
             result = cursor.fetchone()
-            conn.commit()
+
         except Exception as e:
             conn.rollback()
             return {
