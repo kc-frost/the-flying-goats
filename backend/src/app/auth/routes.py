@@ -4,7 +4,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 from app.db import get_connection
 from app.models import User
 
-from .service import find_user, get_reservations, get_user_data, if_admin, book_a_flight, insert_user
+from .service import find_user, get_user_data, if_admin, book_a_flight, insert_user
 from .validators import validate_email, validate_password
 
 # first param: name of parent folder
@@ -151,58 +151,6 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
-
-# Reservation logic
-@bp.get("/reservations")
-def viewReservations():
-    conn = get_connection()
-    result = get_reservations(conn)
-
-    if result.get("success"):
-        return jsonify(result["data"]), 200
-    else:
-        return jsonify({
-            "success": False,
-            "message": result.get("error")
-        }), 500
-
-# move this to service properly in the next sprint
-@bp.post("/reservations/make")
-def makeReservation():
-
-    """
-    We're taking booking args, meaing:
-    
-    bookingNumber int primary key auto_increment,
-    userID int references users(userID),
-    flightID varchar(7) references flight(IATA),
-    seat int references planeSeat(seatNumber)
-
-    """
-    data = request.json
-
-    # BookingID is auto increment, unlike inventory it's not needed here
-    userID = data['userID']
-    flightID = data['flightID']
-    seat = data['seat']
-
-    conn = get_connection()
-    # Right now this assumes user exists in users, flight exists, and seat exists. Wednesday, gunna add more validation and checks, but for now just wanna get it working
-    query = "insert into booking (userID, flightID, seat) values (%s, %s, %s)"
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute(query, (userID, flightID, seat))
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return jsonify({
-                "success": False,
-                "message": str(e)
-            }), 500
-    return jsonify({
-        "success": True,
-        "message": "Reservation successfully made"
-    }), 201
 
 @bp.route('/available-flights', methods=['GET'])
 def get_available_flights():
