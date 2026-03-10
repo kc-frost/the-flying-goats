@@ -1,10 +1,9 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 
-from app.db import get_connection
 from app.models import User
 
-from .service import find_user, get_user_data, if_admin, insert_user
+from .service import find_user, if_admin, insert_user
 from .validators import validate_email, validate_password
 
 # first param: name of parent folder
