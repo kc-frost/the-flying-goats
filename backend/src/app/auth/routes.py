@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from app.db import get_connection
-from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, if_admin, book_a_flight
+from .service import find_user, get_reservations, get_user_data, if_admin, book_a_flight
 from .validators import validate_email, validate_password
 from .security import admin_required
 from app.models import User
