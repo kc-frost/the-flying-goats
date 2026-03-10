@@ -3,7 +3,6 @@ from .security import get_hashed_password
 
 from typing import Any
 import re
-from datetime import datetime
 
 def if_admin(email: str) -> bool:
     """Checks if a user is an admin
@@ -65,12 +64,11 @@ def insert_user(data: dict) -> dict:
     """
     conn = get_connection()
     hashed_password = get_hashed_password(data['password'])
-    registered_date = datetime.now()
 
     with conn.cursor() as cursor:
         try:
             query = """
-                INSERT INTO `users`(phoneNumber, fname, lname, username, email, password, registeredDate)
+                INSERT INTO `users`(phoneNumber, fname, lname, username, email, password)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """ 
             cursor.execute(query, (
@@ -80,7 +78,6 @@ def insert_user(data: dict) -> dict:
                 data['username'],
                 data['email'],
                 hashed_password,
-                registered_date
             ))
             conn.commit()
         except Exception as e:
