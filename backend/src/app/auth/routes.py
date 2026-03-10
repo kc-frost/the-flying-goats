@@ -151,47 +151,6 @@ def register():
             "message": result.get("error")
         }), 500
 
-@bp.get("/inventory")
-def getInventory():
-    conn = get_connection()
-    result = find_inventory(conn)
-    return jsonify(result)
-
-"""
-constaints/checks/validations for inventory is handled in my sql (hopefully)
-"""
-@bp.post("/inventory/add")
-def addItemToInventory():
-    conn = get_connection()
-    data = request.json
-    result = insert_into_inventory(conn, data)
-    if result.get("success"):
-        return jsonify({"success": True})
-    else:
-        return jsonify({
-            "success": False,
-            "message": result.get("error")
-        }), 500
-
-@bp.post("/inventory/delete")
-def deleteItemFromInventory():
-    conn = get_connection()
-    data = request.json
-    itemID = data['itemID']
-    result = delete_from_inventory(conn, itemID)
-    if result.get("success"):
-        return jsonify({
-            "success": True,
-            "message": "Item deleted from inventory FOREVER" #Items are NOT deleted from item, only from inventory
-        }), 200
-    else:
-        return jsonify({
-            "success": False,
-            "message": result.get("error")
-        }), 500
-    
-# def update inventory(conn, data):
-
 # Reservation logic
 @bp.get("/reservations")
 def viewReservations():
