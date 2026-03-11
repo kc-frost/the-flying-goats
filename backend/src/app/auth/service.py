@@ -69,7 +69,7 @@ def insert_user(data: dict) -> dict:
         try:
             query = """
                 INSERT INTO `users`(phoneNumber, fname, lname, username, email, password)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """ 
             cursor.execute(query, (
                 data['phoneNum'],

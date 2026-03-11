@@ -26,13 +26,13 @@ def check_session():
     if current_user.is_authenticated:
         return jsonify({
             "authenticated": True,
-            "isAdmin": current_user.isAdmin,
+            "is_admin": current_user.is_admin,
             "username": current_user.username
         }), 200
     else:
         return jsonify({
             "authenticated": False,
-            "isAdmin": False,
+            "is_admin": current_user.is_admin,
             "username": "null"
         }), 401
 
