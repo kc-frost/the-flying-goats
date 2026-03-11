@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, inject } from "@angular/core";
-import { environment } from "../../_environments/environment";
+import { environment } from "../../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 
 type UserInfo = {

@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { environment } from "../../_environments/environment";
+import { environment } from "../../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 
 type InventoryRow = {

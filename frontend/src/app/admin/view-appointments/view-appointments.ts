@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
-import { environment } from "../../_environments/environment";
+import { environment } from "../../../_environments/environment";
 
 type ReservationRow = {
   bookingNumber: number;
