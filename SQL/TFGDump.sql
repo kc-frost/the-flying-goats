@@ -1,15 +1,15 @@
 CREATE DATABASE  IF NOT EXISTS `tfg` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `tfg`;
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Linux (x86_64)
 --
--- Host: localhost    Database: tfg
+-- Host: localhost    Database: TFG
 -- ------------------------------------------------------
--- Server version	8.4.6
+-- Server version	8.0.45-0ubuntu0.24.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -31,7 +31,7 @@ CREATE TABLE `booking` (
   `seat` int DEFAULT NULL,
   `bookingDate` datetime DEFAULT NULL,
   PRIMARY KEY (`bookingNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES (1,1,'TP1001',101,'2026-03-01 12:00:00'),(2,2,'TP1002',103,'2026-03-01 12:10:00'),(3,1,'TP1003',105,'2026-03-01 12:20:00'),(4,2,'TP1004',107,'2026-03-01 12:30:00'),(5,1,'TP1005',109,'2026-03-01 12:40:00'),(6,2,'TP1006',111,'2026-03-01 12:50:00');
+INSERT INTO `booking` VALUES (1,1,'TP1001',101,'2026-03-01 12:00:00'),(2,2,'TP1002',103,'2026-03-01 12:10:00'),(3,1,'TP1003',105,'2026-03-01 12:20:00'),(4,2,'TP1004',107,'2026-03-01 12:30:00'),(5,1,'TP1005',109,'2026-03-01 12:40:00'),(6,2,'TP1006',111,'2026-03-01 12:50:00'),(7,18,'TP1001',110,'2026-03-07 00:00:00'),(8,18,'TP1001',110,'2026-03-07 00:00:00'),(9,18,'TP1002',110,'2026-03-07 00:00:00'),(10,18,'TP1002',110,'2026-03-07 00:00:00'),(11,18,'TP1002',110,'2026-03-07 00:00:00');
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -517,7 +517,7 @@ CREATE TABLE `users` (
   `bio` text,
   `registeredDate` datetime DEFAULT NULL,
   PRIMARY KEY (`userID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -526,7 +526,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'5127997308','Alan','Gascon','McTails','alangascon@gmail.com','password123',0,NULL,'2026-03-01 09:00:00'),(2,'5123005252','Maria','Valentine','ValesMom','mariavalentine@gmail.com','password234',1,NULL,'2026-03-01 09:15:00'),(3,'5125550101','Kai','Cairo','kcfrost','kaicairo@tfg.com','password345',1,NULL,'2026-03-01 09:30:00'),(4,'5125550102','Richard','Walker','rich93147','richardwalker@tfg.com','password456',1,NULL,'2026-03-01 09:45:00'),(5,'5125550103','Erin','Choi','ErinCo','erin.choi@tfg.com','password567',1,NULL,'2026-03-01 10:00:00'),(6,'5125550104','Omar','Singh','OmarSec','omar.singh@tfg.com','password678',0,NULL,'2026-03-01 10:15:00'),(7,'5125550105','Tess','Nguyen','TessFA','tess.nguyen@tfg.com','password789',0,NULL,'2026-03-01 10:30:00'),(8,'5125550106','Luis','Martinez','LuisOps','luis.martinez@tfg.com','password890',0,NULL,'2026-03-01 10:45:00');
+INSERT INTO `users` VALUES (1,'5127997308','Alan','Gascon','McTails','alangascon@gmail.com','password123',0,NULL,'2026-03-01 09:00:00'),(2,'5123005252','Maria','Valentine','ValesMom','mariavalentine@gmail.com','password234',1,NULL,'2026-03-01 09:15:00'),(3,'5125550101','Kai','Cairo','kcfrost','kaicairo@tfg.com','password345',1,NULL,'2026-03-01 09:30:00'),(4,'5125550102','Richard','Walker','rich93147','richardwalker@tfg.com','password456',1,NULL,'2026-03-01 09:45:00'),(5,'5125550103','Erin','Choi','ErinCo','erin.choi@tfg.com','password567',1,NULL,'2026-03-01 10:00:00'),(6,'5125550104','Omar','Singh','OmarSec','omar.singh@tfg.com','password678',0,NULL,'2026-03-01 10:15:00'),(7,'5125550105','Tess','Nguyen','TessFA','tess.nguyen@tfg.com','password789',0,NULL,'2026-03-01 10:30:00'),(8,'5125550106','Luis','Martinez','LuisOps','luis.martinez@tfg.com','password890',0,NULL,'2026-03-01 10:45:00'),(9,'5129999999','another','user','testtest','testtesttesttest@gmail.com','707c025380546f5b0db4fe50910a0730e330cec289771a6d064c12b6',0,NULL,NULL),(10,'1111111111','Kai','Richard','KaiAndRichard','KaiRichard@admin.com','e41fc16d04c7972f2f5a48e511d7aa60a046238f37720a304d59d70c',0,NULL,NULL),(11,'2222222222','I\'mRunning','OutofNames','RICHHHH','RichardKai@gmail.com','e41fc16d04c7972f2f5a48e511d7aa60a046238f37720a304d59d70c',0,NULL,NULL),(12,'8888888888','RICHARD','WALKER','asdfadsfasdf','runningoutofemailideas@gmail.com','f3e7ecba1482486acdaaa3fadc41710febbdd8832529af435311dde6',0,NULL,NULL),(13,'5555555555','LAST','ONE','lastonelastone','LASTONE@gmail.com','7470eb72e2fcb1363b209a523babc68e9455dccbdb83de4a6b27de7e',0,NULL,NULL),(14,'512890','APU','a','kai','kpo2@gmail.com','255de87b404ce62c3c1b8b96b0ea79b6a28cccb6a1fd428d9d1f4267',0,NULL,NULL),(15,'98','ka','ca','Kcairo','Kcairo123@gmail.com','e3e208e859c3bd685e146283cb7f08605ee2c3d2e066a0c5735bb403',0,NULL,NULL),(16,'123','admin','admin','admin','admin@gmail.com','21dc4bde52eeb40f9a3182906f05c2a071839d37c132004144481bb3',0,'A new bio!',NULL),(17,'123123','a','a','User1@gmail.com','User1@gmail.com','8428448df54362cff9c4b56bf83a4b12fa2cef6bacd0b7a86bc28915',0,NULL,NULL),(18,'123','User2@gmail.com','User2@gmail.com','User2@gmail.com','User2@gmail.com','7f31936227c4474704f3028a3b09d125aac1f100688dd96a849f6a51',0,NULL,NULL),(19,'3333333333','Lauren','LastName','LaurenSucks','Lauren@admin.com','e41fc16d04c7972f2f5a48e511d7aa60a046238f37720a304d59d70c',0,NULL,NULL),(20,'1231232','a','a','User3@gmail.com','User3@gmail.com','e37aded4ba979c1d5c4840a1e6dff8a8191f1e892bb2f4b6081408df',0,NULL,NULL),(21,'123123','a','a','User4@gmail.com','User4@gmail.com','0d4156c00c703757ff14d416b2b0865712514f3acc27d12ed9ba0f19',0,NULL,NULL),(22,'123','firstname','me','User5@gmail.com','User5@gmail.com','16fb0aa1c72daec190f9578b852e8af602914fdf7a8a11a84f1d0bb4',0,NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -537,6 +537,19 @@ UNLOCK TABLES;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `defaultUserValsUponNull`
+BEFORE INSERT ON `users`
+FOR EACH ROW
+begin
+	if new.bio is null then
+		set new.bio = 'No bio';
+	end if;
+	set new.registeredDate = curdate();
+end */;;
+DELIMITER ;;
+
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaff` AFTER INSERT ON `users` FOR EACH ROW begin
     if new.isStaff = true 
@@ -550,14 +563,6 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-
---
--- Dumping events for database 'tfg'
---
-
---
--- Dumping routines for database 'tfg'
---
 
 --
 -- Final view structure for view `inventorynames`
@@ -640,4 +645,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-07  2:22:29
+-- Dump completed on 2026-03-11  2:22:41
