@@ -4,6 +4,6 @@ app = create_app()
 
 if __name__ == "__main__":
     app.run(
-        host=app.config["HOST"], 
-        debug=app.config["DEBUG"], 
-        port=app.config["PORT"])
+        host=app.config["FLASK_HOST"], 
+        debug=app.config["FLASK_DEBUG"], 
+        port=app.config["FLASK_PORT"])

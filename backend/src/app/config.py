@@ -14,9 +14,9 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev")
     
     # for flask run
-    HOST = "0.0.0.0"
-    PORT = 5000
-    DEBUG = True
+    FLASK_HOST = "0.0.0.0"
+    FLASK_PORT = 5000
+    FLASK_DEBUG = True
 
     # for cors
     CORS_WHITELISTED_ORIGINS = [
