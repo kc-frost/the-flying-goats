@@ -38,7 +38,9 @@ def register_blueprints(app):
     origins = app.config.get("CORS_WHITELISTED_ORIGINS")
     cors.init_app(app, 
                   supports_credentials=True,
-                  resources={r"/api/": {"origins": origins}})
+                  resources={
+                      r"/api/*": {"origins": origins},
+                      r"/admin/*": {"origins": origins}})
     
     # blueprints
     # id appreciate it if we grouped it by public, logged-in, and admin routes, but if this gets out of order its nbd
