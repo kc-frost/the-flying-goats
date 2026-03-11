@@ -7,7 +7,6 @@ IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
 gate varchar(2),
 origin varchar(255),
-origin varchar(255),
 destination varchar(255)
 );
 
@@ -17,7 +16,6 @@ liftOff datetime,
 landing datetime
 );
 
-create table planestatusenums(
 create table planestatusenums(
 psEnumID int primary key,
 status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
@@ -39,13 +37,10 @@ email varchar(255) not null,
 password varchar(255) not null,
 isStaff boolean default false,
 bio text,
-registeredDate datetime,
-bio text,
 registeredDate datetime
 -- maybe add passport or some sorta identification?
 );
 
-create table positionenums (
 create table positionenums (
 positionID int primary key auto_increment, 
 position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned"
@@ -58,18 +53,14 @@ positionID int default 5 references positionEnums(positionID)
 );
 
 create table flightclass(
-create table flightclass(
 classID int auto_increment primary key,
 className varchar(255) not null,
 price double
 );
 
 create table planeseat(
-create table planeseat(
 seatNumber int,
 flightID varchar(7) references flight(IATA),
-classID int,
-constraint fk_class_id foreign key (classID) references flightclass(classID),
 classID int,
 constraint fk_class_id foreign key (classID) references flightclass(classID),
 primary key(seatNumber, flightID)
@@ -80,8 +71,6 @@ create table booking(
 bookingNumber int primary key auto_increment,
 userID int references users(userID),
 flightID varchar(7) references flight(IATA),
-seat int references planeSeat(seatNumber),
-bookingDate datetime
 seat int references planeSeat(seatNumber),
 bookingDate datetime
 );
@@ -108,14 +97,12 @@ constraint fk_transportation_item foreign key (itemID) references item(itemID) o
 );
 
 create table miscellaneousitem(
-create table miscellaneousitem(
 itemID int primary key,
 itemName varchar(255),
 itemDescription text,
 constraint fk_miscellaneous_item foreign key (itemID) references item(itemID) on delete cascade
 );
 
-create table parkinglot(
 create table parkinglot(
 lot char(1) primary key,
 lotSpace int 
@@ -136,7 +123,6 @@ constraint fk_inventory_item foreign key (itemID) references item(itemID) on del
 -- triggers
 delimiter //
 create trigger transportandequipmentinsert
-create trigger transportandequipmentinsert
 after insert on item
 for each row
 begin
@@ -156,7 +142,6 @@ begin
 end//
 
 create trigger createstaff
-create trigger createstaff
 after insert on users
 for each row
 begin
@@ -167,6 +152,21 @@ begin
     end if;
 end//
 delimiter ;
+
+-- Use this to change default user vals if null. For example, right now this trigger
+-- checks if the upcoming insert of a user has no bio, and also automatically sets
+-- the registeredDate to the current date as of insertion. 
+create trigger defaultUserValsUponNull
+before insert on users
+for each row
+begin
+	if new.bio is null
+		then
+			set new.bio = "No bio";
+	end if;
+    
+    set new.registeredDate = CURDATE();
+end//
 
 
 -- TFG Views --
