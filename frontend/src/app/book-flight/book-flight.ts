@@ -4,6 +4,7 @@ import { invalidDateValidator } from './utils/invalid-date-validator';
 import { environment } from '../../_environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { SeatSelectorModal } from './seat-selector-modal/seat-selector-modal';
 
 interface Flights {
   id: string,
@@ -14,13 +15,14 @@ interface Flights {
   selector: 'app-book-flight',
   templateUrl: './book-flight.html',
   styleUrl: './book-flight.css',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SeatSelectorModal],
 })
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
   
+  modalShown = false;
   // some fields don't have a validator because they are automatically filled in (for now)
   newFlightDetails = this.formBuilder.group({
     reservationDate: [''],
@@ -47,6 +49,10 @@ export class BookFlight {
   { validators: invalidDateValidator}
 );
 
+  toggleModal() {
+    this.modalShown = !this.modalShown;
+    console.log(this.modalShown);
+  }
   
   onSubmit() {
   this.http.post(
@@ -84,7 +90,7 @@ export class BookFlight {
   seatNumber = "110";
   
   constructor() {
-    this.validateUserAccess();
+    // this.validateUserAccess();
     
     this.availableFlights = []
     this.currentDate = new Date();

@@ -29,9 +29,52 @@
             font-size: large;
         }
     }
+
+    & button {
+        width: auto;
+    }
 }
 
 .alert-warning {
     color:red;
     font-weight: bolder;
+}
+
+.seat-modal {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    animation: fade-in 1500ms;
+
+    & app-seat-selector-modal {
+        position: fixed;
+        z-index: 100;
+        animation: slide-down 1500ms;
+    
+        /* puts in the center */
+        /* if this doesnt do it relatively fml */
+        top: 10%;
+        left: 30%;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(-160%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+    }
 }

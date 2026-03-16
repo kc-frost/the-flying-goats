@@ -55,7 +55,20 @@
           <option>{{flight.code}}</option>
         }
       </select>
+      <div class="form-item">
+        <label for="seat">Choose a seat</label>
+        <button for="seat" (click)="toggleModal()">View Available Seats</button>
+        
+        @if (modalShown) {
+          <div class="seat-modal" (click)="toggleModal()">
+            <app-seat-selector-modal (click)="$event.stopPropagation()"
+            (exitModal)="toggleModal()"/>
+          </div>
+        }
+
+      </div>
     </form>
+    
   </section>
 
   <button form="newFlightDetails" type="submit" (click)="printResults()" [disabled]="!newFlightDetails.valid">Confirm Details</button>

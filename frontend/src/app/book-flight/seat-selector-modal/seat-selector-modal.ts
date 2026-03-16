@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-seat-selector-modal',
@@ -7,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './seat-selector-modal.css',
 })
 export class SeatSelectorModal {
+  exitModal = output<boolean>();
 
+  tellExit(): void {
+    this.exitModal.emit(false);
+  }
 }

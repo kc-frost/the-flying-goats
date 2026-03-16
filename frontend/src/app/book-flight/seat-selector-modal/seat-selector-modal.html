@@ -1,1 +1,28 @@
-<p>seat-selector-modal works!</p>
+<main>
+    <header>
+        <h1>Choose Seat</h1>
+        <input class="exitBtn" type="image" src="/xButton/maybe-virus.svg" (click)="tellExit()"/>
+    </header>
+
+    <section class="seat-plan">
+        <fieldset>
+            <div class="row">
+                <div class="seat">
+                    <input id="1A" type="radio" name="seat" />
+                    <label for="1A">1A</label>
+                </div>
+                <div class="seat">
+                    <input id="2A" type="radio" name="seat" />
+                    <label for="2A">2A</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="seat">
+                    <input id="2B" type="radio" name="seat"/>
+                    <label for="2B">2B</label>
+                </div>
+            </div>
+        </fieldset>
+    </section>
+</main>
