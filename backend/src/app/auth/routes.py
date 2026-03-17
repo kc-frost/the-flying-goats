@@ -15,39 +15,28 @@ bp = Blueprint("auth", __name__)
 # This would also require us to import app from main
 # With Blueprints, you can replace "app" with the name of the bp VARIABLE
 
-@bp.route('/check-authenticated', methods=['GET'])
-def check_authenticated():
-    """This checks if a user can access a route that requires authentication
+@bp.route('/check-session', methods=['GET'])
+def check_session():
+    """A general check if a session exists, implying a logged-in user.
+    Use check-authenticated for route protection
 
     Returns:
-        Tuple(JSON, int): A userID if successful, error if not. Then an HTTP status code.
+        Tuple(bool, int): If user is authenticated, and an HTTP status code
     """
-    is_authenticated = current_user.is_authenticated
-    if (is_authenticated):
+    if current_user.is_authenticated:
         return jsonify({
-            "is_authenticated": is_authenticated
+            "authenticated": True,
+            "is_admin": current_user.is_admin,
+            "username": current_user.username,
+            "email": current_user.email
         }), 200
     else:
         return jsonify({
-            "is_authenticated": is_authenticated
+            "authenticated": False,
+            "is_admin": False,
+            "username": current_user.username,
+            "email": current_user.email
         }), 401
-
-@bp.route('/check-admin', methods=['GET'])
-def check_admin():
-    """This checks if a user can access a route that requires admin permissions
-
-    Returns:
-        Tuple(JSON, int): A userID if successful, error if not. Then an HTTP status code.
-    """
-    is_admin = current_user.is_admin
-    if is_admin:
-        return jsonify({
-            "is_admin": is_admin
-        }), 200
-    else:
-        return jsonify({
-            "is_admin": is_admin
-        }), 403
 
 @bp.route('/logout', methods=['GET'])
 @login_required
