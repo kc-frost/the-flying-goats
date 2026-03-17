@@ -101,14 +101,14 @@ def login():
 
         # user exist
         return jsonify({
-            "success": True,
-            "message": "You're logged in!",
-            "username": user.username
+            "authenticated": True,
+            "is_admin": current_user.is_admin,
+            "username": current_user.username
             }), 200
     else:
         # user doesn't exist
         return jsonify({
-            "success": False,
+            "authenticated": False,
             "message": "User doesn't exist/Incorrect password"
         }), 400
 
