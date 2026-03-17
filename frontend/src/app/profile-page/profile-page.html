@@ -2,7 +2,7 @@
     <section class="profile-view">
         <section class="info">
             <img [src]="staticProfileImage" />
-            <h2> {{ userService.getEmail() }} </h2>
+            <h2> {{ userService.currentUsername$ | async }} </h2>
         </section>
         <hr>
         <section class="bio">

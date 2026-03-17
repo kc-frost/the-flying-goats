@@ -2,7 +2,7 @@
     <section class="content">
         <img class="profile"
         [src]="staticProfileImage" />
-        <h2> Welcome {{ userService.getEmail() }}! </h2>
+        <h2> Welcome {{ userService.currentUsername$ | async }}! </h2>
     </section>
     
     <section class="btn-centered">

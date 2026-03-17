@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { UserService } from '../_shared/services/user-service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from '../_shared/services/user-service';
 import { environment } from '../../_environments/environment';
 
 interface Reservation {
@@ -19,7 +20,8 @@ interface Reservation {
 
 @Component({
   selector: 'app-profile-page',
-  imports: [ReactiveFormsModule],
+  // AsyncPipe subscribes to an Observable/Promise and emits the latest value emitted, and then is marked to be checked for changes
+  imports: [ReactiveFormsModule, AsyncPipe],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })

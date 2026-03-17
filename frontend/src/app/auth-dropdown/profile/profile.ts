@@ -1,11 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
 import { AuthService } from '../../_shared/services/auth-service';
 import { UserService } from '../../_shared/services/user-service';
 
 @Component({
   selector: 'app-dropdown-profile',
-  imports: [],
+  // AsyncPipe subscribes to an Observable/Promise and emits the latest value emitted, and then is marked to be checked for changes
+  imports: [AsyncPipe],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -16,6 +18,7 @@ export class DropdownProfile {
 
   staticProfileImage = "/profile/static-profile-image.svg";
 
+  // TODO: Clear secondary outlet upon navigation
   goToProfilePage() {
     this.router.navigate(['/profile']);
   }
@@ -23,17 +26,7 @@ export class DropdownProfile {
   backToLogin() {
     this.authService.logout().subscribe({
       next: () => {
-        localStorage.clear()
         this.router.navigate(['']);
-
-        // commented but not deleted
-        // for preservation of database, i'd rather we have a little jank to our dropdown
-        // than prioritize visuals
-        // ideally, will fix it
-
-        // this.router.navigate([{ outlets: {
-        //   dropdown: ['login']
-        // }}], { skipLocationChange: true});
       }
     });
   }
