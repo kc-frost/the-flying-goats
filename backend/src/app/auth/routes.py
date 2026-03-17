@@ -15,27 +15,6 @@ bp = Blueprint("auth", __name__)
 # This would also require us to import app from main
 # With Blueprints, you can replace "app" with the name of the bp VARIABLE
 
-@bp.route('/check-session', methods=['GET'])
-def check_session():
-    """A general check if a session exists, implying a logged-in user.
-    Use check-authenticated for route protection
-
-    Returns:
-        Tuple(bool, int): If user is authenticated, and an HTTP status code
-    """
-    if current_user.is_authenticated:
-        return jsonify({
-            "authenticated": True,
-            "is_admin": current_user.is_admin,
-            "username": current_user.username
-        }), 200
-    else:
-        return jsonify({
-            "authenticated": False,
-            "is_admin": current_user.is_admin,
-            "username": "null"
-        }), 401
-
 @bp.route('/check-authenticated', methods=['GET'])
 def check_authenticated():
     """This checks if a user can access a route that requires authentication
