@@ -102,8 +102,9 @@ def login():
         # user exist
         return jsonify({
             "success": True,
-            "message": "You're logged in!"
-        }), 200
+            "message": "You're logged in!",
+            "username": user.username
+            }), 200
     else:
         # user doesn't exist
         return jsonify({
