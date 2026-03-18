@@ -27,7 +27,7 @@ def admin_required(func):
     def wrapped_func(*args, **kwargs):
         if not current_user.is_authenticated:
             abort(401)
-        if not current_user.isAdmin:
+        if not current_user.is_admin:
             abort(403)
         
         return func(*args, **kwargs)

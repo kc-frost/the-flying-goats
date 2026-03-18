@@ -33,9 +33,6 @@ def check_session():
     else:
         return jsonify({
             "authenticated": False,
-            "is_admin": False,
-            "username": current_user.username,
-            "email": current_user.email
         }), 401
 
 @bp.route('/logout', methods=['GET'])
