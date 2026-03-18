@@ -86,6 +86,9 @@ export class AuthService {
         if (res.body.is_admin) {
           this.setAdminTrue()
         }
+
+        // Notify the rest of the app (guards) that the check-sesssion call completed
+        this.authReady.next(true);
       })
     )
   }
