@@ -39,13 +39,12 @@ export class Register {
   })
 
   onSubmit() {
-    this.authService.register(this.newUserProfile.value).subscribe({
+    this.authService.register(this.newUserProfile).subscribe({
       next: (res) => {
-        console.log(res);
         this.goToLogin();
       },
       error: (err) => {
-        console.log(err);
+        console.log("REGISTER FAILED:", err);
       }
     })
   }
