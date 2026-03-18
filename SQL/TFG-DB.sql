@@ -2,31 +2,6 @@ drop database TFG;
 create database TFG;
 use TFG;
 
-create table flight(
-IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
-planeName varchar(255),
-gate varchar(2),
-origin varchar(255),
-destination varchar(255)
-);
-
-create table schedule(
-flight varchar(7) primary key references flight(IATA),
-liftOff datetime,
-landing datetime
-);
-
-create table planestatusenums(
-psEnumID int primary key,
-status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
-ICAO varchar(4)
-);
-
-create table plane(
-ICAO varchar(4) primary key, 
-statusID int references planeStatusEnums(psEnumID)
-);
-
 create table users(
 userID int primary key auto_increment,
 phoneNumber char(10) not null,
@@ -50,6 +25,34 @@ create table staff(
 staffID int primary key,
 email varchar(255) references users(email),
 positionID int default 5 references positionEnums(positionID) 
+);
+
+create table flight(
+IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
+planeName varchar(255),
+gate varchar(2),
+origin varchar(255),
+destination varchar(255),
+assignedPilot int,
+constraint fk_staffID foreign key (assignedPilot) references staff(staffID) -- A flight MUST have a pilot now (staffID)
+-- A trigger will make sure that staffID both belongs to a pilot and is available
+);
+
+create table schedule(
+flight varchar(7) primary key references flight(IATA),
+liftOff datetime,
+landing datetime
+);
+
+create table planestatusenums(
+psEnumID int primary key,
+status enum("On Time", "Delayed", "Boarding", "Taxiing", "Airborne", "Landing", "Grounded"),
+ICAO varchar(4)
+);
+
+create table plane(
+ICAO varchar(4) primary key, 
+statusID int references planeStatusEnums(psEnumID)
 );
 
 create table flightclass(
@@ -117,58 +120,6 @@ constraint fk_inventory_item foreign key (itemID) references item(itemID) on del
 -- create table payment
 
 
-
-
-
--- triggers
-delimiter //
-create trigger transportandequipmentinsert
-after insert on item
-for each row
-begin
-	if (new.type = "equipment")
-		then
-			insert into equipment(itemID, equipmentName, equipmentDescription) values 
-            (new.itemID, new.itemName, new.itemDescription);
-	elseif (new.type = "transportation")
-		then 
-			insert into transportation(itemID, transportName, transportDescription) values
-            (new.itemID, new.itemName, new.itemDescription);
-	elseif (new.type="misc")
-		then
-			insert into miscellaneousItem(itemID, itemName, itemDescription) values
-            (new.itemID, new.itemName, new.itemDescription);
-	end if;
-end//
-
-create trigger createstaff
-after insert on users
-for each row
-begin
-    if new.isStaff = true 
-		then
-			insert into staff(staffID, email) values
-            (new.userID, new.email);
-    end if;
-end//
-delimiter ;
-
--- Use this to change default user vals if null. For example, right now this trigger
--- checks if the upcoming insert of a user has no bio, and also automatically sets
--- the registeredDate to the current date as of insertion. 
-create trigger defaultUserValsUponNull
-before insert on users
-for each row
-begin
-	if new.bio is null
-		then
-			set new.bio = "No bio";
-	end if;
-    
-    set new.registeredDate = CURDATE();
-end//
-
-
 -- TFG Views --
 -- view for staff count per position
 create view staffcountperposition as select
@@ -226,3 +177,65 @@ from users u
 left join booking b on u.userID = b.userID
 left join schedule s on b.flightID = s.flight
 group by u.userID, u.email, u.registeredDate;
+
+-- organizes staffID, position, and amount of people in that position with a window func
+create view positionAndStaffIDCounted as
+select s.staffID, p.position, count(p.positionID) over (partition by p.positionID order by position desc) as positionsCounted
+from staff s
+left join positionenums p using (positionID)
+where staffID not in (select assignedPilot from flight);
+
+
+-- triggers
+delimiter //
+create trigger transportandequipmentinsert
+after insert on item
+for each row
+begin
+	if (new.type = "equipment")
+		then
+			insert into equipment(itemID, equipmentName, equipmentDescription) values 
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type = "transportation")
+		then 
+			insert into transportation(itemID, transportName, transportDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type="misc")
+		then
+			insert into miscellaneousItem(itemID, itemName, itemDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	end if;
+end//
+
+create trigger createstaff
+after insert on users
+for each row
+begin
+    if new.isStaff = true 
+		then
+			insert into staff(staffID, email) values
+            (new.userID, new.email);
+    end if;
+end//
+
+create trigger enforceAvailablePilot
+before insert on flight
+for each row
+begin
+
+	declare pilotsQuantity int;
+    
+    select positionsCounted into pilotsQuantity from positionsAndStaffIDCounted where positionID = 2;
+    
+    if new.assignedPilot != 2
+		then 
+			signal sqlstate '45000'
+            set message_text = "The staff attempting to take control of the plane is NOT a pilot";
+	end if;
+    if @pilotsQuantity = 0
+		then
+			signal sqlstate '45000'
+            set message_text = "No available pilots at the moment";
+	end if;
+end//
+delimiter ;
