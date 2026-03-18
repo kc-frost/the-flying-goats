@@ -5,24 +5,55 @@
     </header>
 
     <section class="seat-plan">
-        <fieldset>
-            <div class="row">
-                <div class="seat">
-                    <input id="1A" type="radio" name="seat" />
-                    <label for="1A">1A</label>
-                </div>
-                <div class="seat">
-                    <input id="2A" type="radio" name="seat" />
-                    <label for="2A">2A</label>
-                </div>
-            </div>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">A</th>
+                    <th scope="col">B</th>
+                    <th scope="col" class="aisle"></th>
+                    <th scope="col">D</th>
+                    <th scope="col">C</th>
+                </tr>
+            </thead>
 
-            <div class="row">
-                <div class="seat">
-                    <input id="2B" type="radio" name="seat"/>
-                    <label for="2B">2B</label>
-                </div>
-            </div>
-        </fieldset>
+            <tbody>
+                @for (row of rows; track row) {
+                    <tr>
+                        @for (seat of leftSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seat" type="radio"/>
+                                <label [for]="row+seat"></label>
+                            </td>
+                        }
+                        <td>{{row}}</td>
+                        @for (seat of rightSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seat" type="radio"/>
+                                <label [for]="row+seat"></label>
+                            </td>
+                        }
+                    </tr>
+                }
+                <tr>
+                    <td>
+                        <input id="5A" name="seat" type="radio" disabled/>
+                        <label class="taken" for="5A">X</label>
+                    </td>
+                    <td>
+                        <input id="5B" name="seat" type="radio" />
+                        <label for="5B"></label>
+                    </td>
+                    <td>5</td>
+                    <td>
+                        <input id="5C" name="seat" type="radio" />
+                        <label for="5C"></label>
+                    </td>
+                    <td>
+                        <input id="5D" name="seat" type="radio" />
+                        <label for="5D"></label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </section>
 </main>

@@ -12,4 +12,10 @@ export class SeatSelectorModal {
   tellExit(): void {
     this.exitModal.emit(false);
   }
+
+  // HARCODED SEAT IDs
+  rows = [1, 2, 3, 4];
+  leftSeats = ["A", "B"];
+  rightSeats = ["C", "D"];
+  seats = ["A", "B", "C", "D"];
 }
