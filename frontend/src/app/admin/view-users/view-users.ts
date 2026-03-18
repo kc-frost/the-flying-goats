@@ -32,7 +32,7 @@ export class ViewUsers implements OnInit {
 
   getUsers(): void {
     this.http
-          .get<UserInfo[]>(`${environment.api_url}/api/users`)
+          .get<UserInfo[]>(`${environment.api_url}/admin/users`)
           .subscribe({
             next: (data) => {
               console.log("users received:", data);

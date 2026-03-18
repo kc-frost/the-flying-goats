@@ -34,7 +34,7 @@ export class ViewAppointments implements OnInit {
   }
   getReservations(): void {
     this.http
-      .get<ReservationRow[]>(`${environment.api_url}/api/reservations`)
+      .get<ReservationRow[]>(`${environment.api_url}/admin/reservations`)
       .subscribe({
         next: (data) => {
           console.log("reservations received:", data);
