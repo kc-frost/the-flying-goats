@@ -68,14 +68,14 @@ insert into positionenums (position) values
 ("Unassigned");
 
 -- staff updates
-update staff set positionID = 1 where staffID = 2;
-update staff set positionID = 2 where staffID = 3;
-update staff set positionID = 3 where staffID = 4;
-update staff set positionID = 4 where staffID = 5;
-update staff set positionID = 1 where staffID = 6;
-update staff set positionID = 4 where staffID = 7;
-update staff set positionID = 5 where staffID = 8;
-update staff set positionID = 5 where staffID = 9;
+update staff set positionID = 1 where staffID = 24;
+update staff set positionID = 2 where staffID = 25;
+update staff set positionID = 3 where staffID = 26;
+update staff set positionID = 4 where staffID = 27;
+update staff set positionID = 1 where staffID = 28;
+update staff set positionID = 4 where staffID = 29;
+update staff set positionID = 5 where staffID = 30;
+update staff set positionID = 5 where staffID = 31;
 
 -- flight class inserts
 insert into flightclass (className, price) values
