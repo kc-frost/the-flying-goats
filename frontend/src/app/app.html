@@ -4,7 +4,8 @@
     <!-- Brand Details -->
     <section class="brand-group">
       <nav>
-        <a routerLink='' (click)="toggleExpanded()">
+        <!-- Explicitly close dropdown on navigation instead of toggling state -->
+        <a routerLink='' (click)="isExpanded = false">
           <img class="brand-logo" src="/brand/plane-logo.svg" alt="An image of a paper plane with a trail marking its path"/>
         </a>
       </nav>
