@@ -1,12 +1,14 @@
 main {
     /* add an img background eventually */
+    overflow: hidden;
+    background-color: blue;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 50px 5%;
-
+    padding: 50px 5%; 
     gap: 8%;
+
     & header {  
         font-size: 2rem;
         display: flex;
@@ -16,6 +18,7 @@ main {
 }
 
 .book-flight {
+    background-color:whitesmoke;
     width: 65%;
 
     & .flight-options {
@@ -23,15 +26,17 @@ main {
         display: flex;
         flex-direction: column;
         gap: 50px;
+        padding: 2%;
+        & img {
+            width: 30px;
+            height: 30px;
+        }
 
         & .location {
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            background-color:aliceblue;
-
-            padding: 2%;
 
             & section {
                 display: flex;
@@ -43,11 +48,6 @@ main {
                 padding: 15px;
 
                 gap: 10px;
-
-                & img {
-                    width: 30px;
-                    height: 30px;
-                }
 
                 & div {
                     display: flex;
@@ -72,14 +72,157 @@ main {
                             outline: none;
                         }
                     }
-                } 
+                }
+                
+                &:hover {
+                    background-color: var(--section-hover-color);
+                }
+            }
+        }
+
+        & .dates {
+            border: 2px solid gray;
+            border-radius: 10px;
+            padding: 2%;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+
+            gap: 10px;
+
+            & section {
+                display: flex;
+                flex-direction: column;
+                
+                & label {
+                    font-weight: bold;
+                }
+
+                & .mat-dates {
+                    margin: 10px auto auto -1px;
+                    width: 245%;
+                }
+            }
+        }
+
+        & .submit {
+            display: flex;
+            align-items: center;
+            justify-content: center ;
+
+            & button {
+                width: 200px;
+                height: 80px;
+                font-size: 1.5rem;
+                font-weight: 900;
             }
         }
     }
 }
 
 .pick-flight {
+    background-color: whitesmoke;
     width: 45%;
+
+    & .flight-choices {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        gap: 30px;
+        padding: 5%;
+        max-height: 445px;
+        
+        & .choice {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            background-color: whitesmoke;
+
+            border-radius: 8px;
+            padding: 1.1% 1.5%;
+            &:hover {
+                background-color: var(--section-hover-color);
+            }
+
+            & input[type=radio] {
+                position:absolute;
+                opacity: 0;
+
+                + label {
+                    display: inline-flex;
+                    flex-direction: column;
+                    justify-content:center;
+                    width: 100%;
+                    margin-left: -60px;
+                    & > div {
+                        display: inline-flex;
+                        flex-direction: row;
+                        justify-content: space-evenly;
+
+                        &:not(:nth-child(2)) {
+                            gap: 4%;
+                        }
+                    }
+
+                    & .header {
+                        font-size: 0.9rem;
+                        color: rgb(73, 73, 73);
+                    }
+
+                    & .time {
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                        align-items: center;
+
+                        & .duration {
+                            font-size: 0.7rem;
+                            color: #66757f;
+
+                            img {
+                                width: 10px;
+                                height: 10px;
+                            }
+                        }
+                    }
+
+                    & .airport {
+                        margin-top: 5px;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                        color: rgb(73,73,73);
+                    }
+                }
+
+                &:checked + label {
+                    color: blue;
+                }
+            }
+
+            & button {
+                width: 20%;
+                height: 40px;
+                font-weight: 600;
+            }
+
+            
+        }
+
+    }
+}
+
+/* General styling for buttons */
+button {
+    border-radius: 9px;
+    font-family: var(--body-font);
+    margin: auto auto 3% auto;
+
+    &:hover {
+        cursor:pointer;
+        background-color:#c2c2c2;
+    }
 }
 
 .form {
@@ -116,10 +259,10 @@ main {
         z-index: 100;
         animation: slide-down 1500ms;
     
-        /* puts in the center */
+        /* puts in the center
         /* if this doesnt do it relatively fml */
         top: 10%;
-        left: 30%;
+        left: 30%; 
     }
 }
 
@@ -135,7 +278,7 @@ main {
 @keyframes slide-down {
     from {
         transform: translateY(-160%);
-        opacity: 0;
+        opacity: 0.9;
     }
 
     to {

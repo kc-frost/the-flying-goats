@@ -1,5 +1,6 @@
 <main>
   <section class="book-flight">
+    <form id="newFlightDetails" [formGroup]="newFlightDetails" (ngSubmit)="printResults()">
     <header>Book a Flight</header>
     <section class="flight-options">
       <div class="location">
@@ -7,100 +8,70 @@
           <img src="/book-flight/map-marker.svg" />
           <div>
             <label for="origin">From</label>
-            <input id="origin" type="text" placeholder="Enter City or Airport" />
+            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport" />
           </div>
         </section>
         <section class="to">
           <img src="/book-flight/map-marker.svg" />
           <div>
             <label for="destination">To</label>
-            <input id="destination" type="text" placeholder="Enter City or Airport" />
+            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" />
           </div>
         </section>
       </div>
       <div class="dates">
-
+        <img src="/book-flight/calendar.svg" />
+        <section>
+          <label>Depart & Return</label>
+          <mat-form-field class="mat-dates">
+            <mat-date-range-input [formGroup]="newFlightDetails" [rangePicker]="picker" [min]="MIN_DATE" [max]="MAX_DATE">
+            <input matStartDate placeholder="Depart date" formControlName="departureDate">
+            <input matEndDate placeholder="Return date" formControlName="arrivalDate">
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker startView="month" [startAt]="currentDate"></mat-date-range-picker>
+          </mat-form-field>
+        </section>
+      </div>
+      <div class="submit">
+        <button type="submit" form="newFlightDetails">Search Flights</button>
       </div>
     </section>
+    </form>
   </section>
 
   <section class="pick-flight">
     <header>Available Flights</header>
-  </section>
-
-  <!-- <h1> Book a Flight </h1>
-  <hr>
-  <section class="form">
-    <form [formGroup]="newFlightDetails" (ngSubmit)="onSubmit()" id="newFlightDetails">
-      <div class="form-item">
-        <label for="origin">Where are you flying from?</label>
-        <select name="origin" id="origin" formControlName="origin">
-          <option>--Select a city--</option>
-          <option>Austin</option>
-        </select>
-      </div>
-      
-      <div class="form-item">
-        <label for="departureDate">When do you want to fly?</label>
-        <input type="datetime-local" id="departureDate" formControlName="departureDate"
-        min="2026-02-01T15:00"
-        max="2026-04-31T18:00" />
-
-        <div class="alert-warning">
-          @if (newFlightDetails.hasError('departBeforeToday')) {
-            <p>Date has to be after today.</p>
-          }
-          @if (newFlightDetails.hasError('leaveAfterArrive')) {
-            <p>Date has to be after return date.</p>
-          }
-        </div>
-      </div>
-
-      <div class="form-item">
-        <label for="arrivalDate">When do you want to go back?</label>
-        <input type="datetime-local" id="arrivalDate" formControlName="arrivalDate"
-        min="2026-02-01T15:00"
-        max="2026-04-31T18:00" />
-
-        <div class="alert-warning">
-          @if (newFlightDetails.hasError('arriveBeforeToday')) {
-            <p>Date has to be after today.</p>
-          }
-        </div>
-      </div>
-      
-      <div class="form-item">
-        <label for="destination">Where do you want to go?</label>
-        <select name="destination" id="destination" formControlName="destination">
-          <option>--Select a city--</option>
-          <option>Paris</option>
-          <option>Japan</option>
-        </select>
-      </div>
-      <h1> Available Flights</h1>
-      <select name="flightID" id="flightID" formControlName="flightID">
-        <option>--Select a city--</option>
-        @for (flight of availableFlights; track flight) {
-          <option>{{flight.code}}</option>
-        }
-      </select>
-      <div class="form-item">
-        <label for="seat">Choose a seat</label>
-        <button for="seat" (click)="toggleModal()">View Available Seats</button>
-        
-        @if (modalShown) {
-          <div class="seat-modal" (click)="toggleModal()">
-            <app-seat-selector-modal (click)="$event.stopPropagation()"
-            (exitModal)="toggleModal()"
-            (seatID)="setSeatID($event)"/>
+    <section class="flight-choices">
+      <div class="choice">
+        <input name="flight" type="radio" id="first" required />
+        <label for="first">
+          <div class="header">
+            <p>DEPART</p>
+            <p>→</p>
+            <p>ARRIVE</p>
           </div>
-        }
+          <div class="time">
+            <p>15:00</p>
+            <span class="duration">
+              21h 36m
+            </span>
+            <p>01:00</p>
+          </div>
+          <div class="airport">
+            <p>AUS</p>
+            <p>→</p>
+            <p>JFK</p>
+          </div>
+        </label>
 
+        <button popovertarget="seat-modal" >Select Seat</button>
+        <dialog class="seat-modal" #seatModal id="seat-modal" popover>
+          <app-seat-selector-modal />
+        </dialog>
       </div>
-    </form>
-    
+    </section>
   </section>
-
-  <button form="newFlightDetails" type="submit" (click)="printResults()" [disabled]="!newFlightDetails.valid">Confirm Details</button> -->
 
 </main>
