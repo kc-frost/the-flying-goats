@@ -12,10 +12,10 @@ def available_flights():
     Returns:
         flights (list | dict(str, Any)): Valid flights for those dates or an error message from pymsql
     """
-    departure_date = request.args.get('departureDate')
-    arrival_date = request.args.get('arrivalDate')
+    origin = request.args.get('user_origin')
+    destination = request.args.get('user_destination')
 
-    flights = get_available_flights(departure_date, arrival_date)
+    flights = get_available_flights(origin, destination)
 
     if isinstance(flights, dict) and "error" in flights:
         return jsonify(flights), 500

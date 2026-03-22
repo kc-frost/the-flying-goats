@@ -1,25 +1,24 @@
 from app.db import get_connection
 from datetime import datetime
 
-def get_available_flights(departure_date, arrival_date):
+def get_available_flights(origin, departure):
     conn = get_connection()
 
     with conn.cursor() as cursor:
         try:
             query = """
-                SELECT `flight`
-                FROM `schedule`
-                WHERE DATE(liftOff) = %s AND DATE(landing) = %s
+                SELECT *
+                FROM `available_flights`
+                WHERE origin = %s AND destination = %s
             """
-            cursor.execute(query, (departure_date, arrival_date))
+            cursor.execute(query, (origin, departure))
             rows = cursor.fetchall()
 
             flights = []
             for row in rows:
-                flights.append(row.get("flight"))
+                flights.append(row)
 
         except Exception as e:
-            conn.rollback()
             return {"error": str(e)}
     
     return flights
