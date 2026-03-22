@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router, CanMatchFn } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { BASE_URL } from "../../_environments/environment";
+import { environment } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 
 type InventoryRow = {
@@ -52,7 +52,7 @@ export class Inventory implements OnInit {
 
   getInventory(): void {
     this.http
-      .get<Omit<InventoryRow, "isReadOnly">[]>(`${BASE_URL}/api/inventory`)
+      .get<Omit<InventoryRow, "isReadOnly">[]>(`${environment.api_url}/api/inventory`)
       .subscribe({
         next: (rows) => {
           this.items = rows.map((row) => ({
@@ -89,7 +89,7 @@ export class Inventory implements OnInit {
     }
 
     this.http
-      .post(`${BASE_URL}/api/inventory/add`, {
+      .post(`${environment.api_url}/api/inventory/add`, {
         itemID: this.newItem.itemID,
         quantity: this.newItem.quantity,
         type: this.newItem.type,
@@ -109,7 +109,7 @@ export class Inventory implements OnInit {
 
   deleteItem(itemID: number): void {
     this.http
-      .post(`${BASE_URL}/api/inventory/delete`, {
+      .post(`${environment.api_url}/api/inventory/delete`, {
         itemID: itemID,
       })
       .subscribe({
@@ -133,7 +133,7 @@ export class Inventory implements OnInit {
 
   saveChanges(item: InventoryRow): void {
     this.http
-      .post(`${BASE_URL}/api/inventory/edit`, {
+      .post(`${environment.api_url}/api/inventory/edit`, {
         itemID: item.itemID,
         quantity: item.quantity,
         type: item.type,

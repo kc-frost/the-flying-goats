@@ -7,7 +7,8 @@ insert into planestatusenums (psEnumID, status, ICAO) values
 (3, "Boarding", null),
 (4, "Taxiing", null),
 (5, "Airborne", null),
-(6, "Landing", null);
+(6, "Landing", null),
+(7, "Grounded", null);
 
 -- plane inserts
 insert into plane (ICAO, statusID) values
@@ -42,10 +43,18 @@ insert into users (phoneNumber, fname, lname, username, email, password, isStaff
 ("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", "password234", 1, "2026-03-01 09:15:00"),
 ("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", "password345", 1, "2026-03-01 09:30:00"),
 ("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", "password456", 1, "2026-03-01 09:45:00"),
-("5125550103", "Erin", "Choi", "ErinCo", "erin.choi@tfg.com", "password567", 1, "2026-03-01 10:00:00"),
-("5125550104", "Omar", "Singh", "OmarSec", "omar.singh@tfg.com", "password678", 0, "2026-03-01 10:15:00"),
-("5125550105", "Tess", "Nguyen", "TessFA", "tess.nguyen@tfg.com", "password789", 0, "2026-03-01 10:30:00"),
-("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", "password890", 0, "2026-03-01 10:45:00");
+("5125550103", "Erin", "Choi", "ErinCo", "erinchoi@tfg.com", "password567", 1, "2026-03-01 10:00:00"),
+("5125550104", "Omar", "Singh", "OmarSec", "omarsingh@tfg.com", "password678", 0, "2026-03-01 10:15:00"),
+("5125550105", "Tess", "Nguyen", "TessFA", "tessnguyen@tfg.com", "password789", 0, "2026-03-01 10:30:00"),
+("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", "password890", 0, "2026-03-01 10:45:00"),
+("5125550201", "Bongo", "Meatwagon", "bongojet", "bongomeatwagon@tfg.com", "password901", 1, "2026-03-01 11:00:00"),
+("5125550202", "Crunch", "Spaghetti", "crunchpilot", "crunchspaghetti@tfg.com", "password902", 1, "2026-03-01 11:15:00"),
+("5125550203", "Toaster", "Goblin", "toastgob", "toastergoblin@tfg.com", "password903", 1, "2026-03-01 11:30:00"),
+("5125550204", "Toe", "Enjoyer", "toeLiker", "toelover@tfg.com", "password904", 1, "2026-03-01 11:45:00"),
+("5125550205", "Soggy", "Waffle", "sogwaff", "soggywaffle@tfg.com", "password905", 0, "2026-03-01 12:00:00"),
+("5125550206", "Grease", "McChicken", "greasemc", "greasemcchicken@tfg.com", "password906", 0, "2026-03-01 12:15:00"),
+("5125550207", "Wiggles", "Funk", "wigglefunk", "wigglesfunk@tfg.com", "password907", 0, "2026-03-01 12:30:00"),
+("5125550208", "Cheddar", "Blaster", "chedblast", "cheddarblaster@tfg.com", "password908", 0, "2026-03-01 12:45:00");
 
 select * from users;
 select * from staff;
@@ -59,10 +68,14 @@ insert into positionenums (position) values
 ("Unassigned");
 
 -- staff updates
-update staff set positionID = 1 where staffID = 2;
-update staff set positionID = 2 where staffID = 3;
-update staff set positionID = 3 where staffID = 4;
-update staff set positionID = 4 where staffID = 5;
+update staff set positionID = 1 where staffID = 24;
+update staff set positionID = 2 where staffID = 25;
+update staff set positionID = 3 where staffID = 26;
+update staff set positionID = 4 where staffID = 27;
+update staff set positionID = 1 where staffID = 28;
+update staff set positionID = 4 where staffID = 29;
+update staff set positionID = 5 where staffID = 30;
+update staff set positionID = 5 where staffID = 31;
 
 -- flight class inserts
 insert into flightclass (className, price) values
@@ -95,8 +108,7 @@ insert into booking (userID, flightID, seat, bookingDate) values
 (1, "TP1005", 109, "2026-03-01 12:40:00"),
 (2, "TP1006", 111, "2026-03-01 12:50:00");
 
--- parking lot inserts
-insert into parkinglot (lot, lotSpace) values
+insert into parkingLot(lot, lotSpace) values
 ("A", 100),
 ("B", 120),
 ("C", 80),
@@ -104,8 +116,7 @@ insert into parkinglot (lot, lotSpace) values
 ("E", 150),
 ("F", 90);
 
--- item inserts
-insert into item (itemName, itemDescription, type) values
+insert into item(itemName, itemDescription, type) values
 ("Metal Detector", "Primary security screening device used at entry checkpoints.", "equipment"),
 ("First Aid Kit", "Emergency medical kit stored for handling minor injuries and health incidents.", "equipment"),
 ("Baggage Tug", "Vehicle used to transport luggage carts between terminals and aircraft.", "transportation"),
@@ -113,8 +124,7 @@ insert into item (itemName, itemDescription, type) values
 ("Lost & Found Bin", "Storage container used for temporarily holding lost passenger items.", "misc"),
 ("Cleaning Supplies", "General cleaning materials used by maintenance staff throughout the airport.", "misc");
 
--- inventory inserts
-insert into inventory (itemID, quantity) values
+insert into inventory(itemID, quantity) values
 (1, 10),
 (2, 25),
 (3, 3),
