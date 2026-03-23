@@ -40,17 +40,17 @@ constraint fk_staffID foreign key (assignedPilot) references staff(staffID) -- A
 -- A trigger will make sure that staffID both belongs to a pilot and is available
 );
 
+create table regions(
+regionID int primary key,
+region varchar(255)
+);
+
 create table airports(
 airportID int primary key auto_increment,
 regionID int references regions(regionID), 
 place varchar(255),
 name varchar(255),
 IATA varchar(3)
-);
-
-create table regions(
-regionID int primary key,
-region varchar(255)
 );
 
 create table schedule(
