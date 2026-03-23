@@ -34,12 +34,23 @@ export class BookFlight {
     this.currentUser = this.userService.getUsername();
 
     this.newFlightDetails.get('origin')?.valueChanges.pipe(
-      // Wait for 300ms of inactivity before subscribing
-      debounceTime(300)
+      // Wait for 400ms of inactivity before subscribing
+      debounceTime(400)
     )
     .subscribe({
       next: (search_term) => {
-        this.searchAirports(search_term!)
+        this.searchAirports(search_term!, "origin");
+      }
+    }
+    );
+
+    this.newFlightDetails.get('destination')?.valueChanges.pipe(
+      // Wait for 400ms of inactivity before subscribing
+      debounceTime(400)
+    )
+    .subscribe({
+      next: (search_term) => {
+        this.searchAirports(search_term!, "destination");
       }
     }
     );
@@ -57,10 +68,12 @@ export class BookFlight {
     this.MIN_DATE.getDate()
   )
 
-  private airports = new BehaviorSubject<any[]>([]);
+  private originAirports = new BehaviorSubject<any[]>([]);
+  private destinationAirports = new BehaviorSubject<any[]>([]);
   private availableFlights = new BehaviorSubject<any[]>([]);
 
-  airports$ = this.airports.asObservable();
+  orginAirports$ = this.originAirports.asObservable();
+  destinationAirports$ = this.destinationAirports.asObservable();
   availableFlights$ = this.availableFlights.asObservable();
   currentDate!: Date
   currentUser!: string
@@ -113,11 +126,15 @@ export class BookFlight {
 }
 
 // === HELPER FUNCTIONS ===
-  searchAirports(search_term: string) {
+  searchAirports(search_term: string, leg: string) {
     this.flightService.getAirports(search_term).subscribe({
       next: (res) => {
         console.log("AIRPORTS FOUND");
-        this.airports.next(res);
+        if (leg == "origin") {
+          this.originAirports.next(res);
+        } else if (leg == "destination") {
+          this.destinationAirports.next(res);
+        }
       }
     })
   }
@@ -132,6 +149,14 @@ export class BookFlight {
         this.availableFlights.next(res);
       }
     })
+  }
+
+  setOrigin(airport: any) {
+    this.newFlightDetails.get('origin')?.setValue(airport.IATA)!
+  }
+
+  setDestination(airport: any) {
+    this.newFlightDetails.get('destination')?.setValue(airport.IATA)!
   }
 
   setSeatID(seatID: string) {
