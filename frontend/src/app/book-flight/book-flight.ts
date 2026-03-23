@@ -72,7 +72,7 @@ export class BookFlight {
   private destinationAirports = new BehaviorSubject<any[]>([]);
   private availableFlights = new BehaviorSubject<any[]>([]);
 
-  orginAirports$ = this.originAirports.asObservable();
+  originAirports$ = this.originAirports.asObservable();
   destinationAirports$ = this.destinationAirports.asObservable();
   availableFlights$ = this.availableFlights.asObservable();
   currentDate!: Date
