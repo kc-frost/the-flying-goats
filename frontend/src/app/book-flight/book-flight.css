@@ -49,11 +49,49 @@ main {
 
                 gap: 10px;
 
+                /* position properties are important for the airport dropdown */
                 & div {
+                    position: relative;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     margin-bottom: 5px;
+
+                     & .suggestions {
+                        position: absolute;
+                        list-style: none;
+
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        top: 100%;
+                        left: 0;
+                        z-index: 2;
+                        gap: 5px;
+
+                        background-color: whitesmoke;
+                        overflow-y: auto;
+                        max-height: 150px;
+                        padding: 3%;
+
+                        border: 1px solid black;
+
+                        & li {
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+
+                            &:hover {
+                                width: 100%;
+                                background-color: var(--section-hover-color);
+                            }
+
+                            & .code {
+                                font-weight: bold;
+                            }
+                        }
+                    }
+
                 }
                 
                 & label {
