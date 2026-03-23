@@ -1,7 +1,48 @@
 from app.db import get_connection
 from datetime import datetime
 
-def get_available_flights(origin, departure):
+def get_airports(search_term):
+    """Get all airports based on if it matches the `search_term`
+
+    Args:
+        search_term (str): To search the airports by
+
+    Returns:
+        list: All airports that match the passed `search_term`
+    """    
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT place, IATA
+                FROM `airports`
+                WHERE place LIKE %s OR IATA LIKE %s
+            """
+
+            # Accounts for partial matches
+            cursor.execute(query, (f'%{search_term}%', f'%{search_term}%'))
+            rows = cursor.fetchall()
+
+            airports = []
+            for row in rows:
+                airports.append(row);
+            
+        except Exception as e:
+            return {"error": str(e)}
+        
+    return airports
+
+def get_available_flights(origin, destination):
+    """Get all available flights according to their airport of origin and destination
+
+    Args:
+        origin (str): The airport where a plane is departing from
+        destination (str): The airport where a plane is headed towards
+
+    Returns:
+        list: A list of flights that whose origin and destination match the passed `origin` and `destination`
+    """    
     conn = get_connection()
 
     with conn.cursor() as cursor:
@@ -9,9 +50,11 @@ def get_available_flights(origin, departure):
             query = """
                 SELECT *
                 FROM `available_flights`
-                WHERE origin = %s AND destination = %s
+                WHERE origin LIKE %s AND destination LIKE %s
             """
-            cursor.execute(query, (origin, departure))
+
+            # This accounts for partial matches
+            cursor.execute(query, (f'%{origin}', f'%{destination}%'))
             rows = cursor.fetchall()
 
             flights = []
@@ -22,7 +65,6 @@ def get_available_flights(origin, departure):
             return {"error": str(e)}
     
     return flights
-
 
 def book_a_flight(data: dict):
     booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")
