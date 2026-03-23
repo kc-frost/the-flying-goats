@@ -1,29 +1,74 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { invalidDateValidator } from './utils/invalid-date-validator';
 import { environment } from '../../_environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { SeatSelectorModal } from './seat-selector-modal/seat-selector-modal';
-
-interface Flights {
-  id: string,
-  code: string
-}
+import { UserService } from '../_shared/services/user-service';
+import { FlightService } from './utils/flight-service/flight-service';
+import { BehaviorSubject, debounceTime } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-book-flight',
   templateUrl: './book-flight.html',
   styleUrl: './book-flight.css',
-  imports: [ReactiveFormsModule, SeatSelectorModal],
+  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe],
+  providers: [provideNativeDateAdapter()],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
+// This file is gonna be separated into commented categories because even after reorganizing everything it's still so fucking long
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
   private http = inject(HttpClient);
-  private router = inject(Router);
+  private userService = inject(UserService);
+  flightService = inject(FlightService);
+
+  // === ON INIT ===
+  ngOnInit() {
+    this.currentDate = new Date();
+    this.currentUser = this.userService.getUsername();
+
+    this.newFlightDetails.get('origin')?.valueChanges.pipe(
+      // Wait for 300ms of inactivity before subscribing
+      debounceTime(300)
+    )
+    .subscribe({
+      next: (search_term) => {
+        this.searchAirports(search_term!)
+      }
+    }
+    );
+
+    this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
+    this.newFlightDetails.get("username")?.setValue(this.currentUser);
+  }
+
+  // === FIELDS AND PROPERTIES ===
+
+  readonly MIN_DATE = new Date();
+  readonly MAX_DATE = new Date(
+    this.MIN_DATE.getFullYear(),
+    this.MIN_DATE.getMonth() + 3,
+    this.MIN_DATE.getDate()
+  )
+
+  private airports = new BehaviorSubject<any[]>([]);
+  private availableFlights = new BehaviorSubject<any[]>([]);
+
+  airports$ = this.airports.asObservable();
+  availableFlights$ = this.availableFlights.asObservable();
+  currentDate!: Date
+  currentUser!: string
+  seatID: string | undefined | null; 
   
-  modalShown = false;
-  // some fields don't have a validator because they are automatically filled in (for now)
+  // === FORM ===
+  // Username, ReservationDate, and SeatClass are filled in automatically
+  // SeatClass is automatic (FOR NOW)
   newFlightDetails = this.formBuilder.group({
     reservationDate: [''],
     flightID: ['',
@@ -43,19 +88,17 @@ export class BookFlight {
     arrivalDate: ['',
       [Validators.required]
     ],
-    seatNumber: ['',],
+    seatNumber: ['',
+      [Validators.required]
+    ],
     seatClass: ['Economy'],
   },
   { validators: invalidDateValidator}
 );
-
-  toggleModal() {
-    this.modalShown = !this.modalShown;
-    console.log(this.modalShown);
-  }
   
+  // == ON SUBMIT ==
   onSubmit() {
-  this.http.post(
+    this.http.post(
     `${environment.api_url}/api/book-flight`, 
     this.newFlightDetails.value,
     { withCredentials: true }
@@ -64,115 +107,36 @@ export class BookFlight {
       alert("Booking received!")
     },
     error: (err) => {
-      console.log(err);
+      console.log("BOOKING NOT RECEIVED:", err);
     }
   });
 }
 
-  printResults() {
-    var deptDate = this.newFlightDetails.get('departureDate')?.value
-    console.log(this.newFlightDetails.value);
-  }
-
-  validateUserAccess() {
-    this.http.get(`${environment.api_url}/api/check-authenticated`).subscribe({
-      error: () => {
-        this.router.navigate([''])
+// === HELPER FUNCTIONS ===
+  searchAirports(search_term: string) {
+    this.flightService.getAirports(search_term).subscribe({
+      next: (res) => {
+        console.log("AIRPORTS FOUND");
+        this.airports.next(res);
       }
     })
   }
 
-  availableFlights!: Flights[]
-  currentDate: Date
-  currentUser!: string
+  searchFlights() {
+    const origin = this.newFlightDetails.get('origin')?.value!;
+    const destination = this.newFlightDetails.get('destination')?.value!;
 
-  // temporarily hardcode everyone to have seat 1
-  seatNumber = "110";
-  
-  constructor() {
-    // this.validateUserAccess();
-    
-    this.availableFlights = []
-    this.currentDate = new Date();
-    this.currentUser = localStorage.getItem('username')!
-    
-    this.newFlightDetails.valueChanges.subscribe({
-      next: (changes) => {
-        this.updateFlights(changes.departureDate!, changes.arrivalDate!);
+    this.flightService.getFlights(origin, destination).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.availableFlights.next(res);
       }
     })
-  
-    this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
-    this.newFlightDetails.get("username")?.setValue(this.currentUser);
-    this.newFlightDetails.get("seatNumber")?.setValue(this.seatNumber);
   }
 
-  updateFlights(departureDate: string, arrivalDate: string) {
-  if (!departureDate || !arrivalDate) return;
-
-  const dept = new Date(departureDate).toISOString().split('T')[0];
-  const arr = new Date(arrivalDate).toISOString().split('T')[0];
-
-  this.http.get<Flights[]>(
-    `${environment.api_url}/api/available-flights`,
-    { params: { departureDate: dept, arrivalDate: arr }, withCredentials: true }
-  ).subscribe({
-    next: (flights) => this.availableFlights = flights,
-    error: (err) => console.log(err)
-  });
-}
-
-  // // get destination and time of departure date
-  // updateFlights(time: string, destination: string) {
-  //   var deptHours = new Date(time).getHours()
-  //   var destination = destination
-  //   var timeSlot = ""
-  //   if (deptHours >= 0 && deptHours < 12) timeSlot = "morning";
-  //   else if (deptHours >= 12 && deptHours < 18 ) timeSlot = "afternoon";
-  //   else if (deptHours >= 18 && deptHours <=23) timeSlot = "evening";
-  
-  
-  //   this.availableFlights = this.flightsByTimeAndDest[timeSlot][destination];
-  // }
-
-  // hardcoded flights
-  flightsByTimeAndDest: any = {
-    morning: {
-    Paris: [
-      { id: 'morning-paris-1', code: 'TP1002' },
-      { id: 'morning-paris-2', code: 'TP1003' },
-      { id: 'morning-paris-3', code: 'TP1004' },
-    ],
-    Japan: [
-      { id: 'morning-japan-1', code: 'TP1006' },
-      { id: 'morning-japan-2', code: 'TP1005' },
-      { id: 'morning-japan-3', code: 'TP1004' },
-    ]
-  },
-  afternoon: {
-    Paris: [
-      { id: 'afternoon-paris-1', code: 'TP1007' },
-      { id: 'afternoon-paris-2', code: 'TP1003' },
-      { id: 'afternoon-paris-3', code: 'TP1002' },
-    ],
-    Japan: [
-      { id: 'afternoon-japan-1', code: 'TP1007' },
-      { id: 'afternoon-japan-2', code: 'TP1006' },
-      { id: 'afternoon-japan-3', code: 'TP1005' },
-    ]
-  },
-  evening: {
-    Paris: [
-      { id: 'evening-paris-1', code: 'TP1001' },
-      { id: 'evening-paris-2', code: 'TP1004' },
-      { id: 'evening-paris-3', code: 'TP1007' },
-    ],
-    Japan: [
-      { id: 'evening-japan-1', code: 'TP1003' },
-      { id: 'evening-japan-2', code: 'TP1001' },
-      { id: 'evening-japan-3', code: 'TP1002' },
-    ]
+  setSeatID(seatID: string) {
+    this.seatID = seatID;
+    this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
+    console.log(this.seatID);
   }
 };
-
-}
