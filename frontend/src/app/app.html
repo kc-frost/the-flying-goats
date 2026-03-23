@@ -21,16 +21,20 @@
         <!-- lil div class to modify the modal without affecting anything else-->
           <div class="modal">
             <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
-            <img src="/header/navlink/navlink-arrow.svg" />
+            <img src="/header/navlink/navlink-arrow.svg"/>
           </div>
       </section>
       <section class="nav-link"> 
         <a routerLink="/view-appointments"> View Appointments</a>
-        <img src="/header/navlink/navlink-arrow.svg" />
+        <img src="/header/navlink/navlink-arrow.svg"/>
       </section>
       <section class="nav-link"> 
         <a routerLink="/view-users"> View Users</a>
-        <img src="/header/navlink/navlink-arrow.svg" />
+        <img src="/header/navlink/navlink-arrow.svg"/>
+      </section>
+        <section class="nav-link"> 
+          <a routerLink="/pilot-view"> Pilot Schedule</a>
+          <img src="/header/navlink/navlink-arrow.svg"/>
       </section>
     </nav>
 

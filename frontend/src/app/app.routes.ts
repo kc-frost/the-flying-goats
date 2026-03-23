@@ -11,6 +11,7 @@ import { userAuthGuard } from './_shared/guards/user-auth-guard';
 import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
 import { ViewAppointments } from './view-appointments/view-appointments';
 import { ViewUsers } from './view-users/view-users';
+import { PilotView } from './pilot-view/pilot-view';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -71,6 +72,10 @@ export const routes: Routes = [
     {
         path: 'view-users',
         component: ViewUsers
+    },
+    {
+        path: 'pilot-view',
+        component: PilotView
     }
 ];
 

@@ -1,4 +1,5 @@
 from typing import Any
+from unittest import result
 from db import get_connection
 from .security import get_hashed_password
 from datetime import datetime
@@ -225,3 +226,20 @@ def get_user_data(conn):
         except Exception as e:
             return {"success": False, 
                     "error": str(e)}
+
+# Gunna change I gotta ask about Kai's table cause she didn't push it
+# def getairportsorsomethingjlkajsdflkjklsas():
+
+# Collects from the view I made pilotSchedule, check db for returns
+def get_pilot_schedule(conn):
+    query = """select * from pilotSchedule"""
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True, 
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}

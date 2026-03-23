@@ -27,17 +27,17 @@
 
           <tbody>
             <tr *ngFor="let reservation of reservations">
-              <td>{{ reservation.bookingNumber }}</td>
-              <td>{{ reservation.userID }}</td>
-              <td>{{ reservation.username }}</td>
-              <td>{{ reservation.flightID }}</td>
-              <td>{{ reservation.seatNumber }}</td>
-              <td>{{ reservation.seatClass }}</td>
-              <td>{{ reservation.reservationDate }}</td>
-              <td>{{ reservation.liftOffDate }}</td>
-              <td>{{ reservation.arrivingDate }}</td>
-              <td>{{ reservation.origin }}</td>
-              <td>{{ reservation.destination }}</td>
+              <td>{{reservation.bookingNumber}}</td>
+              <td>{{reservation.userID}}</td>
+              <td>{{reservation.username}}</td>
+              <td>{{reservation.flightID}}</td>
+              <td>{{reservation.seatNumber}}</td>
+              <td>{{reservation.seatClass}}</td>
+              <td>{{reservation.reservationDate}}</td>
+              <td>{{reservation.liftOffDate}}</td>
+              <td>{{reservation.arrivingDate}}</td>
+              <td>{{reservation.origin}}</td>
+              <td>{{reservation.destination}}</td>
             </tr>
 
             <tr *ngIf="reservations.length === 0">

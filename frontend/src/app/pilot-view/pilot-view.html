@@ -1,0 +1,40 @@
+<!-- Incase you look at this before I'm done, this is going to show the schedule on a weekly basis that updates everyday (when checked) -->
+ <!-- Essentially, if you're looking at this on monday, you'll see your schedule for that day and the next six days. -->
+  <!-- Writing this now, it sounded better in my head, but thinking about it I should probably change it, but FOR NOW it's what I got and it sounded cool lmao -->
+   <!-- I'll probably change it so that it shows the next like 2 weeks or the next month/30 days -->
+
+<main class="pilot-schedule">
+  <section class="pilot-container">
+    <header class="pilot-header">
+        <!-- I'ma replace pilot name later when I get the ts logic done (thumbs up) -->
+      <h1>Your Weekly Flight Schedule, [Pilot Name]</h1> 
+    </header>
+
+    <!-- I LOWKEY don't know how I'ma implement this, but I plan to just create a query to get the pilot schedule by querying plane schedule with assigned pilot ids -->
+    <div class="calendar">
+        <div class="calendar-header">
+            <div *ngFor = "let day of weekDays" class="day-headers">
+                <div class="day-name">{{day}}</div>
+                <!-- Place holder method that I'ma prolly name for getting todays date -->
+                <!-- <div class ="day-date">{{getDateForDay(day)}}</div> -->
+            </div>
+        </div>
+    </div>
+
+    <div class ="calendar-body">
+        <div *ngFor = "let day of weekDays" class="day-column">
+            <!-- Temp let cause idk how I'ma do it rn -->
+             <!-- literally NONE of this is gunna even load rn until I fix my main and fully connect it and do ts lmao, but I'm just getting the general structure down -->
+            <div *ngFor = "let flight of getFlightsForDay(day)" class="flight-card">
+                <div class="flight-info">
+                    <div class="flight-number">Flight {{flight.IATA}}</div>
+                    <div class="departure-time">Departure: {{flight.startShift}}</div>
+                    <div class="arrival-time">Arrival: {{flight.endShift}}</div>
+                    <div class="origin">Origin: {{flight.origin}}</div>
+                    <div class="destination">Destination: {{flight.destination}}</div>
+                    <div class="pilot-name">Pilot: {{flight.staffFName}} {{flight.staffLName}}</div>"
+                    <div class="pilot-ID">Pilot ID: {{flight.staffID}}</div>
+                </div>
+            </div>
+        </div>
+    </div>

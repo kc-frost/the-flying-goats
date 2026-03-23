@@ -294,3 +294,21 @@ def users_data():
             "success": False,
             "message": result.get("error")
         }), 500
+
+# Gotta ask about Kai's table for this
+# def get_airports():
+
+
+# Should work, hopefully (praying) no reason for it not to ngl
+# But I'm not testing this rn cause for some reason my mains messed up
+@bp.get('/pilot-schedule')
+def get_pilot_schedule():
+    conn = get_connection()
+    result = get_pilot_schedule(conn)
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
