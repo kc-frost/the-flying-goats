@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './dropdown/login/login';
-import { Register } from './dropdown/register/register';
-import { DropdownProfile } from './dropdown/profile/profile';
+import { Login } from './auth-dropdown/login/login';
+import { Register } from './auth-dropdown/register/register';
+import { DropdownProfile } from './auth-dropdown/profile/profile';
 import { ProfilePage } from './profile-page/profile-page';
-import { Inventory, inventoryModalRedirect } from './inventory/inventory';
+import { Inventory } from './admin/inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
 import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
-import { ViewAppointments } from './view-appointments/view-appointments';
-import { ViewUsers } from './view-users/view-users';
+import { ViewAppointments } from './admin/view-appointments/view-appointments';
+import { ViewUsers } from './admin/view-users/view-users';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
