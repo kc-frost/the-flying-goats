@@ -201,6 +201,23 @@ from staff s
 left join positionenums p using (positionID)
 where staffID not in (select assignedPilot from flight);
 
+-- Shows available flights (typically queried through origin and destination
+-- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
+create view available_flights as
+select 
+ao.IATA as origin_IATA, 
+ad.IATA as destination_IATA, 
+f.IATA, 
+TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
+TIME_FORMAT(s.landing, "%H:%i") as landing, 
+CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
+from flight f
+join airports ao on f.origin = ao.airportID
+join airports ad on f.destination = ad.airportID
+join schedule s on f.IATA = s.flight;
+
+select * from available_flights;
+
 
 -- triggers
 delimiter //
