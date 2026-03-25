@@ -79,6 +79,9 @@ export class BookFlight {
   currentUser!: string
   seatID: string | undefined | null; 
   
+  originFocused = false;
+  destFocused = false;
+
   // === FORM ===
   // Username, ReservationDate, and SeatClass are filled in automatically
   // SeatClass is automatic (FOR NOW)
