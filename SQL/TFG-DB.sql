@@ -201,6 +201,7 @@ from staff s
 left join positionenums p using (positionID)
 where staffID not in (select assignedPilot from flight);
 
+<<<<<<< HEAD
 -- Shows available flights (typically queried through origin and destination
 -- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
 create view available_flights as
@@ -218,6 +219,8 @@ join schedule s on f.IATA = s.flight;
 
 select * from available_flights;
 
+=======
+>>>>>>> main
 
 -- triggers
 delimiter //
@@ -271,4 +274,8 @@ begin
             set message_text = "No available pilots at the moment";
 	end if;
 end//
+<<<<<<< HEAD
 delimiter ;
+=======
+delimiter ;
+>>>>>>> main
