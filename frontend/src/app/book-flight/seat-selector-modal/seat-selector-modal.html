@@ -1,0 +1,48 @@
+<main>
+    <header>
+        <h1>Choose Seat</h1>
+        <input class="exitBtn" type="image" src="/xButton/maybe-virus.svg" (click)="tellExit()"/>
+    </header>
+
+    <section class="submit-btn">
+        <button form="seatID" type="submit">Confirm</button>
+    </section>
+
+    <section class="seat-plan">
+        <form id="seatID" [formGroup]="mySeat" (ngSubmit)="onSubmit()">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">A</th>
+                    <th scope="col">B</th>
+                    <th scope="col" class="aisle"></th>
+                    <th scope="col">C</th>
+                    <th scope="col">D</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (row of rows; track row) {
+                    <tr>
+                        @for (seat of leftSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
+                                formControlName="seatID"/>
+                                <label [for]="row+seat"></label>
+                            </td>
+                        }
+                        <td>{{row}}</td>
+                        @for (seat of rightSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
+                                formControlName="seatID"/>
+                                <label [for]="row+seat"></label>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </form>
+    </section>
+</main>

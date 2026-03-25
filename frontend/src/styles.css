@@ -8,11 +8,14 @@
 :root {
     --primary-color: #192e56;
 
-    --primary-header-color: whitesmoke;
+    --primary-header-color: #f5f5f5;
     --header-font: "Nunito Sans";
     --header-content-padding: 10px;
 
     --body-font: "Arimo";
+
+    /* Usually used in book-flight */
+    --section-hover-color: rgb(223, 223, 223);
 }
 
 /* Fonts */

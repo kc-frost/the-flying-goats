@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
+  private router = inject(Router);
 
+  navigateToLogin() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['login']}}],
+      {
+        skipLocationChange: true
+      }
+    )
+  }
 }

@@ -31,15 +31,31 @@ create table flight(
 IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
 gate varchar(2),
-origin varchar(255),
-destination varchar(255),
+origin int references airports(airportID),
+destination int references airports(airportID),
+capacity int,
 assignedPilot int,
+constraint chk_capacity check (capacity >= 0),
 constraint fk_staffID foreign key (assignedPilot) references staff(staffID) -- A flight MUST have a pilot now (staffID)
 -- A trigger will make sure that staffID both belongs to a pilot and is available
 );
 
+create table regions(
+regionID int primary key,
+region varchar(255)
+);
+
+create table airports(
+airportID int primary key auto_increment,
+regionID int references regions(regionID), 
+place varchar(255),
+name varchar(255),
+IATA varchar(3)
+);
+
 create table schedule(
-flight varchar(7) primary key references flight(IATA),
+scheduleID int primary key auto_increment,
+flight varchar(7) references flight(IATA),
 liftOff datetime,
 landing datetime
 );
@@ -62,7 +78,7 @@ price double
 );
 
 create table planeseat(
-seatNumber int,
+seatNumber varchar(3),
 flightID varchar(7) references flight(IATA),
 classID int,
 constraint fk_class_id foreign key (classID) references flightclass(classID),
@@ -74,7 +90,7 @@ create table booking(
 bookingNumber int primary key auto_increment,
 userID int references users(userID),
 flightID varchar(7) references flight(IATA),
-seat int references planeSeat(seatNumber),
+seat varchar(3) references planeSeat(seatNumber),
 bookingDate datetime
 );
 
@@ -185,6 +201,26 @@ from staff s
 left join positionenums p using (positionID)
 where staffID not in (select assignedPilot from flight);
 
+<<<<<<< HEAD
+-- Shows available flights (typically queried through origin and destination
+-- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
+create view available_flights as
+select 
+ao.IATA as origin_IATA, 
+ad.IATA as destination_IATA, 
+f.IATA, 
+TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
+TIME_FORMAT(s.landing, "%H:%i") as landing, 
+CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
+from flight f
+join airports ao on f.origin = ao.airportID
+join airports ad on f.destination = ad.airportID
+join schedule s on f.IATA = s.flight;
+
+select * from available_flights;
+
+=======
+>>>>>>> main
 
 -- triggers
 delimiter //
@@ -238,4 +274,8 @@ begin
             set message_text = "No available pilots at the moment";
 	end if;
 end//
+<<<<<<< HEAD
 delimiter ;
+=======
+delimiter ;
+>>>>>>> main

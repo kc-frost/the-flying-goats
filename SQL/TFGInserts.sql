@@ -1,5 +1,13 @@
 use TFG;
 
+-- regions
+insert into regions() values
+(1, "North America"),
+(2, "South America"),
+(3, "Asia"),
+(4, "Europe"),
+(5, "Africa");
+
 -- plane status enums inserts
 insert into planestatusenums (psEnumID, status, ICAO) values
 (1, "On Time", null),
@@ -9,6 +17,40 @@ insert into planestatusenums (psEnumID, status, ICAO) values
 (5, "Airborne", null),
 (6, "Landing", null),
 (7, "Grounded", null);
+
+-- airports
+insert into airports(regionID, place, name, IATA) values
+-- North America
+(1, "Austin, TX", "Austin-Bergstrom Intl", "AUS"),
+(1, "New York, NYC", "John F Kennedy Intl", "JFK"),
+(1, "San Francisco, CA", "San Francisco Intl.", "SFO"),
+(1, "Atlanta, GA", "Hartsfield-Jackson Int", "ATL"),
+(1, "Toronto, ON", "Lester B. Pearson Intl", "YYZ"),
+(1, "Mexico City, Mexico", "Benito Juarez Intl", "MEX"),
+-- South America
+(2, "São Paulo, Brazil", "Guarulhos Intl", "GRU"),
+(2, "Buenos Aires, Argentina", "Ministro Pistarini Intl", "EZE"),
+(2, "Bogotá, Colombia", "El Dorado Intl", "BOG"),
+(2, "Lima, Peru", "Jorge Chávez Intl", "LIM"),
+(2, "Santiago, Chile", "Arturo Merino Benítez Intl", "SCL"),
+-- Asia
+(3, "Manila, Philippines", "Ninoy Aquino Intl", "MNL"),
+(3, "Tokyo, Japan", "Haneda Intl", "HND"),
+(3, "Dubai, UAE", "Dubai Intl", "DXB"),
+(3, "Singapore, Singapore", "Changi Intl", "SIN"),
+(3, "Beijing, China", "Capital Intl", "PEK"),
+-- Europe
+(4, "London, UK", "Heathrow Intl", "LHR"),
+(4, "Paris, France", "Charles de Gaulle Intl", "CDG"),
+(4, "Frankfurt, Germany", "Frankfurt am Main Intl", "FRA"),
+(4, "Madrid, Spain", "Adolfo Suárez Madrid-Barajas Intl", "MAD"),
+(4, "Sofia, Bulgaria", "Sofia Airport", "SOF"),
+-- Africa
+(5, "Johannesburg, South Africa", "O.R. Tambo Intl", "JNB"),
+(5, "Cairo, Egypt", "Cairo Intl", "CAI"),
+(5, "Nairobi, Kenya", "Jomo Kenyatta Intl", "NBO"),
+(5, "Lagos, Nigeria", "Murtala Muhammed Intl", "LOS"),
+(5, "Casablanca, Morocco", "Mohammed V Intl", "CMN");
 
 -- plane inserts
 insert into plane (ICAO, statusID) values
@@ -20,13 +62,13 @@ insert into plane (ICAO, statusID) values
 ("F101", 6);
 
 -- flight inserts
-insert into flight (IATA, planeName, gate, origin, destination) values
-("TP1001", "Goated67Plane", "A1", "Austin", "Dallas"),
-("TP1002", "SkyRam900", "A2", "Austin", "Houston"),
-("TP1003", "HornetJet11", "B1", "Austin", "San Antonio"),
-("TP1004", "Nimbus220", "B2", "Austin", "Denver"),
-("TP1005", "CrownCruiser", "C1", "Austin", "Chicago"),
-("TP1006", "AtlasSprint", "C2", "Austin", "Phoenix");
+insert into flight (IATA, planeName, gate, origin, destination, capacity) values
+("TP1001", "Goated67Plane", "A1", 1, 2, 4), -- AUS -> NYC
+("TP1002", "SkyRam900", "A2", 1, 3, 18), 	-- AUS -> SFO
+("TP1003", "HornetJet11", "B1", 1, 23, 8),	-- AUS -> CAI
+("TP1004", "Nimbus220", "B2", 1, 13, 12),	-- AUS -> HND
+("TP1005", "CrownCruiser", "C1", 1, 16, 32),	-- AUS -> PEK
+("TP1006", "AtlasSprint", "C2", 1, 21, 20);		-- AUS -> SOF
 
 -- schedule inserts
 insert into schedule (flight, liftOff, landing) values
