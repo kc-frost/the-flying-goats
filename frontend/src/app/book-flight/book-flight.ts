@@ -85,6 +85,14 @@ export class BookFlight {
   activeFlight: number | null = null;
 
   // === FORM ===
+  searchTerms = this.formBuilder.group({
+    origin: ['', [Validators.required]],
+    destination: ['', [Validators.required]],
+    departureDate: ['', [Validators.required]],
+    arrivalDate: ['', [Validators.required]],
+    
+  })
+  
   // Username, ReservationDate, and SeatClass are filled in automatically
   // SeatClass is automatic (FOR NOW)
   newFlightDetails = this.formBuilder.group({
@@ -115,7 +123,7 @@ export class BookFlight {
 );
   
   // == ON SUBMIT ==
-  onSubmit() {
+  bookFlight() {
     this.http.post(
     `${environment.api_url}/api/book-flight`, 
     this.newFlightDetails.value,
@@ -151,8 +159,8 @@ export class BookFlight {
       this.activeFlight = null;
     }, 150);
 
-    const origin = this.newFlightDetails.get('origin')?.value!;
-    const destination = this.newFlightDetails.get('destination')?.value!;
+    const origin = this.searchTerms.get('origin')?.value!;
+    const destination = this.searchTerms.get('destination')?.value!;
 
     this.flightService.getFlights(origin, destination).subscribe({
       next: (res) => {
@@ -161,12 +169,14 @@ export class BookFlight {
     })
   }
 
+  // Replaces text in input element
   setOrigin(airport: any) {
-    this.newFlightDetails.get('origin')?.setValue(airport.IATA)!
+    this.newFlightDetails.get('origin')?.setValue(airport.IATA)!;
   }
 
+  // Replaces text in input element
   setDestination(airport: any) {
-    this.newFlightDetails.get('destination')?.setValue(airport.IATA)!
+    this.newFlightDetails.get('destination')?.setValue(airport.IATA)!;
   }
 
   setSeatID(seatID: string) {
@@ -175,8 +185,22 @@ export class BookFlight {
     console.log(this.seatID);
   }
 
-  setActiveFlight(flight: number) {
-    this.activeFlight = flight;
+  selectFlight(flightIndex: number, flight: any, leg: string) {
+    // important for knowing what flight was selected
+    this.activeFlight = flightIndex;
+
+    const dateKey = (leg == 'outbound') ? "departureDate" : "arrivalDate";
+
+    // extract date out of the calendar
+    var tripDate = new Date(`${this.newFlightDetails.get(`${dateKey}`)?.value}`).toLocaleDateString();
+
+    var liftOff = flight.liftOff;
+    var landing = flight.landing;
+
+    var newDeptDate = new Date(`${tripDate} ${liftOff}`).toLocaleString();
+    var newArrDate = new Date(`${tripDate} ${landing}`).toLocaleString();
+
+    this.newFlightDetails.get('departure')
   }
 
   getActiveFlight(): number | null {

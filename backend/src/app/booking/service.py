@@ -26,7 +26,7 @@ def get_airports(search_term):
 
             airports = []
             for row in rows:
-                airports.append(row);
+                airports.append(row)
             
         except Exception as e:
             return {"error": str(e)}

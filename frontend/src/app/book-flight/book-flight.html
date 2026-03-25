@@ -1,6 +1,6 @@
 <main>
   <section class="book-flight">
-    <form id="newFlightDetails" [formGroup]="newFlightDetails" (ngSubmit)="searchFlights()">
+    <form id="searchTerms" [formGroup]="searchTerms" (ngSubmit)="searchFlights()">
     <header>Book a Flight</header>
     <section class="flight-options">
       <div class="location">
@@ -8,7 +8,7 @@
           <img src="/book-flight/map-marker.svg" />
           <div class="wrapper">
             <label for="origin">From</label>
-            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="originFocused = true" (blur)="originFocused = false"/>
+            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="originFocused = true" (blur)="originFocused = false" required/>
             @if (originFocused) {
               <ul class="suggestions">
                 @for (airport of originAirports$ | async; track $index) {
@@ -25,7 +25,7 @@
           <img src="/book-flight/map-marker.svg" />
           <div>
             <label for="destination">To</label>
-            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="destFocused = true" (blur)="destFocused = false"/>
+            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="destFocused = true" (blur)="destFocused = false" required/>
             @if (destFocused) {
               <ul class="suggestions">
                 @for (airport of destinationAirports$ | async; track $index) {
@@ -44,9 +44,9 @@
         <section>
           <label>Depart & Return</label>
           <mat-form-field class="mat-dates">
-            <mat-date-range-input [formGroup]="newFlightDetails" [rangePicker]="picker" [min]="MIN_DATE" [max]="MAX_DATE">
-            <input matStartDate placeholder="Depart date" formControlName="departureDate">
-            <input matEndDate placeholder="Return date" formControlName="arrivalDate">
+            <mat-date-range-input [formGroup]="searchTerms" [rangePicker]="picker" [min]="MIN_DATE" [max]="MAX_DATE">
+            <input matStartDate placeholder="Depart date" formControlName="departureDate" required>
+            <input matEndDate placeholder="Return date" formControlName="arrivalDate" required>
           </mat-date-range-input>
           <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -55,7 +55,8 @@
         </section>
       </div>
       <div class="submit">
-        <button type="submit" form="newFlightDetails">Search Flights</button>
+        <button type="submit" [disabled]="!searchTerms.valid">Search Flights</button>
+        <!-- <button type="button" (click)="bookFlight()" [disabled]="!searchTerms.valid">Book Flight</button> -->
       </div>
     </section>
     </form>
@@ -66,7 +67,7 @@
     <section class="flight-choices">
       @for (flight of availableFlights$ | async; track $index) {
         <div class="choice">
-        <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="getActiveFlight() === $index" (change)="setActiveFlight($index)" required/>
+        <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="getActiveFlight() === $index" (change)="selectFlight($index, flight, 'outbound' )" required/>
         <label [for]=$index>
           <div class="header">
             <p>DEPART</p>
@@ -89,6 +90,7 @@
 
         <button popovertarget="seat-modal" [disabled]="getActiveFlight() !== $index">Select Seat</button>
         <dialog class="seat-modal" #seatModal id="seat-modal" popover>
+          <!-- TODO: Get emitted Seat ID -->
           <app-seat-selector-modal />
         </dialog>
       </div>
