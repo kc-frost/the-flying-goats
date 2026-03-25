@@ -134,7 +134,6 @@ export class BookFlight {
   searchAirports(search_term: string, leg: string) {
     this.flightService.getAirports(search_term).subscribe({
       next: (res) => {
-        console.log("AIRPORTS FOUND");
         if (leg == "origin") {
           this.originAirports.next(res);
         } else if (leg == "destination") {
@@ -157,7 +156,6 @@ export class BookFlight {
 
     this.flightService.getFlights(origin, destination).subscribe({
       next: (res) => {
-        console.log(res);
         this.availableFlights.next(res);
       }
     })
@@ -179,7 +177,6 @@ export class BookFlight {
 
   setActiveFlight(flight: number) {
     this.activeFlight = flight;
-    console.log(this.activeFlight);
   }
 
   getActiveFlight(): number | null {
