@@ -33,7 +33,7 @@ export class BookFlight {
     this.currentDate = new Date();
     this.currentUser = this.userService.getUsername();
 
-    this.newFlightDetails.get('origin')?.valueChanges.pipe(
+    this.searchTerms.get('origin')?.valueChanges.pipe(
       // Wait for 400ms of inactivity before subscribing
       debounceTime(400)
     )
@@ -44,7 +44,7 @@ export class BookFlight {
     }
     );
 
-    this.newFlightDetails.get('destination')?.valueChanges.pipe(
+    this.searchTerms.get('destination')?.valueChanges.pipe(
       // Wait for 400ms of inactivity before subscribing
       debounceTime(400)
     )
@@ -90,7 +90,6 @@ export class BookFlight {
     destination: ['', [Validators.required]],
     departureDate: ['', [Validators.required]],
     arrivalDate: ['', [Validators.required]],
-    
   })
   
   // Username, ReservationDate, and SeatClass are filled in automatically
@@ -171,12 +170,12 @@ export class BookFlight {
 
   // Replaces text in input element
   setOrigin(airport: any) {
-    this.newFlightDetails.get('origin')?.setValue(airport.IATA)!;
+    this.searchTerms.get('origin')?.setValue(airport.IATA)!;
   }
 
   // Replaces text in input element
   setDestination(airport: any) {
-    this.newFlightDetails.get('destination')?.setValue(airport.IATA)!;
+    this.searchTerms.get('destination')?.setValue(airport.IATA)!;
   }
 
   setSeatID(seatID: string) {
@@ -192,7 +191,7 @@ export class BookFlight {
     const dateKey = (leg == 'outbound') ? "departureDate" : "arrivalDate";
 
     // extract date out of the calendar
-    var tripDate = new Date(`${this.newFlightDetails.get(`${dateKey}`)?.value}`).toLocaleDateString();
+    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)?.value}`).toLocaleDateString();
 
     var liftOff = flight.liftOff;
     var landing = flight.landing;
@@ -200,7 +199,7 @@ export class BookFlight {
     var newDeptDate = new Date(`${tripDate} ${liftOff}`).toLocaleString();
     var newArrDate = new Date(`${tripDate} ${landing}`).toLocaleString();
 
-    this.newFlightDetails.get('departure')
+    this.searchTerms.get('departure')
   }
 
   getActiveFlight(): number | null {

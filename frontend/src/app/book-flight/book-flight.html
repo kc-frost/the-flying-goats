@@ -16,6 +16,8 @@
                     <span class="place">{{airport.place}}</span> 
                     <span class="code">{{airport.IATA}}</span>
                   </li>
+                } @empty {
+                  <li>No results found.</li>
                 }
               </ul>
             }
@@ -33,6 +35,8 @@
                     <span class="place">{{airport.place}}</span> 
                     <span class="code">{{airport.IATA}}</span>
                   </li>
+                } @empty {
+                  <li>No results found.</li>
                 }
               </ul>
             }
