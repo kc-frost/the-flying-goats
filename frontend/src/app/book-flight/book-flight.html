@@ -66,7 +66,7 @@
     <section class="flight-choices">
       @for (flight of availableFlights$ | async; track $index) {
         <div class="choice">
-        <input name="flight" type="radio" [id]=$index required />
+        <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="getActiveFlight() === $index" (change)="setActiveFlight($index)" required/>
         <label [for]=$index>
           <div class="header">
             <p>DEPART</p>
@@ -87,7 +87,7 @@
           </div>
         </label>
 
-        <button popovertarget="seat-modal" >Select Seat</button>
+        <button popovertarget="seat-modal" [disabled]="getActiveFlight() !== $index">Select Seat</button>
         <dialog class="seat-modal" #seatModal id="seat-modal" popover>
           <app-seat-selector-modal />
         </dialog>

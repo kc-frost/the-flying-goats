@@ -79,8 +79,10 @@ export class BookFlight {
   currentUser!: string
   seatID: string | undefined | null; 
   
-  originFocused = false;
-  destFocused = false;
+  originFocused: boolean = false;
+  destFocused: boolean = false;
+
+  activeFlight: number | null = null;
 
   // === FORM ===
   // Username, ReservationDate, and SeatClass are filled in automatically
@@ -143,6 +145,13 @@ export class BookFlight {
   }
 
   searchFlights() {
+    // due to the api call, flights takes a little longer to load
+    // this delays the button from turning grey so that it "syncs up" with flights loading in 
+    // this is more for visual purposes
+    setTimeout(() => {
+      this.activeFlight = null;
+    }, 150);
+
     const origin = this.newFlightDetails.get('origin')?.value!;
     const destination = this.newFlightDetails.get('destination')?.value!;
 
@@ -167,4 +176,14 @@ export class BookFlight {
     this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
     console.log(this.seatID);
   }
+
+  setActiveFlight(flight: number) {
+    this.activeFlight = flight;
+    console.log(this.activeFlight);
+  }
+
+  getActiveFlight(): number | null {
+    return this.activeFlight;
+  }
+
 };
