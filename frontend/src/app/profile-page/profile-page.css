@@ -6,6 +6,7 @@
     justify-content: space-evenly;
     gap: 50px;
 
+    height: 1000px;
     & > * {
         margin-top: 70px;
     }
@@ -86,11 +87,18 @@
 .reservation-view {
     background-color: whitesmoke;
     width: 1000px;
-    height: 1000px;
+    height: 600px;
+    max-height: 600px;
 
     border-radius: 10px;
-    overflow: hidden;
+    overflow: auto;
   
+    & header {
+        padding: 20px 0 10px 20px;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
     & .tab {
         display: flex;
         align-items: center;
