@@ -8,7 +8,7 @@
           <img src="/book-flight/map-marker.svg" />
           <div class="wrapper">
             <label for="origin">From</label>
-            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport"/>
+            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false"/>
             @if (newFlightDetails.get('origin')?.value) {
               <ul class="suggestions">
                 @for (airport of originAirports$ | async; track $index) {
@@ -25,7 +25,7 @@
           <img src="/book-flight/map-marker.svg" />
           <div>
             <label for="destination">To</label>
-            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" />
+            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false"/>
             @if (newFlightDetails.get('destination')?.value) {
               <ul class="suggestions">
                 @for (airport of destinationAirports$ | async; track $index) {
