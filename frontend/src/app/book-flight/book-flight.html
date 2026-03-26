@@ -60,7 +60,7 @@
       </div>
       <div class="submit">
         <button type="submit" [disabled]="!searchTerms.valid">Search Flights</button>
-        <button type="button" (click)="onSubmit()" [disabled]="!(outboundFlight.valid && inboundFlight.valid)">Book Flight</button>
+        <button type="button" (click)="printOutbound()" [disabled]="!(outboundFlight.valid)">Book Flight</button>
       </div>
     </section>
     </form>
@@ -95,7 +95,7 @@
         <button popovertarget="seat-modal" [disabled]="getActiveFlight() !== $index">Select Seat</button>
         <dialog class="seat-modal" #seatModal id="seat-modal" popover>
           <!-- TODO: Get emitted Seat ID -->
-          <app-seat-selector-modal />
+          <app-seat-selector-modal (seatID)="setSeatID($event)"/>
         </dialog>
       </div>
       }

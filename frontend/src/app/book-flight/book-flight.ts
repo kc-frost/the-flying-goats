@@ -153,10 +153,15 @@ export class BookFlight {
     this.searchTerms.get('destination')?.setValue(airport.IATA)!;
   }
 
+  // separated function since seatID is determined from the child component
   setSeatID(seatID: string) {
+    // persists selected seat while even if the seat selector modal is closed
+    // for as long as the associated flight remains selected
     this.seatID = seatID;
-    // this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
-    console.log(this.seatID);
+
+    this.outboundFlight.patchValue({
+      seatNumber: seatID
+    });
   }
 
   selectFlight(flightIndex: number, flight: any, leg: string) {
@@ -166,7 +171,7 @@ export class BookFlight {
     const dateKey = (leg == 'outbound') ? "departureDate" : "arrivalDate";
 
     // extract date out of the calendar
-    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)?.value}`).toLocaleDateString();
+    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
 
     var liftOff = flight.liftOff;
     var landing = flight.landing;
@@ -174,11 +179,25 @@ export class BookFlight {
     var newDeptDate = new Date(`${tripDate} ${liftOff}`).toLocaleString();
     var newArrDate = new Date(`${tripDate} ${landing}`).toLocaleString();
 
-    this.searchTerms.get('departure')
+    this.outboundFlight.patchValue({
+      origin: this.searchTerms.get('origin')!.value.toUpperCase(),
+      destination: this.searchTerms.get('destination')!.value.toUpperCase(),
+      departureDate: newDeptDate,
+      arrivalDate: newArrDate
+    });
   }
 
   getActiveFlight(): number | null {
     return this.activeFlight;
+  }
+
+  // TESTING FUNCTIONS
+  printOutbound() {
+    console.log(this.outboundFlight.value);
+  }
+
+  printInBound() {
+    console.log(this.inboundFlight.value);
   }
 
 };

@@ -1,12 +1,9 @@
 <main>
     <header>
-        <h1>Choose Seat</h1>
+        <h1>Choose a Seat</h1>
+        <!-- <h4>Click to make your selection</h4> -->
         <input class="exitBtn" type="image" src="/xButton/maybe-virus.svg" (click)="tellExit()"/>
     </header>
-
-    <section class="submit-btn">
-        <button form="seatID" type="submit">Confirm</button>
-    </section>
 
     <section class="seat-plan">
         <form id="seatID" [formGroup]="mySeat" (ngSubmit)="onSubmit()">
@@ -27,7 +24,7 @@
                         @for (seat of leftSeats; track seat) {
                             <td>
                                 <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
-                                formControlName="seatID"/>
+                                formControlName="seatID" (change)="onSubmit()"/>
                                 <label [for]="row+seat"></label>
                             </td>
                         }
@@ -35,7 +32,8 @@
                         @for (seat of rightSeats; track seat) {
                             <td>
                                 <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
-                                formControlName="seatID"/>
+                                formControlName="seatID"
+                                (change)="onSubmit()"/>
                                 <label [for]="row+seat"></label>
                             </td>
                         }
