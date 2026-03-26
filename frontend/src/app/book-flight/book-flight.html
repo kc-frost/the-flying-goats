@@ -68,6 +68,16 @@
 
   <section class="pick-flight">
     <header>Available Flights</header>
+    <section class="tab">
+      <div class="depart">
+        <input type="radio" name="tab" id="depart" checked/>
+        <label for="depart">Departing Flights</label>
+      </div>
+      <div class="return">
+        <input type="radio" name="tab" id="return" />
+        <label for="return">Returning Flights</label>
+      </div>
+    </section>
     <section class="flight-choices">
       @for (flight of availableFlights$ | async; track $index) {
         <div class="choice">
@@ -94,7 +104,6 @@
 
         <button popovertarget="seat-modal" [disabled]="getActiveFlight() !== $index">Select Seat</button>
         <dialog class="seat-modal" #seatModal id="seat-modal" popover>
-          <!-- TODO: Get emitted Seat ID -->
           <app-seat-selector-modal (seatID)="setSeatID($event)"/>
         </dialog>
       </div>
