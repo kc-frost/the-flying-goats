@@ -1,11 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy} from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { invalidDateValidator } from './utils/invalid-date-validator';
-import { environment } from '../../_environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { SeatSelectorModal } from './seat-selector-modal/seat-selector-modal';
 import { UserService } from '../_shared/services/user-service';
 import { FlightService } from './utils/flight-service/flight-service';
@@ -24,15 +21,11 @@ import { AsyncPipe } from '@angular/common';
 // This file is gonna be separated into commented categories because even after reorganizing everything it's still so fucking long
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient);
   private userService = inject(UserService);
-  flightService = inject(FlightService);
+  private flightService = inject(FlightService);
 
   // === ON INIT ===
   ngOnInit() {
-    this.currentDate = new Date();
-    this.currentUser = this.userService.getUsername();
-
     this.searchTerms.get('origin')?.valueChanges.pipe(
       // Wait for 400ms of inactivity before subscribing
       debounceTime(400)
@@ -54,9 +47,6 @@ export class BookFlight {
       }
     }
     );
-
-    this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
-    this.newFlightDetails.get("username")?.setValue(this.currentUser);
   }
 
   // === FIELDS AND PROPERTIES ===
@@ -84,60 +74,45 @@ export class BookFlight {
 
   activeFlight: number | null = null;
 
-  // === FORM ===
-  searchTerms = this.formBuilder.group({
+  // === FORMS ===
+  // searches for flights
+  searchTerms: FormGroup = this.formBuilder.group({
     origin: ['', [Validators.required]],
     destination: ['', [Validators.required]],
     departureDate: ['', [Validators.required]],
     arrivalDate: ['', [Validators.required]],
   })
-  
-  // Username, ReservationDate, and SeatClass are filled in automatically
-  // SeatClass is automatic (FOR NOW)
-  newFlightDetails = this.formBuilder.group({
-    reservationDate: [''],
-    flightID: ['',
-      [Validators.required]
-    ],
-    username: [''
-    ],
-    origin: ['',
-      [Validators.required]
-    ],
-    destination: ['',
-      [Validators.required]
-    ],
-    departureDate: ['',
-      [Validators.required]
-    ],
-    arrivalDate: ['',
-      [Validators.required]
-    ],
-    seatNumber: ['',
-      [Validators.required]
-    ],
-    seatClass: ['Economy'],
-  },
-  { validators: invalidDateValidator}
-);
-  
-  // == ON SUBMIT ==
-  bookFlight() {
-    this.http.post(
-    `${environment.api_url}/api/book-flight`, 
-    this.newFlightDetails.value,
-    { withCredentials: true }
-  ).subscribe({
-    next: () => {
-      alert("Booking received!")
-    },
-    error: (err) => {
-      console.log("BOOKING NOT RECEIVED:", err);
-    }
-  });
+
+  // round-trip flight forms to create a booking from
+  outboundFlight = this.createFlightForm();
+  inboundFlight = this.createFlightForm();
+
+  // === ON SUBMIT ===
+  onSubmit() {
+    this.flightService.bookFlight(this.outboundFlight, this.inboundFlight).subscribe({
+      next: () => {
+        alert("Booking created! Safe travels :)");
+      },
+      error: (err) => {
+        console.log("BOOKING NOT RECEIVED:", err);
+      }
+    });
 }
 
 // === HELPER FUNCTIONS ===
+  createFlightForm() {
+    return this.formBuilder.group({
+      reservationDate: [new Date(), [Validators.required]],
+      username: [this.userService.getUsername(), [Validators.required]],
+      origin: ['', [Validators.required]],
+      destination: ['', [Validators.required]],
+      departureDate: ['', [Validators.required]],
+      arrivalDate: ['', [Validators.required]],
+      seatNumber: ['', [Validators.required]],
+      seatClass: ['Economy', [Validators.required]],
+    })
+  }
+
   searchAirports(search_term: string, leg: string) {
     this.flightService.getAirports(search_term).subscribe({
       next: (res) => {
@@ -180,7 +155,7 @@ export class BookFlight {
 
   setSeatID(seatID: string) {
     this.seatID = seatID;
-    this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
+    // this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
     console.log(this.seatID);
   }
 
