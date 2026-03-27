@@ -51,7 +51,7 @@ def get_available_flights(origin, destination):
             query = """
                 SELECT *
                 FROM `available_flights`
-                WHERE origin LIKE %s AND destination LIKE %s
+                WHERE `origin` LIKE %s AND `destination` LIKE %s
             """
 
             # This accounts for partial matches
@@ -70,36 +70,106 @@ def get_available_flights(origin, destination):
     return {"depart": departFlights,
             "return": returnFlights}
 
-def book_a_flight(data: dict):
-    booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")
+def insert_planeseat(seatNumber, scheduleID, classID):
+    conn = get_connection()
 
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                INSERT INTO `planeseat`
+                VALUES (%s, %s, %s)
+            """
+
+            cursor.execute(query, (seatNumber, scheduleID, classID))
+
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            conn.rollback()
+            return {"error": str(e)}
+
+def book_a_flight(outboundFlight: dict, inboundFlight: dict):
     conn = get_connection()
     
     with conn.cursor() as cursor:
         try:
-            # find user via email
+            # find user via their username and email
             query = """
                 SELECT `userID`
                 FROM `users`
-                WHERE `email` = %s
+                WHERE `username` = %s and `email` = %s
             """
-            cursor.execute(query, (data['email'],))
-            user = cursor.fetchone()
-            if user is None:
-                return {"error": "User not found"}
+            cursor.execute(query, 
+                           (outboundFlight['username'], outboundFlight['email']))
+            row = cursor.fetchone()
+            if row is None:
+                raise ValueError("User not found")
             
-            # use userID to insert into booking
+            userID = row.get("userID")
+            
+            # find flight schedule user booked
             query = """
-                INSERT INTO `booking`(userID, flightID, seat, bookingDate)
-                VALUES (%s, %s, %s, %s)
+                SELECT `scheduleID`
+                FROM `schedule`
+                WHERE `flight` = %s AND
+                    DATE_FORMAT(`liftOff`, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i') AND
+                    DATE_FORMAT(`landing`, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i')
+            """
+            cursor.execute(query, 
+                           (outboundFlight.get("flightID"),
+                            outboundFlight.get("departureDate"),
+                            outboundFlight.get("arrivalDate")))
+            row = cursor.fetchone()
+            # if this error pops up fml
+            if row is None:
+                raise ValueError("Depart ScheduleID can't be found")
+            
+            departSchedule = row.get("scheduleID")
+
+            cursor.execute(query, 
+                           (inboundFlight.get("flightID"),
+                            inboundFlight.get("departureDate"),
+                            inboundFlight.get("arrivalDate")))
+            row = cursor.fetchone()
+            # if this error pops up fml (2)
+            if row is None:
+                raise ValueError("Return ScheduleID can't be found")
+        
+            returnSchedule = row.get("scheduleID")
+
+            # if this error pops up fml (3)
+            if (outboundFlight['reservationDate'] != inboundFlight['reservationDate']):
+                raise ValueError("Reservation dates don't match")
+            
+            # insert into planeseat
+            insert_planeseat(
+                outboundFlight.get("seatNumber"),
+                departSchedule,
+                outboundFlight.get("seatClass"))
+            insert_planeseat(
+                inboundFlight.get("seatNumber"),
+                returnSchedule,
+                inboundFlight.get("seatClass"))
+
+            # insert into booking
+            query = """
+                INSERT INTO `booking`(userID, departSchedule, returnSchedule, departSeat, returnSeat, bookingDate)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """
             cursor.execute(query, (
-                user['userID'],
-                data['flightID'],
-                data['seatNumber'],
-                booking_date
+                userID,
+                departSchedule,
+                returnSchedule,
+                outboundFlight.get("seatNumber"),
+                inboundFlight.get("seatNumber"),
+                outboundFlight.get("reservationDate")
             ))
+
             conn.commit()
         except Exception as e:
             conn.rollback()
             return {"error": str(e)}
+
+def user_details_match(outboundFlight: dict, inboundFlight: dict) -> bool:
+    return (outboundFlight['username'] == inboundFlight['username']
+            and outboundFlight['email'] == inboundFlight['email'])

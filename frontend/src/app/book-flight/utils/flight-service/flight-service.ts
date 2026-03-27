@@ -9,11 +9,10 @@ import { environment } from '../../../../_environments/environment';
 export class FlightService {
   private http = inject(HttpClient);
 
-  // TODO: Test this without {withCredentials: true} and see if the interceptor works
   bookFlight(outboundFlight: FormGroup, inboundFlight: FormGroup) {
     return this.http.post(`${environment.api_url}/api/book-flight`, {
-      outbound: outboundFlight,
-      inbound: inboundFlight
+      outbound: outboundFlight.value,
+      inbound: inboundFlight.value
     }
     );
   }

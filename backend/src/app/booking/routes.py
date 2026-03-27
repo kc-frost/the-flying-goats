@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required
 
-from .service import get_airports, get_available_flights, book_a_flight
+from .service import get_airports, get_available_flights, book_a_flight, user_details_match
 
 bp = Blueprint("booking", __name__)
 
@@ -39,7 +39,14 @@ def available_flights():
 @login_required
 def book_flight():
     data = request.get_json()
-    result = book_a_flight(data)
+    outboundFlight = data['outbound']
+    inboundFlight = data['inbound']
+
+    # this is an insane edge case that hopefully never happens ever
+    if (user_details_match(outboundFlight, inboundFlight) == False):
+        return jsonify({"message": "User details don't match"}), 500
+
+    result = book_a_flight(outboundFlight, inboundFlight)
     if result and "error" in result:
         return jsonify(result), 500
     return jsonify({"message": "booking confirmed"}), 200

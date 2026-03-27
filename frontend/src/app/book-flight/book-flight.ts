@@ -110,17 +110,22 @@ export class BookFlight {
 
 // === HELPER FUNCTIONS ===
   createFlightForm() {
+    // set timezone offset
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    
     return this.formBuilder.group({
       // match mysql datetime format
-      reservationDate: [new Date().toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
+      reservationDate: [local.toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
       username: [this.userService.getUsername(), [Validators.required]],
+      email: [this.userService.getEmail(), [Validators.required]],
       flightID: ['', [Validators.required]], // this field is to make queries easier when POSTed
       origin: ['', [Validators.required]],
       destination: ['', [Validators.required]],
       departureDate: ['', [Validators.required]],
       arrivalDate: ['', [Validators.required]],
       seatNumber: ['', [Validators.required]],
-      seatClass: ['Economy', [Validators.required]],
+      seatClass: ['1', [Validators.required]],
     })
   }
 
@@ -206,9 +211,13 @@ export class BookFlight {
     // extract date out of the calendar
     var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
 
+    // set timezone offset
+    const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 19).replace("T", " ");
+    
     // match mysql datetime format
-    var newDeptDate = new Date(`${tripDate} ${flight.liftOff}`).toISOString().slice(0, 19).replace("T", " ");
-    var newArrDate = new Date(`${tripDate} ${flight.landing}`).toISOString().slice(0, 19).replace("T", " ");
+    var newDeptDate = toLocal(new Date(`${tripDate} ${flight.liftOff}`));
+    var newArrDate = toLocal(new Date(`${tripDate} ${flight.landing}`));
 
     // update form values
     flightForm.patchValue({

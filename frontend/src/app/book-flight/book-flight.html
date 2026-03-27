@@ -60,8 +60,7 @@
       </div>
       <div class="submit">
         <button type="submit" [disabled]="!searchTerms.valid">Search Flights</button>
-        <!-- TODO: Replace this with onSubmit() once you get all the required fields -->
-        <button type="button" (click)="printAllFlights()" [disabled]="!(outboundFlight.valid && inboundFlight.valid)">Book Flight</button>
+        <button type="button" (click)="onSubmit()" [disabled]="!(outboundFlight.valid && inboundFlight.valid)">Book Flight</button>
       </div>
     </section>
     </form>
