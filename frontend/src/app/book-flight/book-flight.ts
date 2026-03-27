@@ -79,7 +79,10 @@ export class BookFlight {
   activeTab: "depart" | "return" = "depart";
 
   activeOutboundFlight: number | null = null;
+  activeOutboundSeat: string | null = null;
+  
   activeInboundFlight: number | null = null;
+  activeInboundSeat: string | null = null;
 
   // === FORMS ===
   // searches for flights
@@ -168,26 +171,35 @@ export class BookFlight {
   }
 
   // separated function since seatID is determined from the child component
-  setSeatID(seatID: string) {
-    // persists selected seat while even if the seat selector modal is closed
-    // for as long as the associated flight remains selected
-    this.seatID = seatID;
+  setSeatID(seatID: string, leg: string) {
+    var isOutbound = (leg === "outbound");
+    var flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
 
-    this.outboundFlight.patchValue({
+    if (isOutbound) {
+      this.activeOutboundSeat = seatID;
+    } else {
+      this.activeInboundSeat = seatID;
+    }
+
+    flightForm.patchValue({
       seatNumber: seatID
     });
   }
 
   selectFlight(flightIndex: number, flight: any, leg: string) {
     var isOutbound = (leg === "outbound");
-
+    
     if (isOutbound) {
       this.activeOutboundFlight = flightIndex;
 
+      // when a user selects a new flight, reset their seat choices
+      this.activeOutboundSeat = null;
+      
       // let user select return flight
       this.hasSelectedDeparture = true;
     } else {
       this.activeInboundFlight = flightIndex;
+      this.activeInboundSeat = null;
     }
 
     const dateKey = isOutbound ? "departureDate" : "arrivalDate";
@@ -217,6 +229,11 @@ export class BookFlight {
 
   printInBound() {
     console.log(this.inboundFlight.value);
+  }
+
+  printAllFlights() {
+    this.printOutbound();
+    this.printInBound();
   }
 
 };

@@ -348,7 +348,7 @@ button {
     & app-seat-selector-modal {
         position: fixed;
         z-index: 100;
-        animation: slide-down 1500ms;
+        animation: slide-down 1000ms;
     
         /* puts in the center
         /* if this doesnt do it relatively fml */
@@ -368,7 +368,7 @@ button {
 
 @keyframes slide-down {
     from {
-        transform: translateY(-160%);
+        transform: translateY(-120%);
         opacity: 0.9;
     }
 
