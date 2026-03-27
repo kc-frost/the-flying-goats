@@ -110,6 +110,8 @@
               <app-seat-selector-modal [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
             </dialog>
           </div>
+          } @empty {
+            <p>No flights matched.</p>
           }
         }
         @case ("return") {
@@ -141,6 +143,8 @@
               <app-seat-selector-modal [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
             </dialog>
           </div>
+          } @empty {
+            <p>No flights matched.</p>
           }
         }
       }

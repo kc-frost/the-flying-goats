@@ -70,7 +70,6 @@ export class BookFlight {
 
   currentDate!: Date
   currentUser!: string
-  seatID: string | undefined | null; 
   
   originFocused: boolean = false;
   destFocused: boolean = false;
@@ -112,8 +111,10 @@ export class BookFlight {
 // === HELPER FUNCTIONS ===
   createFlightForm() {
     return this.formBuilder.group({
-      reservationDate: [new Date(), [Validators.required]],
+      // match mysql datetime format
+      reservationDate: [new Date().toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
       username: [this.userService.getUsername(), [Validators.required]],
+      flightID: ['', [Validators.required]], // this field is to make queries easier when POSTed
       origin: ['', [Validators.required]],
       destination: ['', [Validators.required]],
       departureDate: ['', [Validators.required]],
@@ -204,13 +205,16 @@ export class BookFlight {
 
     // extract date out of the calendar
     var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
-    var newDeptDate = new Date(`${tripDate} ${flight.liftOff}`).toLocaleString();
-    var newArrDate = new Date(`${tripDate} ${flight.landing}`).toLocaleString();
+
+    // match mysql datetime format
+    var newDeptDate = new Date(`${tripDate} ${flight.liftOff}`).toISOString().slice(0, 19).replace("T", " ");
+    var newArrDate = new Date(`${tripDate} ${flight.landing}`).toISOString().slice(0, 19).replace("T", " ");
 
     // update form values
     flightForm.patchValue({
       origin: this.searchTerms.get(`${origin}`)!.value.toUpperCase(),
       destination: this.searchTerms.get(`${destination}`)!.value.toUpperCase(),
+      flightID: flight.IATA,
       departureDate: newDeptDate,
       arrivalDate: newArrDate
     })
