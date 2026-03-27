@@ -106,7 +106,7 @@
     
             <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeOutboundFlight !== $index">Select Seat</button>
             <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
-              <app-seat-selector-modal [planeCapacity]="flight.capacity" [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity" [scheduleID]="flight.scheduleID!" [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
             </dialog>
           </div>
           } @empty {
@@ -139,7 +139,7 @@
     
             <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeInboundFlight !== $index">Select Seat</button>
             <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
-              <app-seat-selector-modal [planeCapacity]="flight.capacity!" [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity!" [scheduleID]="flight.scheduleID!" [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
             </dialog>
           </div>
           } @empty {

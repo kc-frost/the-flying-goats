@@ -150,6 +150,8 @@ export class BookFlight {
       this.activeInboundFlight = null;
     }, 150);
 
+    this.hasSelectedDeparture = false;
+
     const origin = this.searchTerms.get('origin')?.value!;
     const destination = this.searchTerms.get('destination')?.value!;
 

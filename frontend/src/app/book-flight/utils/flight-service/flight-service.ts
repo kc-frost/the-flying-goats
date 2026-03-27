@@ -33,5 +33,13 @@ export class FlightService {
       }}
     );
   }
+
+  getTakenSeats(scheduleID: number) {
+    return this.http.get<any[]>(`${environment.api_url}/api/taken-seats`,
+      { params: {
+        scheduleID: scheduleID
+      }}
+    );
+  }
   
 }
