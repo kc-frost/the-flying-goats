@@ -13,7 +13,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'app-book-flight',
   templateUrl: './book-flight.html',
   styleUrl: './book-flight.css',
-  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe],
+  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe,],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -60,11 +60,14 @@ export class BookFlight {
 
   private originAirports = new BehaviorSubject<any[]>([]);
   private destinationAirports = new BehaviorSubject<any[]>([]);
-  private availableFlights = new BehaviorSubject<any[]>([]);
-
   originAirports$ = this.originAirports.asObservable();
   destinationAirports$ = this.destinationAirports.asObservable();
-  availableFlights$ = this.availableFlights.asObservable();
+
+  private departingFlights = new BehaviorSubject<any[]>([]);
+  private returningFlights = new BehaviorSubject<any[]>([]);
+  departingFlights$ = this.departingFlights.asObservable();
+  returningFlights$ = this.returningFlights.asObservable();
+
   currentDate!: Date
   currentUser!: string
   seatID: string | undefined | null; 
@@ -72,7 +75,11 @@ export class BookFlight {
   originFocused: boolean = false;
   destFocused: boolean = false;
 
-  activeFlight: number | null = null;
+  hasSelectedDeparture = false;
+  activeTab: "depart" | "return" = "depart";
+
+  activeOutboundFlight: number | null = null;
+  activeInboundFlight: number | null = null;
 
   // === FORMS ===
   // searches for flights
@@ -126,11 +133,12 @@ export class BookFlight {
   }
 
   searchFlights() {
-    // due to the api call, flights takes a little longer to load
-    // this delays the button from turning grey so that it "syncs up" with flights loading in 
-    // this is more for visual purposes
+    // if the user has a selected flight from a previous search, and queries new flights based on another search
+    // delay the select seat button from turning gray until the api call returns
+    // (150 isnt exactly how long it takes, but this is more for visual purposes anyway)
     setTimeout(() => {
-      this.activeFlight = null;
+      this.activeOutboundFlight = null;
+      this.activeInboundFlight = null;
     }, 150);
 
     const origin = this.searchTerms.get('origin')?.value!;
@@ -138,7 +146,13 @@ export class BookFlight {
 
     this.flightService.getFlights(origin, destination).subscribe({
       next: (res) => {
-        this.availableFlights.next(res);
+        this.departingFlights.next(res);
+      }
+    })
+    this.flightService.getFlights(destination, origin).
+    subscribe({
+      next: (res) => {
+        this.returningFlights.next(res);
       }
     })
   }
@@ -165,30 +179,35 @@ export class BookFlight {
   }
 
   selectFlight(flightIndex: number, flight: any, leg: string) {
-    // important for knowing what flight was selected
-    this.activeFlight = flightIndex;
+    var isOutbound = (leg === "outbound");
 
-    const dateKey = (leg == 'outbound') ? "departureDate" : "arrivalDate";
+    if (isOutbound) {
+      this.activeOutboundFlight = flightIndex;
+
+      // let user select return flight
+      this.hasSelectedDeparture = true;
+    } else {
+      this.activeInboundFlight = flightIndex;
+    }
+
+    const dateKey = isOutbound ? "departureDate" : "arrivalDate";
+    const origin = isOutbound ? "origin" : "destination";
+    const destination = isOutbound ? "destination" : "origin";
+    const flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
 
     // extract date out of the calendar
     var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
+    var newDeptDate = new Date(`${tripDate} ${flight.liftOff}`).toLocaleString();
+    var newArrDate = new Date(`${tripDate} ${flight.landing}`).toLocaleString();
 
-    var liftOff = flight.liftOff;
-    var landing = flight.landing;
-
-    var newDeptDate = new Date(`${tripDate} ${liftOff}`).toLocaleString();
-    var newArrDate = new Date(`${tripDate} ${landing}`).toLocaleString();
-
-    this.outboundFlight.patchValue({
-      origin: this.searchTerms.get('origin')!.value.toUpperCase(),
-      destination: this.searchTerms.get('destination')!.value.toUpperCase(),
+    // update form values
+    flightForm.patchValue({
+      origin: this.searchTerms.get(`${origin}`)!.value.toUpperCase(),
+      destination: this.searchTerms.get(`${destination}`)!.value.toUpperCase(),
       departureDate: newDeptDate,
       arrivalDate: newArrDate
-    });
-  }
+    })
 
-  getActiveFlight(): number | null {
-    return this.activeFlight;
   }
 
   // TESTING FUNCTIONS

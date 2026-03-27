@@ -288,6 +288,10 @@ main {
             }
         }
 
+        &:disabled + label {
+            cursor: not-allowed;
+        }
+
         &:checked + label {
             color: var(--primary-header-color);
         }

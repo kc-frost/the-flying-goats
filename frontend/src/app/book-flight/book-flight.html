@@ -60,7 +60,7 @@
       </div>
       <div class="submit">
         <button type="submit" [disabled]="!searchTerms.valid">Search Flights</button>
-        <button type="button" (click)="printOutbound()" [disabled]="!(outboundFlight.valid)">Book Flight</button>
+        <button type="button" (click)="printOutbound()" [disabled]="!(outboundFlight.valid && inboundFlight.valid)">Book Flight</button>
       </div>
     </section>
     </form>
@@ -70,43 +70,78 @@
     <header>Available Flights</header>
     <section class="tab">
       <div class="depart">
-        <input type="radio" name="tab" id="depart" checked/>
+        <input type="radio" name="tab" id="depart" (change)="activeTab = 'depart'" checked/>
         <label for="depart">Departing Flights</label>
       </div>
       <div class="return">
-        <input type="radio" name="tab" id="return" />
+        <input type="radio" name="tab" id="return" (change)="activeTab = 'return'" [disabled]="!hasSelectedDeparture"/>
         <label for="return">Returning Flights</label>
       </div>
     </section>
     <section class="flight-choices">
-      @for (flight of availableFlights$ | async; track $index) {
-        <div class="choice">
-        <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="getActiveFlight() === $index" (change)="selectFlight($index, flight, 'outbound' )" required/>
-        <label [for]=$index>
-          <div class="header">
-            <p>DEPART</p>
-            <p>→</p>
-            <p>ARRIVE</p>
+      @switch(activeTab) {
+        @case ("depart") {
+          @for (flight of departingFlights$ | async; track $index) {
+            <div class="choice">
+            <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="activeOutboundFlight === $index" (change)="selectFlight($index, flight, 'outbound')" required/>
+            <label [for]=$index>
+              <div class="header">
+                <p>DEPART</p>
+                <p>→</p>
+                <p>ARRIVE</p>
+              </div>
+              <div class="time">
+                <p>{{flight.liftOff}}</p>
+                <span class="duration">
+                  {{flight.duration}}
+                </span>
+                <p>{{flight.landing}}</p>
+              </div>
+              <div class="airport">
+                <p>{{flight.origin}}</p>
+                <p>→</p>
+                <p>{{flight.destination}}</p>
+              </div>
+            </label>
+    
+            <button popovertarget="seat-modal" [disabled]="activeOutboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal id="seat-modal" popover>
+              <app-seat-selector-modal (seatID)="setSeatID($event)"/>
+            </dialog>
           </div>
-          <div class="time">
-            <p>{{flight.liftOff}}</p>
-            <span class="duration">
-              {{flight.duration}}
-            </span>
-            <p>{{flight.landing}}</p>
+          }
+        }
+        @case ("return") {
+          @for (flight of returningFlights$ | async; track $index) {
+            <div class="choice">
+            <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="activeInboundFlight === $index" (change)="selectFlight($index, flight, 'inbound')" required/>
+            <label [for]=$index>
+              <div class="header">
+                <p>DEPART</p>
+                <p>→</p>
+                <p>ARRIVE</p>
+              </div>
+              <div class="time">
+                <p>{{flight.liftOff}}</p>
+                <span class="duration">
+                  {{flight.duration}}
+                </span>
+                <p>{{flight.landing}}</p>
+              </div>
+              <div class="airport">
+                <p>{{flight.origin}}</p>
+                <p>→</p>
+                <p>{{flight.destination}}</p>
+              </div>
+            </label>
+    
+            <button popovertarget="seat-modal" [disabled]="activeInboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal id="seat-modal" popover>
+              <app-seat-selector-modal (seatID)="setSeatID($event)"/>
+            </dialog>
           </div>
-          <div class="airport">
-            <p>{{flight.origin}}</p>
-            <p>→</p>
-            <p>{{flight.destination}}</p>
-          </div>
-        </label>
-
-        <button popovertarget="seat-modal" [disabled]="getActiveFlight() !== $index">Select Seat</button>
-        <dialog class="seat-modal" #seatModal id="seat-modal" popover>
-          <app-seat-selector-modal (seatID)="setSeatID($event)"/>
-        </dialog>
-      </div>
+          }
+        }
       }
     </section>
   </section>
