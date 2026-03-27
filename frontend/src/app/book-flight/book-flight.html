@@ -98,15 +98,15 @@
                 <p>{{flight.landing}}</p>
               </div>
               <div class="airport">
-                <p>{{flight.origin}}</p>
+                <p>{{flight.origin_IATA}}</p>
                 <p>→</p>
-                <p>{{flight.destination}}</p>
+                <p>{{flight.destination_IATA}}</p>
               </div>
             </label>
     
-            <button popovertarget="seat-modal" [disabled]="activeOutboundFlight !== $index">Select Seat</button>
-            <dialog class="seat-modal" #seatModal id="seat-modal" popover>
-              <app-seat-selector-modal [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
+            <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeOutboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity" [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
             </dialog>
           </div>
           } @empty {
@@ -131,15 +131,15 @@
                 <p>{{flight.landing}}</p>
               </div>
               <div class="airport">
-                <p>{{flight.origin}}</p>
+                <p>{{flight.origin_IATA}}</p>
                 <p>→</p>
-                <p>{{flight.destination}}</p>
+                <p>{{flight.destination_IATA}}</p>
               </div>
             </label>
     
-            <button popovertarget="seat-modal" [disabled]="activeInboundFlight !== $index">Select Seat</button>
-            <dialog class="seat-modal" #seatModal id="seat-modal" popover>
-              <app-seat-selector-modal [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
+            <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeInboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity!" [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
             </dialog>
           </div>
           } @empty {

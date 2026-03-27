@@ -13,24 +13,24 @@
     readonly leftSeats = ["A", "B"];
     readonly rightSeats = ["C", "D"];
 
-    // TODO: USE THIS TO SET CAPACITY
-    planeCapacity = input(0);
+    planeCapacity = input<number | null>(null);
     currentActiveSeat = input<string | null>(null);
 
-    // TODO: Change this to obtain capacity from flights
-    capacity = 8;
+    capacity: number | null = null;
     rows: number[] = [];
 
     ngOnChanges() {
       this.mySeat.patchValue({
         seatID: this.currentActiveSeat(),
-      })
-    }
+      });
 
-    ngOnInit() {
-      for (let a_row = 1; a_row <= (this.capacity/2); a_row++) {
+      // allow seat capacity to dynamically change
+      this.capacity = this.planeCapacity();
+      this.rows = [];
+      for (let a_row = 1; a_row <= (this.capacity!/2); a_row++) {
         this.rows.push(a_row)
       }
+
     }
 
     exitModal = output<boolean>();

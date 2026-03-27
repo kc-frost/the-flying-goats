@@ -51,7 +51,7 @@ def get_available_flights(origin, destination):
             query = """
                 SELECT *
                 FROM `available_flights`
-                WHERE `origin` LIKE %s AND `destination` LIKE %s
+                WHERE `origin_IATA` LIKE %s AND `destination_IATA` LIKE %s
             """
 
             # This accounts for partial matches
