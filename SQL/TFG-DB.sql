@@ -28,13 +28,15 @@ positionID int default 5 references positionEnums(positionID)
 );
 
 create table flight(
-IATA varchar(7) primary key, -- Don't include dashes or space (I.E: TP6767)
+flightID int primary key auto_increment,
+IATA varchar(7), -- Don't include dashes or space (I.E: TP6767)
 planeName varchar(255),
 gate varchar(2),
 origin int references airports(airportID),
 destination int references airports(airportID),
 capacity int,
 assignedPilot int,
+unique(IATA, origin, destination), -- A flight (IATA) and its route (origin, destination) cannot be entered twice
 constraint chk_capacity check (capacity >= 0),
 constraint fk_staffID foreign key (assignedPilot) references staff(staffID) -- A flight MUST have a pilot now (staffID)
 -- A trigger will make sure that staffID both belongs to a pilot and is available
@@ -79,19 +81,25 @@ price double
 
 create table planeseat(
 seatNumber varchar(3),
-flightID varchar(7) references flight(IATA),
+scheduleID int references schedule(scheduleID),
 classID int,
 constraint fk_class_id foreign key (classID) references flightclass(classID),
-primary key(seatNumber, flightID)
+primary key(seatNumber, scheduleID)
 );
 
 -- A table with all the info in one for the view appointment part and cause it's cleaner
 create table booking(
 bookingNumber int primary key auto_increment,
 userID int references users(userID),
-flightID varchar(7) references flight(IATA),
-seat varchar(3) references planeSeat(seatNumber),
-bookingDate datetime
+departSeat varchar(3),
+returnSeat varchar(3),
+departSchedule int not null references schedule(scheduleID),
+returnSchedule int not null references schedule(scheduleID),
+bookingDate datetime,
+
+-- associate each seat with its proper flight
+constraint fk_departDetails foreign key (departSeat, departSchedule) references planeseat(seatNumber, scheduleID),
+constraint fk_returnDetails foreign key (returnSeat, returnSchedule) references planeseat(seatNumber, scheduleID)
 );
 
 create table item (
@@ -158,6 +166,7 @@ it.type, it.itemName
 from inventory i
 join item it on it.itemID = i.itemID;
 
+-- FIX THIS TO ADJUST FOR NEW BOOKING TABLE
 -- Reservation ticket view with all attributes needed for view reservations
 create view reservationticket as
 select
@@ -201,7 +210,6 @@ from staff s
 left join positionenums p using (positionID)
 where staffID not in (select assignedPilot from flight);
 
-<<<<<<< HEAD
 -- Shows available flights (typically queried through origin and destination
 -- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
 create view available_flights as
@@ -218,9 +226,6 @@ join airports ad on f.destination = ad.airportID
 join schedule s on f.IATA = s.flight;
 
 select * from available_flights;
-
-=======
->>>>>>> main
 
 -- triggers
 delimiter //
@@ -274,8 +279,4 @@ begin
             set message_text = "No available pilots at the moment";
 	end if;
 end//
-<<<<<<< HEAD
 delimiter ;
-=======
-delimiter ;
->>>>>>> main

@@ -251,6 +251,59 @@ main {
     }
 }
 
+.tab {
+    display: flex;
+    flex-direction: row;
+    padding: auto 1%;
+    align-items: center;
+    justify-content: space-around;
+    font-family: var(--header-font);
+
+    width: auto;
+    height: 45px;
+
+    color: var(--primary-header-color);
+    background-color: var(--primary-color);
+
+    & input[type=radio] {
+        position: absolute;
+        opacity: 0;
+
+        + label {
+            color: #c3c3c3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            font-size: 1.15rem;
+
+            transition: 
+                background-color 0.2s ease-in-out,
+                color 0.1s ease-in-out;
+
+            &:hover {
+                background-color: #25437a;
+                cursor: pointer;
+            }
+        }
+
+        &:disabled + label {
+            cursor: not-allowed;
+        }
+
+        &:checked + label {
+            color: var(--primary-header-color);
+        }
+    }
+
+    & div {
+        width: 100%;
+        height: 100%;
+    }
+    
+}
+
 /* General styling for buttons */
 button {
     border-radius: 9px;
@@ -295,7 +348,7 @@ button {
     & app-seat-selector-modal {
         position: fixed;
         z-index: 100;
-        animation: slide-down 1500ms;
+        animation: slide-down 1000ms;
     
         /* puts in the center
         /* if this doesnt do it relatively fml */
@@ -315,7 +368,7 @@ button {
 
 @keyframes slide-down {
     from {
-        transform: translateY(-160%);
+        transform: translateY(-120%);
         opacity: 0.9;
     }
 

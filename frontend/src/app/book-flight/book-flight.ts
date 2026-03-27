@@ -1,11 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy} from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { invalidDateValidator } from './utils/invalid-date-validator';
-import { environment } from '../../_environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { SeatSelectorModal } from './seat-selector-modal/seat-selector-modal';
 import { UserService } from '../_shared/services/user-service';
 import { FlightService } from './utils/flight-service/flight-service';
@@ -16,7 +13,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'app-book-flight',
   templateUrl: './book-flight.html',
   styleUrl: './book-flight.css',
-  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe],
+  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe,],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,16 +21,12 @@ import { AsyncPipe } from '@angular/common';
 // This file is gonna be separated into commented categories because even after reorganizing everything it's still so fucking long
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient);
   private userService = inject(UserService);
-  flightService = inject(FlightService);
+  private flightService = inject(FlightService);
 
   // === ON INIT ===
   ngOnInit() {
-    this.currentDate = new Date();
-    this.currentUser = this.userService.getUsername();
-
-    this.newFlightDetails.get('origin')?.valueChanges.pipe(
+    this.searchTerms.get('origin')?.valueChanges.pipe(
       // Wait for 400ms of inactivity before subscribing
       debounceTime(400)
     )
@@ -44,7 +37,7 @@ export class BookFlight {
     }
     );
 
-    this.newFlightDetails.get('destination')?.valueChanges.pipe(
+    this.searchTerms.get('destination')?.valueChanges.pipe(
       // Wait for 400ms of inactivity before subscribing
       debounceTime(400)
     )
@@ -54,9 +47,6 @@ export class BookFlight {
       }
     }
     );
-
-    this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
-    this.newFlightDetails.get("username")?.setValue(this.currentUser);
   }
 
   // === FIELDS AND PROPERTIES ===
@@ -70,67 +60,75 @@ export class BookFlight {
 
   private originAirports = new BehaviorSubject<any[]>([]);
   private destinationAirports = new BehaviorSubject<any[]>([]);
-  private availableFlights = new BehaviorSubject<any[]>([]);
-
   originAirports$ = this.originAirports.asObservable();
   destinationAirports$ = this.destinationAirports.asObservable();
-  availableFlights$ = this.availableFlights.asObservable();
+
+  private departingFlights = new BehaviorSubject<any[]>([]);
+  private returningFlights = new BehaviorSubject<any[]>([]);
+  departingFlights$ = this.departingFlights.asObservable();
+  returningFlights$ = this.returningFlights.asObservable();
+
   currentDate!: Date
   currentUser!: string
-  seatID: string | undefined | null; 
   
   originFocused: boolean = false;
   destFocused: boolean = false;
 
-  activeFlight: number | null = null;
+  hasSelectedDeparture = false;
+  activeTab: "depart" | "return" = "depart";
 
-  // === FORM ===
-  // Username, ReservationDate, and SeatClass are filled in automatically
-  // SeatClass is automatic (FOR NOW)
-  newFlightDetails = this.formBuilder.group({
-    reservationDate: [''],
-    flightID: ['',
-      [Validators.required]
-    ],
-    username: [''
-    ],
-    origin: ['',
-      [Validators.required]
-    ],
-    destination: ['',
-      [Validators.required]
-    ],
-    departureDate: ['',
-      [Validators.required]
-    ],
-    arrivalDate: ['',
-      [Validators.required]
-    ],
-    seatNumber: ['',
-      [Validators.required]
-    ],
-    seatClass: ['Economy'],
-  },
-  { validators: invalidDateValidator}
-);
+  activeOutboundFlight: number | null = null;
+  activeOutboundSeat: string | null = null;
   
-  // == ON SUBMIT ==
+  activeInboundFlight: number | null = null;
+  activeInboundSeat: string | null = null;
+
+  // === FORMS ===
+  // searches for flights
+  searchTerms: FormGroup = this.formBuilder.group({
+    origin: ['', [Validators.required]],
+    destination: ['', [Validators.required]],
+    departureDate: ['', [Validators.required]],
+    arrivalDate: ['', [Validators.required]],
+  })
+
+  // round-trip flight forms to create a booking from
+  outboundFlight = this.createFlightForm();
+  inboundFlight = this.createFlightForm();
+
+  // === ON SUBMIT ===
   onSubmit() {
-    this.http.post(
-    `${environment.api_url}/api/book-flight`, 
-    this.newFlightDetails.value,
-    { withCredentials: true }
-  ).subscribe({
-    next: () => {
-      alert("Booking received!")
-    },
-    error: (err) => {
-      console.log("BOOKING NOT RECEIVED:", err);
-    }
-  });
+    this.flightService.bookFlight(this.outboundFlight, this.inboundFlight).subscribe({
+      next: () => {
+        alert("Booking created! Safe travels :)");
+      },
+      error: (err) => {
+        console.log("BOOKING NOT RECEIVED:", err);
+      }
+    });
 }
 
 // === HELPER FUNCTIONS ===
+  createFlightForm() {
+    // set timezone offset
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    
+    return this.formBuilder.group({
+      // match mysql datetime format
+      reservationDate: [local.toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
+      username: [this.userService.getUsername(), [Validators.required]],
+      email: [this.userService.getEmail(), [Validators.required]],
+      flightID: ['', [Validators.required]], // this field is to make queries easier when POSTed
+      origin: ['', [Validators.required]],
+      destination: ['', [Validators.required]],
+      departureDate: ['', [Validators.required]],
+      arrivalDate: ['', [Validators.required]],
+      seatNumber: ['', [Validators.required]],
+      seatClass: ['1', [Validators.required]],
+    })
+  }
+
   searchAirports(search_term: string, leg: string) {
     this.flightService.getAirports(search_term).subscribe({
       next: (res) => {
@@ -144,43 +142,106 @@ export class BookFlight {
   }
 
   searchFlights() {
-    // due to the api call, flights takes a little longer to load
-    // this delays the button from turning grey so that it "syncs up" with flights loading in 
-    // this is more for visual purposes
+    // if the user has a selected flight from a previous search, and queries new flights based on another search
+    // delay the select seat button from turning gray until the api call returns
+    // (150 isnt exactly how long it takes, but this is more for visual purposes anyway)
     setTimeout(() => {
-      this.activeFlight = null;
+      this.activeOutboundFlight = null;
+      this.activeInboundFlight = null;
     }, 150);
 
-    const origin = this.newFlightDetails.get('origin')?.value!;
-    const destination = this.newFlightDetails.get('destination')?.value!;
+    const origin = this.searchTerms.get('origin')?.value!;
+    const destination = this.searchTerms.get('destination')?.value!;
 
     this.flightService.getFlights(origin, destination).subscribe({
-      next: (res) => {
-        this.availableFlights.next(res);
+      next: (res: any) => {
+        this.departingFlights.next(res.depart);
+        this.returningFlights.next(res.return);
       }
-    })
+    });
   }
 
+  // Replaces text in input element
   setOrigin(airport: any) {
-    this.newFlightDetails.get('origin')?.setValue(airport.IATA)!
+    this.searchTerms.get('origin')?.setValue(airport.IATA)!;
   }
 
+  // Replaces text in input element
   setDestination(airport: any) {
-    this.newFlightDetails.get('destination')?.setValue(airport.IATA)!
+    this.searchTerms.get('destination')?.setValue(airport.IATA)!;
   }
 
-  setSeatID(seatID: string) {
-    this.seatID = seatID;
-    this.newFlightDetails.get("seatNumber")?.setValue(this.seatID);
-    console.log(this.seatID);
+  // separated function since seatID is determined from the child component
+  setSeatID(seatID: string, leg: string) {
+    var isOutbound = (leg === "outbound");
+    var flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
+
+    if (isOutbound) {
+      this.activeOutboundSeat = seatID;
+    } else {
+      this.activeInboundSeat = seatID;
+    }
+
+    flightForm.patchValue({
+      seatNumber: seatID
+    });
   }
 
-  setActiveFlight(flight: number) {
-    this.activeFlight = flight;
+  selectFlight(flightIndex: number, flight: any, leg: string) {
+    var isOutbound = (leg === "outbound");
+    
+    if (isOutbound) {
+      this.activeOutboundFlight = flightIndex;
+
+      // when a user selects a new flight, reset their seat choices
+      this.activeOutboundSeat = null;
+      
+      // let user select return flight
+      this.hasSelectedDeparture = true;
+    } else {
+      this.activeInboundFlight = flightIndex;
+      this.activeInboundSeat = null;
+    }
+
+    const dateKey = isOutbound ? "departureDate" : "arrivalDate";
+    const origin = isOutbound ? "origin" : "destination";
+    const destination = isOutbound ? "destination" : "origin";
+    const flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
+
+    // extract date out of the calendar
+    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
+
+    // set timezone offset
+    const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 19).replace("T", " ");
+    
+    // match mysql datetime format
+    var newDeptDate = toLocal(new Date(`${tripDate} ${flight.liftOff}`));
+    var newArrDate = toLocal(new Date(`${tripDate} ${flight.landing}`));
+
+    // update form values
+    flightForm.patchValue({
+      origin: this.searchTerms.get(`${origin}`)!.value.toUpperCase(),
+      destination: this.searchTerms.get(`${destination}`)!.value.toUpperCase(),
+      flightID: flight.IATA,
+      departureDate: newDeptDate,
+      arrivalDate: newArrDate
+    })
+
   }
 
-  getActiveFlight(): number | null {
-    return this.activeFlight;
+  // TESTING FUNCTIONS
+  printOutbound() {
+    console.log(this.outboundFlight.value);
+  }
+
+  printInBound() {
+    console.log(this.inboundFlight.value);
+  }
+
+  printAllFlights() {
+    this.printOutbound();
+    this.printInBound();
   }
 
 };
