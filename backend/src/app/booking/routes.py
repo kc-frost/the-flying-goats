@@ -1,10 +1,19 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required
 
-from .service import get_airports, get_available_flights, book_a_flight, user_details_match
+from .service import get_taken_seats, get_airports, get_available_flights, book_a_flight, user_details_match
 
 bp = Blueprint("booking", __name__)
 
+@bp.route('/taken-seats', methods=['GET'])
+def taken_seats():
+    scheduleID = request.args.get("scheduleID")
+
+    taken_seats = get_taken_seats(scheduleID)
+    if "error" in taken_seats:
+        return jsonify(taken_seats), 500
+
+    return jsonify(taken_seats), 200
 
 @bp.route('/airports', methods=['GET'])
 def airports():
