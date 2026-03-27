@@ -71,7 +71,7 @@ insert into flight (IATA, planeName, gate, origin, destination, capacity) values
 ("TP1006", "AtlasSprint", "C2", 1, 21, 20);		-- AUS -> SOF
 
 -- schedule inserts
-insert into schedule (flight, liftOff, landing) values
+insert into schedule (flightID, liftOff, landing) values
 ("TP1001", "2026-03-10 10:06:07", "2026-03-10 12:00:00"),
 ("TP1002", "2026-03-10 13:30:00", "2026-03-10 15:05:00"),
 ("TP1003", "2026-03-11 09:15:00", "2026-03-11 10:25:00"),
