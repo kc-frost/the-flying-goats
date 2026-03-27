@@ -148,16 +148,11 @@ export class BookFlight {
     const destination = this.searchTerms.get('destination')?.value!;
 
     this.flightService.getFlights(origin, destination).subscribe({
-      next: (res) => {
-        this.departingFlights.next(res);
+      next: (res: any) => {
+        this.departingFlights.next(res.depart);
+        this.returningFlights.next(res.return);
       }
-    })
-    this.flightService.getFlights(destination, origin).
-    subscribe({
-      next: (res) => {
-        this.returningFlights.next(res);
-      }
-    })
+    });
   }
 
   // Replaces text in input element

@@ -41,7 +41,8 @@ def get_available_flights(origin, destination):
         destination (str): The airport where a plane is headed towards
 
     Returns:
-        list: A list of flights that whose origin and destination match the passed `origin` and `destination`
+        dict: A dict with keys 'depart' and 'return', each containing a list of matching flights. Otherwise,
+        a dict with an error key if the query fails
     """    
     conn = get_connection()
 
@@ -54,17 +55,20 @@ def get_available_flights(origin, destination):
             """
 
             # This accounts for partial matches
+
             cursor.execute(query, (f'%{origin}', f'%{destination}%'))
             rows = cursor.fetchall()
+            departFlights = [dict(row) for row in rows]
 
-            flights = []
-            for row in rows:
-                flights.append(row)
+            cursor.execute(query, (f'%{destination}%', f'%{origin}%'))
+            rows = cursor.fetchall()
+            returnFlights = [dict(row) for row in rows]
 
         except Exception as e:
             return {"error": str(e)}
     
-    return flights
+    return {"depart": departFlights,
+            "return": returnFlights}
 
 def book_a_flight(data: dict):
     booking_date = datetime.strptime(data['reservationDate'], "%a %b %d %Y").strftime("%Y-%m-%d")

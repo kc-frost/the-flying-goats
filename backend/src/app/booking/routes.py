@@ -22,14 +22,14 @@ def available_flights():
     """Gets the available flights between two dates
 
     Returns:
-        flights (list | dict(str, Any)): Valid flights for those dates or an error message from pymsql
+        flights (dict(str, Any)): Valid flights for those dates or an error message from pymsql
     """
     origin = request.args.get('user_origin')
     destination = request.args.get('user_destination')
 
     flights = get_available_flights(origin, destination)
 
-    if isinstance(flights, dict) and "error" in flights:
+    if "error" in flights:
         return jsonify(flights), 500
     
     return jsonify(flights), 200

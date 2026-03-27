@@ -26,7 +26,6 @@ export class FlightService {
     );
   }
 
-  // TODO: Make backend return origin and destination without having to make two separate calls in the frontend
   getFlights(origin: string, destination: string) {
     return this.http.get<any[]>(`${environment.api_url}/api/available-flights`,
       { params: {
