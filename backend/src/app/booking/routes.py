@@ -7,6 +7,11 @@ bp = Blueprint("booking", __name__)
 
 @bp.route('/taken-seats', methods=['GET'])
 def taken_seats():
+    """Gets all the taken seats of a scheduled flight via their scheduleID
+
+    Returns:
+        dict: Taken seats for the matched flight or an error message
+    """    
     scheduleID = request.args.get("scheduleID")
 
     taken_seats = get_taken_seats(scheduleID)
@@ -17,6 +22,11 @@ def taken_seats():
 
 @bp.route('/airports', methods=['GET'])
 def airports():
+    """Gets all matching airports based on search term
+
+    Returns:
+        dict: Airports and their attributes
+    """    
 
     search_term = request.args.get('search_term')
     airports = get_airports(search_term)
@@ -47,6 +57,11 @@ def available_flights():
 @bp.route("/book-flight", methods=["POST"])
 @login_required
 def book_flight():
+    """Book a flight
+
+    Returns:
+        dict: A confirmation or error message
+    """    
     data = request.get_json()
     outboundFlight = data['outbound']
     inboundFlight = data['inbound']
