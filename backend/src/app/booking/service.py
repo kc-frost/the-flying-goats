@@ -1,5 +1,39 @@
 from app.db import get_connection
-from datetime import datetime
+
+def get_taken_seats(scheduleID):
+    """Gets all taken seats of a flight per its scheduleID
+
+    Args:
+        scheduleID (int): scheduleID to identify a flight
+
+    Raises:
+        ValueError: No seats are found/No seats have been booked yet
+
+    Returns:
+        (list | dict): A list of taken_seats, or a dict containing an error message
+    """    
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT `seatNumber`
+                FROM `planeseat`
+                WHERE `scheduleID` = %s
+            """
+
+            cursor.execute(query, (scheduleID,))
+            rows = cursor.fetchall()
+
+            if rows is None:
+                raise ValueError("No seats found!")
+            
+            taken_seats = [row['seatNumber'] for row in rows]
+
+        except Exception as e:
+            return {"error": str(e)}
+    
+    return taken_seats
 
 def get_airports(search_term):
     """Get all airports based on if it matches the `search_term`
@@ -71,6 +105,16 @@ def get_available_flights(origin, destination):
             "return": returnFlights}
 
 def insert_planeseat(seatNumber, scheduleID, classID):
+    """Insert an occupied seat into the planeseat table
+
+    Args:
+        seatNumber (str): The new booked seat
+        scheduleID (int): The scheduleID of a flight
+        classID (int): The class of the seat
+
+    Returns:
+        (dict | None): A dict containing an error message, or nothing
+    """    
     conn = get_connection()
 
     with conn.cursor() as cursor:
@@ -85,10 +129,24 @@ def insert_planeseat(seatNumber, scheduleID, classID):
             conn.commit()
         except Exception as e:
             conn.rollback()
-            conn.rollback()
             return {"error": str(e)}
 
 def book_a_flight(outboundFlight: dict, inboundFlight: dict):
+    """Create a booking with an outbound and inbound flight
+
+    Args:
+        outboundFlight (dict): Details for an outbound flight
+        inboundFlight (dict): Details for an inbound flight
+
+    Raises:
+        ValueError: User can't be found
+        ValueError: Depart scheduleID can't be found
+        ValueError: Return scheduleID can't be found
+        ValueError: Reservation dates don't match
+
+    Returns:
+        dict: A dict containing an error message if the op fails 
+    """    
     conn = get_connection()
     
     with conn.cursor() as cursor:
@@ -171,5 +229,14 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             return {"error": str(e)}
 
 def user_details_match(outboundFlight: dict, inboundFlight: dict) -> bool:
+    """Checks if user details for both flights match
+
+    Args:
+        outboundFlight (dict): Outbound flight details
+        inboundFlight (dict): Inbound flight details
+
+    Returns:
+        bool: If credentials match across flights or not
+    """    
     return (outboundFlight['username'] == inboundFlight['username']
             and outboundFlight['email'] == inboundFlight['email'])

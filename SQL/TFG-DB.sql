@@ -37,7 +37,7 @@ destination int references airports(airportID),
 capacity int,
 assignedPilot int,
 unique(IATA, origin, destination), -- A flight (IATA) and its route (origin, destination) cannot be entered twice
-constraint chk_capacity check (capacity >= 0),
+constraint chk_capacity check (capacity <= 36 and capacity >= 0 and capacity % 4 = 0),
 constraint fk_staffID foreign key (assignedPilot) references staff(staffID) -- A flight MUST have a pilot now (staffID)
 -- A trigger will make sure that staffID both belongs to a pilot and is available
 );
@@ -57,7 +57,7 @@ IATA varchar(3)
 
 create table schedule(
 scheduleID int primary key auto_increment,
-flight varchar(7) references flight(IATA),
+flightID varchar(7) references flight(IATA),
 liftOff datetime,
 landing datetime
 );
@@ -213,17 +213,18 @@ where staffID not in (select assignedPilot from flight);
 -- Shows available flights (typically queried through origin and destination
 -- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
 create view available_flights as
-select 
+select
+s.scheduleID,
 ao.IATA as origin_IATA, 
 ad.IATA as destination_IATA, 
-f.IATA, 
+f.IATA, f.capacity,
 TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
 TIME_FORMAT(s.landing, "%H:%i") as landing, 
 CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
 from flight f
 join airports ao on f.origin = ao.airportID
 join airports ad on f.destination = ad.airportID
-join schedule s on f.IATA = s.flight;
+join schedule s on f.flightID = s.flightID;
 
 select * from available_flights;
 

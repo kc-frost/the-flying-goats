@@ -1,13 +1,32 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required
 
-from .service import get_airports, get_available_flights, book_a_flight, user_details_match
+from .service import get_taken_seats, get_airports, get_available_flights, book_a_flight, user_details_match
 
 bp = Blueprint("booking", __name__)
 
+@bp.route('/taken-seats', methods=['GET'])
+def taken_seats():
+    """Gets all the taken seats of a scheduled flight via their scheduleID
+
+    Returns:
+        dict: Taken seats for the matched flight or an error message
+    """    
+    scheduleID = request.args.get("scheduleID")
+
+    taken_seats = get_taken_seats(scheduleID)
+    if "error" in taken_seats:
+        return jsonify(taken_seats), 500
+
+    return jsonify(taken_seats), 200
 
 @bp.route('/airports', methods=['GET'])
 def airports():
+    """Gets all matching airports based on search term
+
+    Returns:
+        dict: Airports and their attributes
+    """    
 
     search_term = request.args.get('search_term')
     airports = get_airports(search_term)
@@ -38,6 +57,11 @@ def available_flights():
 @bp.route("/book-flight", methods=["POST"])
 @login_required
 def book_flight():
+    """Book a flight
+
+    Returns:
+        dict: A confirmation or error message
+    """    
     data = request.get_json()
     outboundFlight = data['outbound']
     inboundFlight = data['inbound']

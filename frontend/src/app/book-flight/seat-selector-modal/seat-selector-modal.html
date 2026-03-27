@@ -25,7 +25,7 @@
                             <td>
                                 <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
                                 formControlName="seatID" (change)="onSubmit()"/>
-                                <label [for]="row+seat"></label>
+                                <label [class.taken]="takenSeats().includes(row+seat)" [for]="row+seat"></label>
                             </td>
                         }
                         <td>{{row}}</td>
@@ -34,7 +34,7 @@
                                 <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
                                 formControlName="seatID"
                                 (change)="onSubmit()"/>
-                                <label [for]="row+seat"></label>
+                                <label [class.taken]="takenSeats().includes(row+seat)" [for]="row+seat"></label>
                             </td>
                         }
                     </tr>
