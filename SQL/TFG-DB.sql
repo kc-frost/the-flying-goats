@@ -166,12 +166,13 @@ it.type, it.itemName
 from inventory i
 join item it on it.itemID = i.itemID;
 
--- FIX THIS TO ADJUST FOR NEW BOOKING TABLE
 -- Reservation ticket view with all attributes needed for view reservations
 create view reservationticket as
 select
 -- booking
-b.bookingNumber as bookingNumber, b.userID as userID, b.flightID as flightID, b.seat as seatNumber, b.bookingDate as reservationDate,
+b.bookingNumber as bookingNumber, b.userID as userID, b.departSeat as departSeat, b.returnSeat as returnSeat, b.bookingDate as reservationDate,
+-- flight IDS
+f_depart.IATA as departFlightID, f_return.IATA as returnFlightID,
 -- planeseat
 ps.classID as classID,
 -- flightclass
@@ -179,16 +180,22 @@ fc.className as seatClass,
 -- users
 u.username as username,
 -- schedule
-s.liftOff as liftOffDate, s.landing as arrivingDate,
+s_depart.liftOff as liftOffDate, s_return.landing as arrivingDate,
 -- flight
-f.origin as origin, f.destination as destination
+a_origin.place as origin, a_dest.place as destination
 from booking b
-left join planeseat ps on (ps.seatNumber = b.seat)
+left join planeseat ps on (ps.seatNumber = b.departSeat and ps.scheduleID = b.departSchedule)
 inner join flightclass fc on (fc.classID = ps.classID)
 left join users u using(userID)
-left join schedule s on (s.flight = b.flightID)
-left join flight f on (f.IATA = s.flight);
+left join schedule s_depart on b.departSchedule = s_depart.scheduleID
+left join schedule s_return on b.returnSchedule = s_return.scheduleID
+left join flight f_depart on (f_depart.flightID = s_depart.flightID)
+left join flight f_return on (f_return.flightID = s_return.flightID)
+left join airports a_origin on (a_origin.airportID = f_depart.origin)
+left join airports a_dest on (a_dest.airportID = f_depart.destination);
 
+
+select * from reservationticket;
 -- view for view all users 
 create view userreservationsummary as
 select
@@ -196,11 +203,13 @@ select
 u.userID, u.email,
 -- for getting register date in numbers
 datediff(curdate(), date(u.registeredDate)) as registerLengthDays, count(b.bookingNumber) as totalReservations,
-sum(case when s.liftOff < now() then 1 else 0 end) as totalPastReservations,
-sum(case when s.liftOff >= now() then 1 else 0 end) as totalFutureReservations
+sum(case when s_depart.liftOff < now() then 1 else 0 end) as totalPastReservations,
+sum(case when s_depart.liftOff >= now() then 1 else 0 end) as totalFutureReservations
 from users u
 left join booking b on u.userID = b.userID
-left join schedule s on b.flightID = s.flight
+left join schedule s_depart on b.departSchedule = s_depart.scheduleID
+left join schedule s_return on b.returnSchedule = s_return.scheduleID
+-- left join schedule s on b.flightID = s.flight 
 group by u.userID, u.email, u.registeredDate;
 
 -- organizes staffID, position, and amount of people in that position with a window func

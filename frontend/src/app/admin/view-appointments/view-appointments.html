@@ -14,8 +14,10 @@
               <th>Booking #</th>
               <th>User ID</th>
               <th>Username</th>
-              <th>Flight</th>
-              <th>Seat</th>
+              <th>Depart FlightID</th>
+              <th>Depart Seat</th>
+              <th>Return FlightID</th>
+              <th>Return Seat</th>
               <th>Class</th>
               <th>Reserved</th>
               <th>Lift Off</th>
@@ -30,8 +32,10 @@
               <td>{{ reservation.bookingNumber }}</td>
               <td>{{ reservation.userID }}</td>
               <td>{{ reservation.username }}</td>
-              <td>{{ reservation.flightID }}</td>
-              <td>{{ reservation.seatNumber }}</td>
+              <td>{{ reservation.departFlightID }}</td>
+              <td>{{ reservation.departSeat }}</td>
+              <td>{{ reservation.returnFlightID }}</td>
+              <td>{{ reservation.returnSeat }}</td>
               <td>{{ reservation.seatClass }}</td>
               <td>{{ reservation.reservationDate }}</td>
               <td>{{ reservation.liftOffDate }}</td>

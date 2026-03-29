@@ -4,7 +4,7 @@ def validate_email(email: str) -> bool:
     """Validates email according to specified regex pattern
     Local Part (part before the @): 
         Can have any alphanumeric characters [a-ZA-Z0-9]
-        and special characters (. * + ? $ ^ / '\')
+        and special characters (.*+?$^/'\'!)
     Domain (part after the @):
         Can have any alphanumeric character
         CANNOT end in a special character
@@ -16,7 +16,7 @@ def validate_email(email: str) -> bool:
         bool: If this email follows valid structure
     """
 
-    VALID_PATTERN = r"[a-zA-Z0-9\.\*\+\?\$\^\/\\]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+[^\W]+"
+    VALID_PATTERN = r"[a-zA-Z0-9\.\*\+\?\$\^\/\\\?]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+[^\W]+"
     search = re.fullmatch(VALID_PATTERN, email.strip())
 
     return search is not None
