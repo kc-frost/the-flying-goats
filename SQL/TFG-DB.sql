@@ -186,6 +186,8 @@ from booking b
 left join planeseat ps on (ps.seatNumber = b.seat)
 inner join flightclass fc on (fc.classID = ps.classID)
 left join users u using(userID)
+-- left join schedule s_depart on b.departSchedule = s_depart.scheduleID
+-- left join schedule s_return on b.returnSchedule = s_er 
 left join schedule s on (s.flight = b.flightID)
 left join flight f on (f.IATA = s.flight);
 
@@ -196,11 +198,13 @@ select
 u.userID, u.email,
 -- for getting register date in numbers
 datediff(curdate(), date(u.registeredDate)) as registerLengthDays, count(b.bookingNumber) as totalReservations,
-sum(case when s.liftOff < now() then 1 else 0 end) as totalPastReservations,
-sum(case when s.liftOff >= now() then 1 else 0 end) as totalFutureReservations
+sum(case when s_depart.liftOff < now() then 1 else 0 end) as totalPastReservations,
+sum(case when s_depart.liftOff >= now() then 1 else 0 end) as totalFutureReservations
 from users u
 left join booking b on u.userID = b.userID
-left join schedule s on b.flightID = s.flight
+left join schedule s_depart on b.departSchedule = s_depart.scheduleID
+left join schedule s_return on b.returnSchedule = s_return.scheduleID
+-- left join schedule s on b.flightID = s.flight 
 group by u.userID, u.email, u.registeredDate;
 
 -- organizes staffID, position, and amount of people in that position with a window func
