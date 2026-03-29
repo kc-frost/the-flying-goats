@@ -67,9 +67,10 @@ def insert_user(data: dict) -> dict:
 
     with conn.cursor() as cursor:
         try:
+            # let mysql handle date directly on insertion
             query = """
-                INSERT INTO `users`(phoneNumber, fname, lname, username, email, password)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO `users`(phoneNumber, fname, lname, username, email, password, registeredDate)
+                VALUES (%s, %s, %s, %s, %s, %s, now())
             """ 
             cursor.execute(query, (
                 data['phoneNum'],
