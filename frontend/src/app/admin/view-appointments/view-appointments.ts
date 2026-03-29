@@ -7,10 +7,13 @@ type ReservationRow = {
   bookingNumber: number;
   userID: number;
   username: string;
-  flightID: string;
+  departSeat: string;
+  returnSeat: string;
   seatNumber: number;
   seatClass: string;
   reservationDate: string;
+  departFlightID: string;
+  returnFlightID: string;
   liftOffDate: string;
   arrivingDate: string;
   origin: string;
