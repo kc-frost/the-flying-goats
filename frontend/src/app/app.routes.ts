@@ -1,12 +1,16 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './user-auth/login/login';
-import { Register } from './user-auth/register/register';
-import { Inventory, inventoryModalRedirect } from './inventory/inventory';
+import { Login } from './auth-dropdown/login/login';
+import { Register } from './auth-dropdown/register/register';
+import { DropdownProfile } from './auth-dropdown/profile/profile';
+import { ProfilePage } from './profile-page/profile-page';
+import { Inventory } from './admin/inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
-import { ViewAppointments } from './view-appointments/view-appointments';
-import { ViewUsers } from './view-users/view-users';
+import { userAuthGuard } from './_shared/guards/user-auth-guard';
+import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
+import { ViewAppointments } from './admin/view-appointments/view-appointments';
+import { ViewUsers } from './admin/view-users/view-users';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -20,26 +24,33 @@ import { ViewUsers } from './view-users/view-users';
 // (This is what we use for Login/Register)
 
 export const routes: Routes = [
+    // main router
     {
         path: '',
         component: Home,
     },
-    
-    // this autoloads login, but now '' is always gonna be redirected
-    // to 'login'.
-    // eventually, turn dropdown into a clickable dropdown
+    // logged in views
     {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
+        path: 'book-flight',
+        component: BookFlight,
+        canActivate: [userAuthGuard]
     },
     {
-        path: '',
-        outlet: 'dropdown',
-        redirectTo: 'login',
-        pathMatch: 'full',
+        path: 'profile',
+        component: ProfilePage,
+        canActivate: [userAuthGuard],
     },
+    {
+        path: 'view-appointments',
+        component: ViewAppointments,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
+    {
+        path: 'view-users',
+        component: ViewUsers,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
+    // dropdown outlet
     {
         path: 'login',
         outlet: 'dropdown',
@@ -51,22 +62,18 @@ export const routes: Routes = [
         component: Register,
     },
     {
+        path: 'profile-page',
+        outlet: 'dropdown',
+        component: DropdownProfile
+    },
+    
+    // modal outlet
+    {
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-    },
-    {
-        path: 'book-flight',
-        component: BookFlight,
-    },
-    {
-        path: 'view-appointments',
-        component: ViewAppointments
-    },
-    {
-        path: 'view-users',
-        component: ViewUsers
-    }
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },    
 ];
 
 export default routes;

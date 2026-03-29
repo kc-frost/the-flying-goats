@@ -1,20 +1,29 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
-import { Inventory } from './inventory/inventory';
-import { BookFlight } from './book-flight/book-flight';
+import { Component, signal, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { AuthService } from './_shared/services/auth-service';
+import { UserService } from './_shared/services/user-service';
+import { OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Inventory, BookFlight],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  host: {
-    'document:click': 'onClick()'
-  },
 })
 
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('tfg');
+  private router = inject(Router);
+  authService = inject(AuthService);
+  userService = inject(UserService);
+
+  ngOnInit() {
+    this.authService.setCurrentAfterRefresh().subscribe({
+      error: (err) => {
+        console.log("CHECK-SESSION FAILED:", err);
+      }
+    });
+  }
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
   clickedImg = "/header/profile-dropdown/profile-dropdown-hover.svg";
@@ -25,7 +34,30 @@ export class App {
     return this.isExpanded;
   }
 
-  onClick() {
-    console.log("The window was clicked");
+  // If a session exists, clicking on the profile picture should also show ProfileDropdown
+  // Otherwise (including errors), show Login
+  handleProfileClick() {
+    if (this.authService.getAuthenticated()) {
+      this.navigateToProfile()
+    } else {
+      this.navigateToLogin();
+    }
+  }
+
+  navigateToLogin() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['login']}}],
+      {
+        skipLocationChange: true
+      }
+    )
+  }
+
+  navigateToProfile() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['profile-page'] } }], 
+    {
+      skipLocationChange: true
+    });
   }
 }

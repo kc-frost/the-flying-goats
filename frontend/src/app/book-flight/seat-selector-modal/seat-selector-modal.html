@@ -1,0 +1,46 @@
+<main>
+    <header>
+        <h1>Choose a Seat</h1>
+        <!-- <h4>Click to make your selection</h4> -->
+        <input class="exitBtn" type="image" src="/xButton/maybe-virus.svg" (click)="tellExit()"/>
+    </header>
+
+    <section class="seat-plan">
+        <form id="seatID" [formGroup]="mySeat" (ngSubmit)="onSubmit()">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">A</th>
+                    <th scope="col">B</th>
+                    <th scope="col" class="aisle"></th>
+                    <th scope="col">C</th>
+                    <th scope="col">D</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (row of rows; track row) {
+                    <tr>
+                        @for (seat of leftSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
+                                formControlName="seatID" (change)="onSubmit()"/>
+                                <label [class.taken]="takenSeats().includes(row+seat)" [for]="row+seat"></label>
+                            </td>
+                        }
+                        <td>{{row}}</td>
+                        @for (seat of rightSeats; track seat) {
+                            <td>
+                                <input [id]="row+seat" name="seatID" type="radio" [value]="row+seat"
+                                formControlName="seatID"
+                                (change)="onSubmit()"/>
+                                <label [class.taken]="takenSeats().includes(row+seat)" [for]="row+seat"></label>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </form>
+    </section>
+</main>

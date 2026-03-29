@@ -4,7 +4,8 @@
     <!-- Brand Details -->
     <section class="brand-group">
       <nav>
-        <a routerLink=''>
+        <!-- Explicitly close dropdown on navigation instead of toggling state -->
+        <a routerLink='' (click)="isExpanded = false">
           <img class="brand-logo" src="/brand/plane-logo.svg" alt="An image of a paper plane with a trail marking its path"/>
         </a>
       </nav>
@@ -36,12 +37,15 @@
 
     <!-- User Profile -->
     <section class="dropdown">
-      <img class="profile-dropdown" 
-        [src]="toggleExpanded()? defaultImg : clickedImg" 
-        alt="A flat image of a person" 
-        (click)="toggleExpanded()" />
+      <p>Login/Register</p>
+      <a (click)="handleProfileClick()">
+        <img class="profile-dropdown" 
+          [src]="isExpanded ? clickedImg : defaultImg" 
+          alt="A flat image of a person" 
+          (click)="toggleExpanded()" />
+      </a>
       <div class="dropdown-content" 
-        [style.display]="toggleExpanded() ? 'block' : 'none'">
+        [style.display]="isExpanded ? 'block' : 'none'">
         <!-- See login.ts (goToRegister()) for more details
         on what this does -->
         <!-- Keywords: Secondary (named) outlet [angular] -->
