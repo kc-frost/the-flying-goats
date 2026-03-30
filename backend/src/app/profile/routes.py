@@ -37,11 +37,11 @@ def user_reservations():
 def get_bio():
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.execute("SELECT bio FROM users WHERE email = %s", (current_user.get_id(),))
+        cursor.execute("SELECT bio FROM users WHERE userID = %s", (current_user.get_id(),))
         row = cursor.fetchone()
         if row is None:
             return jsonify({"bio": ""}), 200
-        return jsonify({"bio": row['bio'] or ""}), 200
+        return jsonify({"bio": row['bio']}), 200
 
 @bp.route('/save-bio', methods=['POST'])
 @login_required
@@ -50,7 +50,7 @@ def save_bio():
     conn = get_connection()
     with conn.cursor() as cursor:
         try:
-            cursor.execute("UPDATE users SET bio = %s WHERE email = %s", (data['bio'], current_user.get_id()))
+            cursor.execute("UPDATE users SET bio = %s WHERE userID = %s", (data['bio'], current_user.get_id()))
             conn.commit()
             return jsonify({"message": "Bio saved"}), 200
         except Exception as e:
