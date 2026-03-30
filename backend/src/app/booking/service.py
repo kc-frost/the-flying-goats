@@ -165,16 +165,35 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             
             userID = row.get("userID")
             
+            # find flightID based on IATA
+            query = """
+                SELECT `flightID` FROM `flight` WHERE `IATA` = %s
+            """
+            cursor.execute(query, (outboundFlight.get("flightID"),))
+            row = cursor.fetchone()
+            if row is None:
+                raise ValueError("Plane not found")
+
+            outboundFlightID = row.get("flightID")
+
+            cursor.execute(query, (inboundFlight.get("flightID")))
+            row = cursor.fetchone()
+            if row is None:
+                raise ValueError("Plane not found")
+            
+            inboundFlightID = row.get("flightID")
+
             # find flight schedule user booked
             query = """
                 SELECT `scheduleID`
                 FROM `schedule`
-                WHERE `flight` = %s AND
-                    DATE_FORMAT(`liftOff`, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i') AND
-                    DATE_FORMAT(`landing`, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i')
+                WHERE `flightID` = %s AND
+                    TIME_FORMAT(liftOff, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i') AND
+                    TIME_FORMAT(landing, '%%H:%%i') LIKE DATE_FORMAT(%s, '%%H:%%i')
             """
+
             cursor.execute(query, 
-                           (outboundFlight.get("flightID"),
+                           (outboundFlightID,
                             outboundFlight.get("departureDate"),
                             outboundFlight.get("arrivalDate")))
             row = cursor.fetchone()
@@ -185,7 +204,7 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             departSchedule = row.get("scheduleID")
 
             cursor.execute(query, 
-                           (inboundFlight.get("flightID"),
+                           (inboundFlightID,
                             inboundFlight.get("departureDate"),
                             inboundFlight.get("arrivalDate")))
             row = cursor.fetchone()
@@ -212,15 +231,14 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             # insert into booking
             query = """
                 INSERT INTO `booking`(userID, departSchedule, returnSchedule, departSeat, returnSeat, bookingDate)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, now())
             """
             cursor.execute(query, (
                 userID,
                 departSchedule,
                 returnSchedule,
                 outboundFlight.get("seatNumber"),
-                inboundFlight.get("seatNumber"),
-                outboundFlight.get("reservationDate")
+                inboundFlight.get("seatNumber")
             ))
 
             conn.commit()

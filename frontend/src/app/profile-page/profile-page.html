@@ -6,54 +6,100 @@
         </section>
         <hr>
         <section class="bio">
-            @if (isEditing) {
+            @if (isEditing$ | async) {
                 <label for="userBio">Enter a new bio!</label>
-                <textarea id="userBio" [formControl]="userBio"></textarea>
+                <textarea id="userBio" [formControl]="userBioForm"></textarea>
                 <button (click)="saveBio()">Save</button>
             } @else {
-                <p>{{userBio.value}}</p>
+                <p>{{userBio$ | async }}</p>
                 <button class="update"(click)="updateBio()">Update Bio</button>
             }
         </section>
     </section>
 
     <section class="reservation-view">
-        <header><h1>Your Reservations</h1></header>
-        <section class="tab">
-            <button (click)="selectedTab = 'past'">Past</button>
-            <button (click)="selectedTab = 'current'">Current</button>
-            <button (click)="selectedTab = 'future'">Future</button>
-        </section>
+        <div class="header">
+            <header><h1>Your Reservations</h1></header>
+            <section class="tab">
+                <div class="depart">
+                    <input id="past" name="tab" type="radio" (click)="selectedTab = 'past'">
+                    <label for="past">Past</label>
+                </div>
+                <div class="upc">
+                    <input id="upc" name="tab" type="radio" checked (click)="selectedTab = 'upcoming'">
+                    <label for="upc">Upcoming</label>
+                </div>
+            </section>
+        </div>
         <section class="content">
-            @for (reservation of getReservations(); track reservation.bookingNumber) {
-                <details>
-                    <summary> {{formatDate(reservation.reservationDate)}}</summary>
+            @for (reservation of filteredReservations; track $index) {
+                <details open>
+                    <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm'}}</summary>
                     <table>
                     <tr>
                         <th>Date</th>
                         <th>Flight Number</th>
                         <th>Departing</th>
                         <th>Arriving</th>
+                        <th>Seat Number</th>
                     </tr>
+                    
+                    <!-- DEPART DETAILS -->
                     <tr>
                         <td>
-                            <p>{{formatDate(reservation.liftOffDate)}}</p>
-                            <p>{{formatTime(reservation.liftOffDate)}}</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}} </p> -->
+                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
                         </td>
                         <td>
-                            <p>{{reservation.flightID}}</p>
+                            <p>{{reservation.departFlightID}}</p>
                         </td>
                         <td>
                             <p>{{reservation.origin}}</p>
-                            <p>{{formatDate(reservation.liftOffDate)}}</p>
-                            <p>{{formatTime(reservation.liftOffDate)}}</p>
-                            <p>Manila - Ninoy Aquino International Airport Terminal 1</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.o_airport}}</p>
                         </td>
                         <td>
                             <p>{{reservation.destination}}</p>
-                            <p>{{formatDate(reservation.arrivingDate)}}</p>
-                            <p>{{formatTime(reservation.arrivingDate)}}</p>
-                            <p>Changi Airport - Terminal 1</p>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.r_airport}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departSeat}}</p>
+                        </td>
+                    </tr>
+
+                    <!-- RETURN DETAILS -->
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                        <th>Seat Number</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}} </p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
+                        </td>
+                        <td>
+                            <p>{{reservation.departFlightID}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.destination}}</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.o_airport}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.origin}}</p>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.r_airport}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnSeat}}</p>
                         </td>
                     </tr>
                 </table>
