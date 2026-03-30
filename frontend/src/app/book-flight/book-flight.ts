@@ -168,6 +168,21 @@ export class BookFlight {
     this.searchTerms.get('origin')?.setValue(airport.IATA)!;
   }
 
+  onOriginFocused() {
+    if (!this.searchTerms.get("origin")?.value) {
+      this.searchAirports(" ", "origin");
+    }
+    this.originFocused = true;
+  }
+  
+  onDestFocused() {
+    if (!this.searchTerms.get("destination")?.value) {
+      this.searchAirports(" ", "destination");
+    }
+    this.destFocused = true;
+
+  }
+
   // Replaces text in input element
   setDestination(airport: any) {
     this.searchTerms.get('destination')?.setValue(airport.IATA)!;
