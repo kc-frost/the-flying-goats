@@ -58,8 +58,8 @@ IATA varchar(3)
 create table schedule(
 scheduleID int primary key auto_increment,
 flightID varchar(7) references flight(IATA),
-liftOff datetime,
-landing datetime
+liftOff time,
+landing time
 );
 
 create table planestatusenums(
@@ -90,12 +90,14 @@ primary key(seatNumber, scheduleID)
 -- A table with all the info in one for the view appointment part and cause it's cleaner
 create table booking(
 bookingNumber int primary key auto_increment,
+bookingDate datetime,
 userID int references users(userID),
 departSeat varchar(3),
 returnSeat varchar(3),
+departDate date,
 departSchedule int not null references schedule(scheduleID),
+returnDate date,
 returnSchedule int not null references schedule(scheduleID),
-bookingDate datetime,
 
 -- associate each seat with its proper flight
 constraint fk_departDetails foreign key (departSeat, departSchedule) references planeseat(seatNumber, scheduleID),
@@ -169,30 +171,46 @@ join item it on it.itemID = i.itemID;
 -- Reservation ticket view with all attributes needed for view reservations
 create view reservationticket as
 select
--- booking
-b.bookingNumber as bookingNumber, b.userID as userID, b.departSeat as departSeat, b.returnSeat as returnSeat, b.bookingDate as reservationDate,
--- flight IDS
-f_depart.IATA as departFlightID, f_return.IATA as returnFlightID,
--- planeseat
-ps.classID as classID,
--- flightclass
-fc.className as seatClass, 
--- users
-u.username as username,
--- schedule
-s_depart.liftOff as liftOffDate, s_return.landing as arrivingDate,
--- flight
-a_origin.place as origin, a_dest.place as destination
+b.bookingNumber, b.bookingDate,
+u.userID, u.username,
+f_depart.IATA as departIATA, 
+a_depart.place as departOrigin,
+a_depart.name as departAP,
+DATE_FORMAT(CONCAT(b.departDate, ' ', s_depart.liftOff), '%Y-%m-%dT%H:%i:%s') as departLift,
+DATE_FORMAT(CONCAT(
+  CASE WHEN s_depart.landing < s_depart.liftOff 
+    THEN ADDDATE(b.departDate, 1) 
+    ELSE b.departDate 
+  END, 
+  ' ', s_depart.landing
+), '%Y-%m-%dT%H:%i:%s') as departLand,
+b.departSeat,
+fc_depart.className as departClass,
+f_return.IATA as returnIATA,
+a_return.place as returnOrigin,
+a_return.name as returnAP,
+DATE_FORMAT(CONCAT(b.returnDate, ' ', s_return.liftOff), '%Y-%m-%dT%H:%i:%s') as returnLift,
+DATE_FORMAT(CONCAT(
+  CASE WHEN s_return.landing < s_return.liftOff 
+    THEN ADDDATE(b.returnDate, 1) 
+    ELSE b.returnDate 
+  END, 
+  ' ', s_return.landing
+), '%Y-%m-%dT%H:%i:%s') as returnLand,
+b.returnSeat,
+fc_return.className as returnClass
 from booking b
-left join planeseat ps on (ps.seatNumber = b.departSeat and ps.scheduleID = b.departSchedule)
-inner join flightclass fc on (fc.classID = ps.classID)
-left join users u using(userID)
+left join users u on b.userID = u.userID
 left join schedule s_depart on b.departSchedule = s_depart.scheduleID
+left join flight f_depart on s_depart.flightID = f_depart.flightID
 left join schedule s_return on b.returnSchedule = s_return.scheduleID
-left join flight f_depart on (f_depart.flightID = s_depart.flightID)
-left join flight f_return on (f_return.flightID = s_return.flightID)
-left join airports a_origin on (a_origin.airportID = f_depart.origin)
-left join airports a_dest on (a_dest.airportID = f_depart.destination);
+left join flight f_return on s_return.flightID = f_return.flightID
+left join airports a_depart on f_depart.origin = a_depart.airportID
+left join airports a_return on f_return.origin = a_return.airportID
+left join planeseat ps_depart on (b.departSeat = ps_depart.seatNumber and b.departSchedule = ps_depart.scheduleID)
+left join planeseat ps_return on (b.returnSeat = ps_return.seatNumber and b.returnSchedule = ps_return.scheduleID)
+left join flightclass fc_depart on (ps_depart.classID = fc_depart.classID)
+left join flightclass fc_return on (ps_return.classID = fc_return.classID);
 
 
 select * from reservationticket;

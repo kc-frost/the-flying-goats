@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../../_environments/environment";
+import { DatePipe } from "@angular/common";
 
 type ReservationRow = {
   bookingNumber: number;
@@ -10,20 +11,21 @@ type ReservationRow = {
   departSeat: string;
   returnSeat: string;
   seatNumber: number;
-  seatClass: string;
-  reservationDate: string;
-  departFlightID: string;
-  returnFlightID: string;
-  liftOffDate: string;
-  arrivingDate: string;
-  origin: string;
-  destination: string;
+  departClass: string;
+  returnClass: string;
+  bookingDate: string;
+  departIATA: string;
+  returnIATA: string;
+  departLift: string;
+  returnLift: string;
+  departOrigin: string;
+  returnOrigin: string;
 };
 
 @Component({
   selector: "app-view-appointments",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,],
   templateUrl: "./view-appointments.html",
   styleUrls: ["./view-appointments.css"],
 })

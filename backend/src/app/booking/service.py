@@ -230,15 +230,26 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
 
             # insert into booking
             query = """
-                INSERT INTO `booking`(userID, departSchedule, returnSchedule, departSeat, returnSeat, bookingDate)
-                VALUES (%s, %s, %s, %s, %s, now())
+                INSERT INTO `booking`(bookingDate, userID, 
+                departSeat, returnSeat, 
+                departDate, departSchedule, 
+                returnDate, returnSchedule)
+                VALUES (now(), %s, 
+                %s, %s, 
+                DATE_FORMAT(%s, '%%Y-%%m-%%d'), %s, 
+                DATE_FORMAT(%s, '%%Y-%%m-%%d'), %s)
             """
+
+            # YYYY-MM-DD this format
+
             cursor.execute(query, (
                 userID,
-                departSchedule,
-                returnSchedule,
                 outboundFlight.get("seatNumber"),
-                inboundFlight.get("seatNumber")
+                inboundFlight.get("seatNumber"),
+                outboundFlight.get("departureDate"),
+                departSchedule,
+                inboundFlight.get("departureDate"),
+                returnSchedule,
             ))
 
             conn.commit()
