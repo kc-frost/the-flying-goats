@@ -38,9 +38,10 @@ export class ProfilePage {
     this.http.get<any[]>(`${environment.api_url}/api/user-reservations`).subscribe({
       next: (data) => {
         this.userReservations.next(data);
-        
+        console.log(data);
         // load reservations automatically
         this.cdr.detectChanges();
+        
       },
       error: (err) => {
         console.log("LOADING RESERVATIONS ERROR:", err);
@@ -59,17 +60,17 @@ export class ProfilePage {
 
     // past: descending (most recent first)
     if (this.selectedTab == 'past') {
-      return allReservations.filter((reservation) => new Date(reservation.reservationDate) < pastCutoff)
+      return allReservations.filter((reservation) => new Date(reservation.departLift) < pastCutoff)
       .sort((a,b) => 
-        new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime()
+        new Date(b.departLift).getTime() - new Date(a.departLift).getTime()
       )
     } 
 
     // upcoming: ascending (soonest first)
     else {
-      return allReservations.filter((reservation) => new Date(reservation.reservationDate) >= pastCutoff)
+      return allReservations.filter((reservation) => new Date(reservation.departLift) >= pastCutoff)
       .sort((a,b) => 
-        new Date(a.reservationDate).getTime() - new Date(b.reservationDate).getTime()
+        new Date(a.departLift).getTime() - new Date(b.departLift).getTime()
       )
     }
   }

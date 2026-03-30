@@ -40,8 +40,8 @@
               <td>{{ reservation.returnSeat }}</td>
               <td>{{ reservation.departClass }}</td>
               <td>{{ reservation.bookingDate }}</td>
-              <td>{{ reservation.departDate }}</td>
-              <td>{{ reservation.returnDate }}</td>
+              <td>{{ reservation.departLift | date:'d  MMM y' }}</td>
+              <td>{{ reservation.returnLift | date:'d MMM y' }}</td>
               <td>{{ reservation.departOrigin }}</td>
               <td>{{ reservation.returnOrigin }}</td>
             </tr>

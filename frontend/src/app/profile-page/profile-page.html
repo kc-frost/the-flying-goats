@@ -34,7 +34,7 @@
         <section class="content">
             @for (reservation of filteredReservations; track $index) {
                 <details open>
-                    <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm'}}</summary>
+                    <summary> {{reservation.bookingDate | date:'MMM d, y, HH:mm':'+00:00'}}</summary>
                     <table>
                     <tr>
                         <th>Date</th>
@@ -47,23 +47,23 @@
                     <!-- DEPART DETAILS -->
                     <tr>
                         <td>
-                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}} </p> -->
-                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.departLift | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.departLift | date:'hh:mma'}} / {{reservation.departLift | date:'HH:mm'}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.departFlightID}}</p>
+                            <p>{{reservation.departIATA}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.origin}}</p>
-                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
-                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
-                            <p>{{reservation.o_airport}}</p>
+                            <p>{{reservation.departOrigin}}</p>
+                            <p>{{reservation.departLift | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departLift | date:'hh:mma'}} / {{reservation.departLift | date:'HH:mm'}}</p>
+                            <p>{{reservation.departAP}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.destination}}</p>
-                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
-                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
-                            <p>{{reservation.r_airport}}</p>
+                            <p>{{reservation.returnOrigin}}</p>
+                            <p>{{reservation.departLand | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departLand | date:'hh:mma'}} / {{reservation.departLand | date:'HH:mm'}}</p>
+                            <p>{{reservation.returnAP}}</p>
                         </td>
                         <td>
                             <p>{{reservation.departSeat}}</p>
@@ -80,23 +80,23 @@
                     </tr>
                     <tr>
                         <td>
-                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}} </p> -->
-                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
+                            <p>{{reservation.returnLift | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.returnLift | date:'hh:mma'}} / {{reservation.returnLift | date:'HH:mm'}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.departFlightID}}</p>
+                            <p>{{reservation.returnIATA}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.destination}}</p>
-                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
-                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
-                            <p>{{reservation.o_airport}}</p>
+                            <p>{{reservation.returnOrigin}}</p>
+                            <p>{{reservation.returnLift | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnLift | date:'hh:mma'}} / {{reservation.returnLift | date:'HH:mm'}}</p>
+                            <p>{{reservation.returnAP}}</p>
                         </td>
                         <td>
-                            <p>{{reservation.origin}}</p>
-                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
-                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
-                            <p>{{reservation.r_airport}}</p>
+                            <p>{{reservation.departOrigin}}</p>
+                            <p>{{reservation.returnLand | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnLand | date:'hh:mma'}} / {{reservation.returnLand | date:'HH:mm'}}</p>
+                            <p>{{reservation.departAP}}</p>
                         </td>
                         <td>
                             <p>{{reservation.returnSeat}}</p>
