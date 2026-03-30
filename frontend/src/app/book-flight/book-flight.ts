@@ -77,6 +77,18 @@ export class BookFlight {
   hasSelectedDeparture = false;
   activeTab: "depart" | "return" = "depart";
 
+  filters = [
+    {id: 'none', name: 'None'},
+    {id: 'n-am', name: 'North America'},
+    {id: 's-am', name: 'South America'},
+    {id: 'asia', name: 'Asia'},
+    {id: 'eur', name: 'Europe'},
+    {id: 'africa', name: 'Africa'},
+
+  ]
+
+  activeFilter: string | null = 'none';
+
   activeOutboundFlight: number | null = null;
   activeOutboundSeat: string | null = null;
   

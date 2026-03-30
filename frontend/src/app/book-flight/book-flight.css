@@ -38,7 +38,7 @@ main {
             align-items: center;
             justify-content: space-between;
 
-            & section {
+            & .from, .to {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
@@ -57,25 +57,68 @@ main {
                     justify-content: center;
                     margin-bottom: 5px;
 
-                     & .suggestions {
-                        position: absolute;
-                        list-style: none;
-
+                    & .suggest-airports {
+                        background-color: whitesmoke;
                         display: flex;
                         flex-direction: column;
                         width: 100%;
-                        top: 100%;
-                        left: 0;
-                        z-index: 2;
-                        gap: 5px;
-
-                        background-color: whitesmoke;
-                        overflow-y: auto;
-                        max-height: 150px;
-                        padding: 3%;
+                        overflow: hidden;
 
                         border: 1px solid black;
+                        max-height: 200px;
+                        position:absolute;
+                        top: 100%;
+                        z-index: 2;
+                        padding: 5%;
+                        
+                        & p {
+                            font-weight: bold;
+                        }
 
+                        & .filters {
+                            list-style: none;
+                            display: flex;
+                            flex-direction: row;
+                            gap: 10px;
+
+                            overflow-y:hidden;
+                            overflow-x:auto;
+
+                            scrollbar-width: thin;
+                            padding-top: 15px;
+                            padding-bottom: 35px;
+                            margin-bottom: 10px;
+                            & .filter-item {
+                                opacity: 1;
+                                white-space: nowrap;
+                                height: fit-content;
+
+                                border-radius: 5px;
+                                padding: 3px;
+                                &:hover {
+                                    cursor: pointer;
+                                    background-color: var(--section-hover-color);
+                                }
+
+                                &.checked {
+                                    background-color: var(--section-hover-color);
+                                }
+                            }
+                        }
+                    }
+
+                     & .suggestions {
+                        list-style: none;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+                        
+                        background-color: whitesmoke;
+                        overflow-x:hidden;
+                        overflow-y: auto;
+                        
+                        scrollbar-width: thin;
+                        
                         & li {
                             display: flex;
                             flex-direction: row;
@@ -94,7 +137,7 @@ main {
 
                 }
                 
-                & label {
+                & .origin-input, .dest-input {
                 font-weight: bold;
                 margin-bottom: 10px;
 
