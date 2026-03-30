@@ -58,8 +58,8 @@ IATA varchar(3)
 create table schedule(
 scheduleID int primary key auto_increment,
 flightID varchar(7) references flight(IATA),
-liftOff datetime,
-landing datetime
+liftOff time,
+landing time
 );
 
 create table planestatusenums(
@@ -90,12 +90,14 @@ primary key(seatNumber, scheduleID)
 -- A table with all the info in one for the view appointment part and cause it's cleaner
 create table booking(
 bookingNumber int primary key auto_increment,
+bookingDate datetime,
 userID int references users(userID),
 departSeat varchar(3),
 returnSeat varchar(3),
+departDate date,
 departSchedule int not null references schedule(scheduleID),
+returnDate date,
 returnSchedule int not null references schedule(scheduleID),
-bookingDate datetime,
 
 -- associate each seat with its proper flight
 constraint fk_departDetails foreign key (departSeat, departSchedule) references planeseat(seatNumber, scheduleID),
@@ -182,7 +184,8 @@ u.username as username,
 -- schedule
 s_depart.liftOff as liftOffDate, s_return.landing as arrivingDate,
 -- flight
-a_origin.place as origin, a_dest.place as destination
+a_origin.place as origin, a_dest.place as destination,
+a_origin.name as o_airport, a_dest.name as r_airport
 from booking b
 left join planeseat ps on (ps.seatNumber = b.departSeat and ps.scheduleID = b.departSchedule)
 inner join flightclass fc on (fc.classID = ps.classID)
