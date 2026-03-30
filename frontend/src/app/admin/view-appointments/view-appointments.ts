@@ -10,14 +10,15 @@ type ReservationRow = {
   departSeat: string;
   returnSeat: string;
   seatNumber: number;
-  seatClass: string;
-  reservationDate: string;
-  departFlightID: string;
-  returnFlightID: string;
-  liftOffDate: string;
-  arrivingDate: string;
-  origin: string;
-  destination: string;
+  departClass: string;
+  returnClass: string;
+  bookingDate: string;
+  departIATA: string;
+  returnIATA: string;
+  departDate: string;
+  returnDate: string;
+  departOrigin: string;
+  returnOrigin: string;
 };
 
 @Component({
