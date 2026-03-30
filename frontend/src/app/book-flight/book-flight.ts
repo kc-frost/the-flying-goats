@@ -87,7 +87,8 @@ export class BookFlight {
 
   ]
 
-  activeFilter: string | null = 'none';
+  activeOutboundFilter: string | null = 'none';
+  activeInboundFilter: string | null = 'none';
 
   activeOutboundFlight: number | null = null;
   activeOutboundSeat: string | null = null;
