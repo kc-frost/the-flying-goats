@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -6,19 +6,6 @@ import { UserService } from '../_shared/services/user-service';
 import { environment } from '../../_environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { DatePipe } from '@angular/common';
-
-interface Reservation {
-  bookingNumber: number;
-  reservationDate: string;
-  flightID: string;
-  liftOffDate: string;
-  arrivingDate: string;
-  username: string;
-  seatNumber: string;
-  seatClass: string;
-  origin: string;
-  destination: string;
-}
 
 @Component({
   selector: 'app-profile-page',
@@ -29,7 +16,9 @@ interface Reservation {
 })
 export class ProfilePage {
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef)
   private userReservations = new BehaviorSubject<any[]>([]);
+  
   userService = inject(UserService);
   selectedTab: 'past' | 'upcoming' = 'upcoming'
   staticProfileImage = "/profile/static-profile-image.svg";
@@ -39,9 +28,12 @@ export class ProfilePage {
   }
 
   loadReservations() {
-    this.http.get<any[]>(`${environment.api_url}/api/get-user-reservations`).subscribe({
+    this.http.get<any[]>(`${environment.api_url}/api/user-reservations`).subscribe({
       next: (data) => {
         this.userReservations.next(data);
+        
+        // load reservations automatically
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log("LOADING RESERVATIONS ERROR:", err);
@@ -50,12 +42,15 @@ export class ProfilePage {
   }
 
   get filteredReservations() {
-    const today = new Date();
+    // change this to sort by the full date of the initial liftOff of the trip
+
+    const pastCutoff = new Date();
+    pastCutoff.setDate(pastCutoff.getDate() - 2);
     const allReservations = this.userReservations.value;
 
     // past: descending (most recent first)
     if (this.selectedTab == 'past') {
-      return allReservations.filter((reservation) => new Date(reservation.reservationDate) < today)
+      return allReservations.filter((reservation) => new Date(reservation.reservationDate) < pastCutoff)
       .sort((a,b) => 
         new Date(b.reservationDate).getTime() - new Date(a.reservationDate).getTime()
       )
@@ -63,7 +58,7 @@ export class ProfilePage {
 
     // upcoming: ascending (soonest first)
     else {
-      return allReservations.filter((reservation) => new Date(reservation.reservationDate) >= today)
+      return allReservations.filter((reservation) => new Date(reservation.reservationDate) >= pastCutoff)
       .sort((a,b) => 
         new Date(a.reservationDate).getTime() - new Date(b.reservationDate).getTime()
       )
