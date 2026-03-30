@@ -2,6 +2,8 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
+from .service import get_user_reservations
+
 bp = Blueprint("profile", __name__)
 
 @bp.route("/get-active-user")
@@ -19,33 +21,16 @@ def get_active_user():
         "email": email
         }), 200
 
-@bp.route('/get-user-reservations', methods=['GET'])
+@bp.route('/user-reservations', methods=['GET'])
 @login_required
-def get_user_reservations():
+def user_reservations():
     """Gets all flight bookings of a valid user through their userID
 
     Returns:
         dict: All valid reservations or an error message
     """    
 
-    conn = get_connection()
-    with conn.cursor() as cursor:
-        try:
-            query = """
-                SELECT `userID`
-                FROM `users`
-                WHERE userID = %s
-            """
-            cursor.execute(query, (current_user.get_id(),))
-            user = cursor.fetchone()
-            if user is None:
-                return jsonify({"error": "User not found"}), 404
-
-            cursor.execute("SELECT * FROM reservationticket WHERE userID = %s", (user['userID'],))
-            rows = cursor.fetchall()
-            return jsonify(rows), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 400
+    return jsonify(get_user_reservations(current_user.get_id()))
         
 @bp.route('/get-bio', methods=['GET'])
 @login_required
