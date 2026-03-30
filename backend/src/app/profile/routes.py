@@ -7,6 +7,11 @@ bp = Blueprint("profile", __name__)
 @bp.route("/get-active-user")
 @login_required
 def get_active_user():
+    """Get details of active user
+
+    Returns:
+        User: A Logged in user
+    """
     username = current_user.username
     email = current_user.id
     return jsonify({
@@ -17,21 +22,27 @@ def get_active_user():
 @bp.route('/get-user-reservations', methods=['GET'])
 @login_required
 def get_user_reservations():
+    """Gets all flight bookings of a valid user through their userID
+
+    Returns:
+        dict: All valid reservations or an error message
+    """    
+
     conn = get_connection()
     with conn.cursor() as cursor:
         try:
-            cursor.execute("SELECT userID FROM users WHERE email = %s", (current_user.get_id(),))
+            query = """
+                SELECT `userID`
+                FROM `users`
+                WHERE userID = %s
+            """
+            cursor.execute(query, (current_user.get_id(),))
             user = cursor.fetchone()
-            print("USER:", user)
             if user is None:
                 return jsonify({"error": "User not found"}), 404
 
             cursor.execute("SELECT * FROM reservationticket WHERE userID = %s", (user['userID'],))
             rows = cursor.fetchall()
-            print("ROWS:", rows)
-            cursor.execute("SELECT * FROM reservationticket WHERE userID = 9")
-            rows = cursor.fetchall()
-            print(rows)
             return jsonify(rows), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 400
