@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required
 
-from .service import get_taken_seats, get_airports, get_available_flights, book_a_flight, user_details_match
+from .service import get_taken_seats, get_airports, filtered_airports, get_available_flights, book_a_flight, user_details_match
 
 bp = Blueprint("booking", __name__)
 
@@ -30,6 +30,16 @@ def airports():
 
     search_term = request.args.get('search_term')
     airports = get_airports(search_term)
+
+    if isinstance(airports, dict) and "error" in airports:
+        return jsonify(airports), 500
+    
+    return jsonify(airports), 200
+
+@bp.route('/filter-airports', methods=['GET'])
+def filter_airports():
+    region_id = request.args.get('regionID')
+    airports = filtered_airports(region_id)
 
     if isinstance(airports, dict) and "error" in airports:
         return jsonify(airports), 500
