@@ -54,7 +54,7 @@ def get_airports(search_term):
                 WHERE place LIKE %s OR IATA LIKE %s
             """
 
-            # Accounts for partial matches
+            # Queries already account for partial matches
             cursor.execute(query, (f'%{search_term}%', f'%{search_term}%'))
             rows = cursor.fetchall()
 
@@ -65,6 +65,28 @@ def get_airports(search_term):
         except Exception as e:
             return {"error": str(e)}
         
+    return airports
+
+def filtered_airports(regionID):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT place, IATA
+                FROM `airports`
+                WHERE `regionID` = %s
+            """
+
+            cursor.execute(query, (regionID))
+            rows = cursor.fetchall()
+
+            airports = []
+            for row in rows:
+                airports.append(row)
+        except Exception as e:
+            return {"error": str(e)}
+    
     return airports
 
 def get_available_flights(origin, destination):

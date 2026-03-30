@@ -77,6 +77,19 @@ export class BookFlight {
   hasSelectedDeparture = false;
   activeTab: "depart" | "return" = "depart";
 
+  filters = [
+    {id: 'none', name: 'None', region_id: '0'},
+    {id: 'n-am', name: 'North America', region_id: '1'},
+    {id: 's-am', name: 'South America', region_id: '2'},
+    {id: 'asia', name: 'Asia', region_id: '3'},
+    {id: 'eur', name: 'Europe', region_id: '4'},
+    {id: 'africa', name: 'Africa', region_id: '5'},
+
+  ]
+
+  activeOutboundFilter: string | undefined = 'none';
+  activeInboundFilter: string | undefined = 'none';
+
   activeOutboundFlight: number | null = null;
   activeOutboundSeat: string | null = null;
   
@@ -163,9 +176,52 @@ export class BookFlight {
     });
   }
 
+  setFilter(leg: string, filter: {id: string, name: string, region_id: string}) {
+    var isOutbound = (leg === 'outbound');
+    isOutbound ? this.activeOutboundFilter = filter.id : this.activeInboundFilter = filter.id;
+    
+    if (filter.id === 'none') {
+      isOutbound ? this.onOriginFocused() : this.onDestFocused()
+      return;
+    } 
+
+    this.flightService.getFilteredAirports(filter.region_id).subscribe({
+      next: (res) => {
+        if (isOutbound) {
+          this.originAirports.next(res);
+        } else {
+          this.destinationAirports.next(res);
+        }
+      }
+    })
+
+  }
+
   // Replaces text in input element
   setOrigin(airport: any) {
     this.searchTerms.get('origin')?.setValue(airport.IATA)!;
+  }
+
+  onOriginFocused() {
+    if (this.activeOutboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeOutboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("origin")?.value) {
+      this.searchAirports(" ", "origin");
+    }
+    this.originFocused = true;
+  }
+  
+  onDestFocused() {
+    if (this.activeInboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeInboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("destination")?.value) {
+      this.searchAirports(" ", "destination");
+    }
+    
+    this.destFocused = true;
+
   }
 
   // Replaces text in input element
