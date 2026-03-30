@@ -203,16 +203,23 @@ export class BookFlight {
   }
 
   onOriginFocused() {
-    if (!this.searchTerms.get("origin")?.value) {
+    if (this.activeOutboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeOutboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("origin")?.value) {
       this.searchAirports(" ", "origin");
     }
     this.originFocused = true;
   }
   
   onDestFocused() {
-    if (!this.searchTerms.get("destination")?.value) {
+    if (this.activeInboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeInboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("destination")?.value) {
       this.searchAirports(" ", "destination");
     }
+    
     this.destFocused = true;
 
   }
