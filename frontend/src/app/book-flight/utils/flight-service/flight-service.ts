@@ -20,9 +20,17 @@ export class FlightService {
   getAirports(search_tm: string) {
     return this.http.get<any[]>(`${environment.api_url}/api/airports`,
       { params: {
-      search_term: search_tm
-    }}
+        search_term: search_tm
+      }}
     );
+  }
+
+  getFilteredAirports(regionID: string) {
+    return this.http.get<any[]>(`${environment.api_url}/api/filter-airports`,
+      { params: {
+        regionID: regionID
+      }}
+    )
   }
 
   getFlights(origin: string, destination: string) {

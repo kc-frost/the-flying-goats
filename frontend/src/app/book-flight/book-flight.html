@@ -14,7 +14,7 @@
                 <p>Filter by Region</p>
                   <ul class="filters">
                     @for (filter of filters; track filter.id) {
-                      <li [class]="activeOutboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="activeOutboundFilter = filter.id" >{{filter.name}}</li>
+                      <li [class]="activeOutboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="setFilter('outbound', filter)">{{filter.name}}</li>
                     }
                   </ul>
                 <ul class="suggestions">
@@ -41,7 +41,7 @@
                 <p>Filter by Region</p>
                 <ul class="filters">
                   @for (filter of filters; track filter.id) {
-                    <li [class]="activeInboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="activeInboundFilter = filter.id" >{{filter.name}}</li>
+                    <li [class]="activeInboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="setFilter('inbound', filter)">{{filter.name}}</li>
                   }
                 </ul>
                 <ul class="suggestions">

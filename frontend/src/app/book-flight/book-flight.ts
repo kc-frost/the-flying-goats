@@ -78,17 +78,17 @@ export class BookFlight {
   activeTab: "depart" | "return" = "depart";
 
   filters = [
-    {id: 'none', name: 'None'},
-    {id: 'n-am', name: 'North America'},
-    {id: 's-am', name: 'South America'},
-    {id: 'asia', name: 'Asia'},
-    {id: 'eur', name: 'Europe'},
-    {id: 'africa', name: 'Africa'},
+    {id: 'none', name: 'None', region_id: '0'},
+    {id: 'n-am', name: 'North America', region_id: '1'},
+    {id: 's-am', name: 'South America', region_id: '2'},
+    {id: 'asia', name: 'Asia', region_id: '3'},
+    {id: 'eur', name: 'Europe', region_id: '4'},
+    {id: 'africa', name: 'Africa', region_id: '5'},
 
   ]
 
-  activeOutboundFilter: string | null = 'none';
-  activeInboundFilter: string | null = 'none';
+  activeOutboundFilter: string | undefined = 'none';
+  activeInboundFilter: string | undefined = 'none';
 
   activeOutboundFlight: number | null = null;
   activeOutboundSeat: string | null = null;
@@ -174,6 +174,27 @@ export class BookFlight {
         this.returningFlights.next(res.return);
       }
     });
+  }
+
+  setFilter(leg: string, filter: {id: string, name: string, region_id: string}) {
+    var isOutbound = (leg === 'outbound');
+    isOutbound ? this.activeOutboundFilter = filter.id : this.activeInboundFilter = filter.id;
+    
+    if (filter.id === 'none') {
+      isOutbound ? this.onOriginFocused() : this.onDestFocused()
+      return;
+    } 
+
+    this.flightService.getFilteredAirports(filter.region_id).subscribe({
+      next: (res) => {
+        if (isOutbound) {
+          this.originAirports.next(res);
+        } else {
+          this.destinationAirports.next(res);
+        }
+      }
+    })
+
   }
 
   // Replaces text in input element
