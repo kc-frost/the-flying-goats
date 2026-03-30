@@ -6,14 +6,14 @@
         </section>
         <hr>
         <section class="bio">
-            <!-- @if (isEditing) {
+            @if (isEditing$ | async) {
                 <label for="userBio">Enter a new bio!</label>
-                <textarea id="userBio" [formControl]="userBio"></textarea>
+                <textarea id="userBio" [formControl]="userBioForm"></textarea>
                 <button (click)="saveBio()">Save</button>
             } @else {
-                <p>{{userBio.value}}</p>
+                <p>{{userBio$ | async }}</p>
                 <button class="update"(click)="updateBio()">Update Bio</button>
-            } -->
+            }
         </section>
     </section>
 
@@ -47,22 +47,22 @@
                     <!-- DEPART DETAILS -->
                     <tr>
                         <td>
-                            <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}} </p>
-                            <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}} </p> -->
+                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
                         </td>
                         <td>
                             <p>{{reservation.departFlightID}}</p>
                         </td>
                         <td>
                             <p>{{reservation.origin}}</p>
-                            <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.liftOffDate | date:'hh:mma'}} / {{reservation.liftOffDate | date:'HH:mm'}}</p> -->
                             <p>{{reservation.o_airport}}</p>
                         </td>
                         <td>
                             <p>{{reservation.destination}}</p>
-                            <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
                             <p>{{reservation.r_airport}}</p>
                         </td>
                         <td>
@@ -80,22 +80,22 @@
                     </tr>
                     <tr>
                         <td>
-                            <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}} </p>
-                            <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}} </p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
                         </td>
                         <td>
                             <p>{{reservation.departFlightID}}</p>
                         </td>
                         <td>
                             <p>{{reservation.destination}}</p>
-                            <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.liftOffDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
                             <p>{{reservation.o_airport}}</p>
                         </td>
                         <td>
                             <p>{{reservation.origin}}</p>
-                            <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p>
+                            <!-- <p>{{reservation.arrivingDate | date:'ccc dd MMM yyyy'}}</p> -->
+                            <!-- <p>{{reservation.arrivingDate | date:'hh:mma'}} / {{reservation.arrivingDate | date:'HH:mm'}}</p> -->
                             <p>{{reservation.r_airport}}</p>
                         </td>
                         <td>

@@ -18,13 +18,20 @@ export class ProfilePage {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef)
   private userReservations = new BehaviorSubject<any[]>([]);
-  
+  private userBio = new BehaviorSubject<string>("");
+  private isEditing = new BehaviorSubject<boolean>(false);
+
   userService = inject(UserService);
   selectedTab: 'past' | 'upcoming' = 'upcoming'
   staticProfileImage = "/profile/static-profile-image.svg";
+  
+  isEditing$ = this.isEditing.asObservable();
+  userBio$ = this.userBio.asObservable();
+  userBioForm = new FormControl('');
 
   ngOnInit() {
     this.loadReservations();
+    this.loadBio();
   }
 
   loadReservations() {
@@ -45,6 +52,8 @@ export class ProfilePage {
     // change this to sort by the full date of the initial liftOff of the trip
 
     const pastCutoff = new Date();
+
+    // currently, if the creation of a booking is at least 3 days ago
     pastCutoff.setDate(pastCutoff.getDate() - 2);
     const allReservations = this.userReservations.value;
 
@@ -65,43 +74,33 @@ export class ProfilePage {
     }
   }
 
-  // bio logic
-//   isEditing = false;
-//   userBio = new FormControl('');
+  loadBio() {
+    this.http.get<{bio: string}>(`${environment.api_url}/api/get-bio`,)
+    .subscribe({
+      next: (data) => {
+        this.userBio.next(data.bio);
 
-// loadBio() {
-//   this.http.get<{bio: string}>(`${environment.api_url}/api/get-bio`, { withCredentials: true })
-//   .subscribe({
-//     next: (data) => {
-//       // console.log('bio response:', data);
-//       this.userBio.setValue(data.bio ?? '');
-//       this.cdr.detectChanges();
-//     },
-//     error: (err) => console.log(err)
-//   });
-// }
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.log(err)
+    });
+  }
 
-// saveBio() {
-//   this.http.post(
-//     `${environment.api_url}/api/save-bio`, 
-//     { bio: this.userBio.value }, 
-//     { withCredentials: true }
-//   ).subscribe({
-//     next: () => this.isEditing = false,
-//     error: (err) => console.log(err)
-//   });
-// }
+  saveBio() {
+    this.http.post(
+      `${environment.api_url}/api/save-bio`, 
+      { bio: this.userBioForm.value }, 
+    ).subscribe({
+      next: () => {
+        this.isEditing.next(false);
+        this.userBio.next(this.userBioForm.value!);
+      },
+      error: (err) => console.log("SAVE BIO ERROR:", err)
+    });
+  }
 
-// updateBio() {
-//   this.isEditing = true;
-// }
+  updateBio() { 
+    this.isEditing.next(true);
+  }
 
-  // saveBio() {
-  //   this.userBio.setValue(this.userBio.value);
-  //   this.isEditing = false;
-  // }
-
-  // updateBio() {
-  //   this.isEditing = true;
-  // }
 }
