@@ -22,21 +22,17 @@
             <header><h1>Your Reservations</h1></header>
             <section class="tab">
                 <div class="depart">
-                    <input id="past" name="tab" type="radio">
+                    <input id="past" name="tab" type="radio" (click)="selectedTab = 'past'">
                     <label for="past">Past</label>
                 </div>
-                <div class="current">
-                    <input id="cur" name="tab" type="radio" checked>
-                    <label for="cur">Current</label>
-                </div>
-                <div class="future">
-                    <input id="future" name="tab" type="radio">
-                    <label for="future">Future</label>
+                <div class="upc">
+                    <input id="upc" name="tab" type="radio" checked (click)="selectedTab = 'upcoming'">
+                    <label for="upc">Upcoming</label>
                 </div>
             </section>
         </div>
         <section class="content">
-            @for (reservation of userReservations$ | async; track $index) {
+            @for (reservation of filteredReservations; track $index) {
                 <details open>
                     <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm'}}</summary>
                     <table>
