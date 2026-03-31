@@ -72,7 +72,7 @@ def save_profile_pic():
     data = request.get_json()
     
     profile_url = data['profileURL']
-    user_id = data['userID']
+    user_id = current_user.get_id()
 
     if profile_url is None or user_id is None:
         return jsonify({"err": "url/user_id is null",

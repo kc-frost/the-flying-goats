@@ -48,10 +48,10 @@ def get_profile_picture(user_id: str):
             cursor.execute(query, (user_id,))
             profile_picture = cursor.fetchone()
             if profile_picture is None:
-                return jsonify({"err": "User not found"}), 404
+                return {"err": "User not found"}
             
         except Exception as e:
-            return jsonify({"err": str(e)}), 500
+            return {"err": str(e)}
     
     return profile_picture
 
@@ -65,9 +65,9 @@ def save_profile_picture(url: str, user_id: str):
                 SET `profilePicture` = %s
                 WHERE `userID` = %s
             """
-            cursor.execute(query, (user_id))
+            cursor.execute(query, (url, user_id))
             conn.commit()
-            return jsonify({"message": "profile picture uploaded!"}), 200
+            return {"message": "profile picture uploaded"}
         except Exception as e:
             conn.rollback()
-            return jsonify({"err": str(e)}), 500
+            return {"err": str(e)}
