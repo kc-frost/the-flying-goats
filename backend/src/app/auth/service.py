@@ -37,7 +37,7 @@ def find_user(email: str, password: str) -> dict[str, Any] | None:
     with conn.cursor() as cursor:
         try:
             query = """
-                SELECT `userID`, `username`, `email`, `password`
+                SELECT `userID`, `username`, `email`, `password`, `isStaff`
                 FROM `users`
                 WHERE `email`=%s AND `password`=%s
             """

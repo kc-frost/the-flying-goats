@@ -27,6 +27,7 @@ def check_session():
         return jsonify({
             "authenticated": True,
             "is_admin": current_user.is_admin,
+            "is_staff": current_user.is_staff,
             "username": current_user.username,
             "email": current_user.email
         }), 200
@@ -60,7 +61,8 @@ def login():
             str(result['userID']), 
             result['username'], 
             result['email'], 
-            is_admin)
+            is_admin,
+            result['is_staff'])
 
         login_user(user)
 
@@ -68,6 +70,7 @@ def login():
         return jsonify({
             "authenticated": True,
             "is_admin": current_user.is_admin,
+            "is_staff": current_user.is_staff,
             "username": current_user.username
             }), 200
     else:
