@@ -6,7 +6,7 @@ import { map, catchError, of } from 'rxjs';
 export const pilotAuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
 
-  if (!authService.isAuthenticated()) {
+  if (!authService.getAuthenticated()) {
     alert("Route requires authentication. Please login first.");
     return false;
   }

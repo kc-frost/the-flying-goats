@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status
 
 bp = Blueprint("profile", __name__)
 
@@ -85,3 +85,33 @@ def save_profile_pic():
         return jsonify(result), 500
 
     return jsonify(result), 200
+
+@bp.post('/update-seat')
+def update_seat():
+    data = request.json
+    result = update_booking_seat(data)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Seat successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500
+    
+# Again, right now there's no restrictions to this. Need to add restrictions later.
+@bp.post('/update-reservation-status')
+def update_reservation_status():
+    conn = get_connection()
+    data = request.json
+    result = update_booking_status(data)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Reservation status successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500

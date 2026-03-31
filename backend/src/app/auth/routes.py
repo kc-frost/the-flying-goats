@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 
 from app.models import User
 
-from .service import find_user, if_admin, insert_user
+from .service import find_user, if_admin, insert_user, check_ifpilot
 from .validators import validate_email, validate_password
 
 # first param: name of parent folder
@@ -116,3 +116,16 @@ def register():
             "success": False,
             "message": result.get("error")
         }), 500
+
+@bp.route('/check-pilot')
+@login_required
+def check_pilot():
+    if check_ifpilot(current_user.get_id()):
+        return jsonify({
+            "isPilot": True
+        }), 200
+    else:
+        return jsonify({
+            "isPilot": False
+        }), 403
+    

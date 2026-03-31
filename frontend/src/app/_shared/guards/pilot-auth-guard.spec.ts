@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { pilotAuthGuard} from './pilot-auth-guard';
+import { pilotAuthGuard} from '../services/pilot-auth-guard';
 
 describe('pilotAuthGuard', () => {
   let service: typeof pilotAuthGuard;
