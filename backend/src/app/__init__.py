@@ -44,7 +44,7 @@ def register_blueprints(app):
     
     # blueprints
     # id appreciate it if we grouped it by public, logged-in, and admin routes, but if this gets out of order its nbd
-    from app import auth, profile, booking, pilot_view, inventory, view_reservations, view_users
+    from app import auth, profile, app_notifs, booking, pilot_view, inventory, view_reservations, view_users
 
     # 'public' routes
     app.register_blueprint(auth.routes.bp, url_prefix="/api")
@@ -67,7 +67,7 @@ def load_user(user_id: str):
     conn = get_connection()
     with conn.cursor() as cursor:
         query = """
-            SELECT `userID`, `username`, `email` 
+            SELECT `userID`, `username`, `email`, `isStaff`
             FROM `users`
             WHERE `userID` = %s
         """
@@ -79,6 +79,7 @@ def load_user(user_id: str):
             str(result['userID']), 
             result['username'], 
             result['email'], 
-            if_admin(result['email']))
+            if_admin(result['email']),
+            result['isStaff'])
     
     return None

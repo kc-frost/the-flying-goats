@@ -62,7 +62,7 @@ def login():
             result['username'], 
             result['email'], 
             is_admin,
-            result['is_staff'])
+            result['isStaff'])
 
         login_user(user)
 
