@@ -34,3 +34,15 @@ def admin_required(func):
                 
     return wrapped_func
 
+# this is a decorator function
+def staff_required(func):
+    @wraps(func)
+    def wrapped_func(*args, **kwargs):
+        if not current_user.is_authenticated:
+            abort(401)
+        if not current_user.is_staff:
+            abort(403)
+        
+        return func(*args, **kwargs)
+                
+    return wrapped_func

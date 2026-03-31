@@ -48,6 +48,7 @@ def register_blueprints(app):
 
     # 'public' routes
     app.register_blueprint(auth.routes.bp, url_prefix="/api")
+    app.register_blueprint(app_notifs.routes.bp, url_prefix="/api")
 
     # logged-in routes
     app.register_blueprint(profile.routes.bp, url_prefix="/api")

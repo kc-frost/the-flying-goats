@@ -10,8 +10,9 @@ class User(UserMixin):
         these properties and methods
 
     """
-    def __init__(self, user_id: str, username: str, email: str, is_admin: bool) -> None:
+    def __init__(self, user_id: str, username: str, email: str, is_admin: bool, is_staff: bool) -> None:
         self.id = user_id
         self.email = email
         self.username = username
         self.is_admin = is_admin
+        self.is_staff = is_staff
