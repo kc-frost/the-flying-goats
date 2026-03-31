@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './_shared/services/auth-service';
 import { UserService } from './_shared/services/user-service';
 import { OnInit } from '@angular/core';
+import { AppNotifService } from './_shared/services/app-notif-service';
 
 @Component({
   selector: 'app-root',
@@ -14,15 +15,20 @@ import { OnInit } from '@angular/core';
 export class App implements OnInit {
   protected readonly title = signal('tfg');
   private router = inject(Router);
+  private appNotifs = inject(AppNotifService);
   authService = inject(AuthService);
   userService = inject(UserService);
 
   ngOnInit() {
+    this.appNotifs.startAlerts();
+
     this.authService.setCurrentAfterRefresh().subscribe({
       error: (err) => {
         console.log("CHECK-SESSION FAILED:", err);
       }
     });
+
+
   }
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";

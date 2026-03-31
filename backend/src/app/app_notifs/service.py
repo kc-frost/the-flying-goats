@@ -5,9 +5,9 @@ def get_upcoming_flights(user_id: str):
 
     with conn.cursor() as cursor:
         try:
-            # flights within 30 minutes
+            # # flights within 30 minutes
             query = """
-                SELECT `bookingNumber`, `userID`, `departOrigin`, `departLift`, 'outbound' as leg
+                SELECT `bookingNumber`, `userID`, `departOrigin` as origin, `departLift` as liftOff, 'outbound' as leg
                 FROM `reservationticket`
                 WHERE `userID` = %s
                 AND TIMEDIFF(`departLift`, NOW()) <= '00:30:00'
@@ -15,7 +15,7 @@ def get_upcoming_flights(user_id: str):
 
                 UNION
 
-                SELECT `bookingNumber`, `userID`, `returnOrigin`, `returnLift`, 'inbound' as leg
+                SELECT `bookingNumber`, `userID`, `returnOrigin` as origin, `returnLift` as liftOff, 'inbound' as leg
                 FROM `reservationticket`
                 WHERE `userID` = %s
                 AND TIMEDIFF(`returnLift`, NOW()) <= '00:30:00'
