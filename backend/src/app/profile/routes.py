@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations
+from .service import get_user_reservations, get_profile_picture, save_profile_picture
 
 bp = Blueprint("profile", __name__)
 
@@ -56,3 +56,32 @@ def save_bio():
         except Exception as e:
             conn.rollback()
             return jsonify({"error": str(e)}), 400
+        
+@bp.route('/get-profile-pic', methods=['GET'])
+@login_required
+def get_profile_pic():
+    result = get_profile_picture(current_user.get_id())
+
+    if ('err' in result):
+        return jsonify(result), 500
+    
+    return jsonify(result), 200
+
+@bp.route('/save-profile-picture', methods=['POST'])
+def save_profile_pic():
+    data = request.get_json()
+    
+    profile_url = data['profileURL']
+    user_id = data['userID']
+
+    if profile_url is None or user_id is None:
+        return jsonify({"err": "url/user_id is null",
+                        "profile_url": profile_url,
+                        "user_id": user_id}), 400
+
+    result = save_profile_picture(profile_url, user_id)
+
+    if ('err' in result):
+        return jsonify(result), 500
+
+    return jsonify(result), 200
