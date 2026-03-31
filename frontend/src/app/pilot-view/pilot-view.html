@@ -1,0 +1,88 @@
+<div class="pilot-page">
+  <div class="pilot-panel">
+    <div class="pilot-header">
+      <div>
+        <h1 class="pilot-title">Here's your schedule for the month brotato</h1>
+      </div>
+
+<button class="pilot-refresh-btn" type="button" (click)="clearPilotAndFlightAvailability()">
+    Clear Availability (VERY DANGEROUS)
+</button>
+    </div>
+
+    <div class="pilot-calendar-grid">
+      <div
+        class="calendar-day-card"
+        *ngFor="let day of calendarDays"
+        [class.today]="day.isToday"
+        [class.selected]="selectedDay?.date?.toDateString() === day.date.toDateString()"
+        (click)="selectDay(day)"
+      >
+        <div class="calendar-day-top">
+          <span class="calendar-day-name">{{day.dayName}}</span>
+          <span class="calendar-month-name">{{day.monthName}}</span>
+        </div>
+
+        <div class="calendar-day-number">{{day.dayNumber}}</div>
+
+        <div class="calendar-day-count">
+          {{day.events.length}} {{day.events.length === 1 ? "flight" : "flights"}}
+        </div>
+      </div>
+    </div>
+
+    <div class="pilot-detail-panel" *ngIf="selectedDay">
+      <div class="pilot-detail-header">
+        <h2>{{selectedDay.fullLabel}}</h2>
+      </div>
+
+      <div class="pilot-empty-state" *ngIf="getSelectedDayEvents().length === 0">
+        No pilot assignments on this day.
+      </div>
+
+      <div class="pilot-event-list" *ngIf="getSelectedDayEvents().length > 0">
+        <div class="pilot-event-card" *ngFor="let event of getSelectedDayEvents()">
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Pilot</span>
+            <span class="pilot-event-value">{{getPilotName(event)}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Flight</span>
+            <span class="pilot-event-value">{{getFlightCode(event)}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Plane</span>
+            <span class="pilot-event-value">{{getPlaneCode(event)}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Origin</span>
+            <span class="pilot-event-value">{{getOrigin(event)}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Destination</span>
+            <span class="pilot-event-value">{{getDestination(event)}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Departure</span>
+            <span class="pilot-event-value">{{formatEventTime(event, "start")}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Arrival</span>
+            <span class="pilot-event-value">{{formatEventTime(event, "end")}}</span>
+          </div>
+
+          <div class="pilot-event-row">
+            <span class="pilot-event-label">Status</span>
+            <span class="pilot-event-value">{{getStatus(event)}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

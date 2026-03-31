@@ -110,4 +110,11 @@ export class AuthService {
       { observe: 'response'}
     )
   }
+
+  // Heard on the "can only do this here"
+  isPilot() {
+  return this.http.get(`${environment.api_url}/api/check-pilot`, {
+    withCredentials: true
+  });
+}
 }
