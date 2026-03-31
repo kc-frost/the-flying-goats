@@ -1,6 +1,7 @@
 -- ============================================================
 -- FLIGHT INSERTS
 -- ============================================================
+use TFG;
 insert into flight (IATA, planeName, gate, origin, destination, capacity) values
 ("TP1001", "Goated67Plane", "B3", 1, 18, 8),
 ("TP1002", "SkyRam900", "D3", 1, 8, 28),

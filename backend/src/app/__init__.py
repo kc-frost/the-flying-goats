@@ -44,7 +44,7 @@ def register_blueprints(app):
     
     # blueprints
     # id appreciate it if we grouped it by public, logged-in, and admin routes, but if this gets out of order its nbd
-    from app import auth, app_notifs, profile, booking, inventory, view_reservations, view_users
+    from app import auth, profile, booking, pilot_view, inventory, view_reservations, view_users
 
     # 'public' routes
     app.register_blueprint(auth.routes.bp, url_prefix="/api")
@@ -53,6 +53,7 @@ def register_blueprints(app):
     # logged-in routes
     app.register_blueprint(profile.routes.bp, url_prefix="/api")
     app.register_blueprint(booking.routes.bp, url_prefix="/api")
+    app.register_blueprint(pilot_view.routes.bp, url_prefix="/api")
 
     # admin routes
     app.register_blueprint(inventory.routes.bp, url_prefix="/admin")

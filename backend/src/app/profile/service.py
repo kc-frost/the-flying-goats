@@ -1,4 +1,5 @@
 from flask import jsonify
+from unittest import result
 from app.db import get_connection
 from datetime import timedelta
 
@@ -71,3 +72,38 @@ def save_profile_picture(url: str, user_id: str):
         except Exception as e:
             conn.rollback()
             return {"err": str(e)}
+
+# Update seat function. I don't have a single "update" function, because it would get messy with admin perms coming soon. Restrictions to updating seat is already in SQL db
+def update_booking_seat(data):
+    conn = get_connection()
+    query = """
+    update booking set seat = %s where bookingID = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (data['seatNumber'], data['bookingID']))
+            conn.commit()
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, 
+                    "error": str(e)}
+
+# Currently no restrictions on updating booking status. Will change later, but for now just getting the method out. Most likely going to add restrictions on monday.
+def update_booking_status(data):
+    conn = get_connection()
+    query = """
+    update booking set status = %s where bookingID = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (data['status'], data['bookingID']))
+            conn.commit()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, 
+                    "error": str(e)}
