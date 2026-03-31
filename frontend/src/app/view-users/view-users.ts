@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 
 type UserInfo = {
   userID: number;
@@ -16,7 +17,7 @@ type UserInfo = {
 @Component({
   selector: "app-view-users",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./view-users.html",
   styleUrls: ["./view-users.css"],
 })
@@ -25,23 +26,41 @@ export class ViewUsers implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   users: UserInfo[] = [];
+  searchTerm: string = "";
 
   ngOnInit(): void {
     this.getUsers();
   }
 
-  getUsers(): void {
-    this.http
-          .get<UserInfo[]>(`${environment.api_url}/api/users`)
-          .subscribe({
-            next: (data) => {
-              console.log("users received:", data);
-              this.users = data;
-              this.cdr.detectChanges();
-            },
-            error: (err) => {
-              console.error("error loading users:", err);
-            },
-          });
-      }
+  getUsers(search: string = ""): void {
+    const trimmedSearch = search.trim();
+    const url = trimmedSearch
+      ? // Chekcs if the search is empty after the trim, if yeah it'll just fetch all users, if not it'll search by whatevers in the search bar
+        `${environment.api_url}/api/search-users?search=${encodeURIComponent(
+          trimmedSearch
+        )}`
+      : `${environment.api_url}/api/users`;
+    // For some reason (from my experience) you have to press enter twice for the search to work, no idea why but it still works, will look into later.
+    this.http.get<UserInfo[]>(url).subscribe({
+      next: (data) => {
+        console.log("users received:", data);
+        this.users = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error("error loading users:", err);
+      },
+    });
   }
+
+  onSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm = value;
+    this.getUsers(this.searchTerm);
+  }
+
+  clearSearch(): void {
+    this.searchTerm = "";
+    this.getUsers();
+  }
+}

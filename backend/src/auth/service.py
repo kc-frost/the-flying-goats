@@ -228,32 +228,35 @@ def get_user_data(conn):
                     "error": str(e)}
 
 # Update seat function. I don't have a single "update" function, because it would get messy with admin perms coming soon. Restrictions to updating seat is already in SQL db
-def update_booking_seat(conn):
+def update_booking_seat(conn, data):
     query = """
-    update booking set seat = %s
+    update booking set seat = %s where bookingID = %s
     """
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query)
+            cursor.execute(query, (data['seatNumber'], data['bookingID']))
+            conn.commit()
             result = cursor.fetchall()
             return {"success": True,
                     "data": result}
         except Exception as e:
+            conn.rollback()
             return {"success": False, 
                     "error": str(e)}
 
 # Currently no restrictions on updating booking status. Will change later, but for now just getting the method out. Most likely going to add restrictions on monday.
-def update_booking_status(conn):
+def update_booking_status(conn, data):
     query = """
-    update booking set status = %s
+    update booking set status = %s where bookingID = %s
     """
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query)
-            result = cursor.fetchall()
+            cursor.execute(query, (data['status'], data['bookingID']))
+            conn.commit()
             return {"success": True,
                     "data": result}
         except Exception as e:
+            conn.rollback()
             return {"success": False, 
                     "error": str(e)}
 # Gunna change I gotta ask about Kai's table cause she didn't push it
@@ -261,7 +264,7 @@ def update_booking_status(conn):
 
 # Collects from the view I made pilotSchedule, check db for returns
 def get_pilot_schedule(conn):
-    query = """select * from pilotSchedule"""
+    query = """select * from pilotScheduleInfo"""
     with conn.cursor() as cursor:
         try:
             cursor.execute(query)
@@ -272,3 +275,131 @@ def get_pilot_schedule(conn):
             return {"success": False, 
                     "error": str(e)}
     return {"success": True, "data": result}
+
+# This will create a plane and insert it into the plane table
+# On the sql side, it will automatically insert into the hanger
+# The hanger is a sort of "memory" table.
+def create_planes(conn, data):
+    query = """
+    insert into plane(ICAO) values (%s)"""
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (data['ICAO'],))
+            conn.commit()
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}
+
+# This gets the planes from the planeStatus view, not hanger.
+def get_planes(conn):
+    query = """
+    select * from planeStatus
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}
+
+# This is for getting available planes. Currently don't have a use for it, but might need it later.
+def get_available_planes(conn):
+    query = """
+    select * from plane where ICAO in (select ICAO from hanger where status = "Available")
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}
+
+# For updating the plane ICAO between "In Use" and "Available".
+def update_plane_ICAO(conn, data):
+    query = """
+    update plane set ICAO = %s where ICAO = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (data['ICAO'], data['old_ICAO']))
+            conn.commit()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}
+
+# This will delete the plane from the plane table, but not the hanger. 
+def delete_plane(conn, data):
+    query = """
+    delete from plane where ICAO = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (data['ICAO'],))
+            conn.commit()
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, 
+                    "error": str(e)}
+    return {"success": True, "data": result}
+
+# This loops through all flights, and calls the function I created in MySQL
+# The function clears all pilots and planes from flights that are considered "completed"
+# "Completed" means the landing datetime is before the current moment of calling the function.
+def clear_all_expired_schedules(conn):
+    funcCallQuery = """
+    call clearpilotandflightavailability()
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute("select IATA from flight")
+            flights = cursor.fetchall()
+            for f in flights:
+                cursor.execute(funcCallQuery)
+            conn.commit()
+            return {"success": True}
+        except Exception as e:
+            conn.rollback()
+            return {"success": False, "error": str(e)}
+        
+
+# Auth stuff for pilot view, putting it here for now may move to profile if I think it fits later
+
+def check_ifpilot(email: str) -> bool:
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        query = """
+        select 1 from users join staff on staff.staffID = users.userID where users.email = %s and users.isStaff = true and staff.positionID = 2
+        """
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        return result is not None
+
+def search_user_data(conn, searchKey):
+    query = "select * from userreservationsummary where cast(userID as char) = %s or email = %s or username = %s"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (searchKey, searchKey, searchKey))
+            result = cursor.fetchall()
+            return {"success": True, "data": result}
+        except Exception as e:
+            return {"success": False, "error": str(e)}

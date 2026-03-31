@@ -12,6 +12,7 @@ import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
 import { ViewAppointments } from './view-appointments/view-appointments';
 import { ViewUsers } from './view-users/view-users';
 import { PilotView } from './pilot-view/pilot-view';
+import { pilotAuthGuard } from './_shared/services/pilot-auth-guard';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -63,19 +64,22 @@ export const routes: Routes = [
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-        canActivate: [userAuthGuard, adminAuthGuard],
+        // canActivate: [userAuthGuard, adminAuthGuard],
     },
     {
         path: 'view-appointments',
-        component: ViewAppointments
+        component: ViewAppointments,
+        // canActivate: [userAuthGuard, adminAuthGuard],
     },
     {
         path: 'view-users',
-        component: ViewUsers
+        component: ViewUsers,
+        // canActivate: [userAuthGuard, adminAuthGuard],
     },
     {
         path: 'pilot-view',
-        component: PilotView
+        component: PilotView,
+        // canActivate: [userAuthGuard, pilotAuthGuard],
     }
 ];
 

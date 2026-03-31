@@ -313,3 +313,72 @@
   transform: translateY(0px);
   box-shadow: 0 8px 18px rgba(0,0,0,0.18);
 }
+
+
+/* Nav arrow thighs */
+.modal-dropdown {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.plane-panel-slide {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+/* inventory panel starts centered after dropDown animation */
+.inv-panel.plane-panel-slide {
+  transform: translate(-50%, 0);
+}
+
+/* when plane modal is active, inventory slides fully left */
+.inv-panel.plane-panel-slide.inv-shift-left {
+  transform: translate(calc(-50% - 120vw), 0);
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+
+/* plane panel starts fully off-screen right */
+.plane-panel-main {
+  transform: translate(calc(-50% + 120vw), 0);
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+
+/* plane panel slides into same exact centered spot */
+.plane-panel-main.plane-panel-active {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+  animation: none;
+}
+
+.plane-save-btn {
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+}
+
+.screen-side-arrow {
+  position: fixed;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 120px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1010;
+}
+
+.screen-side-arrow img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}

@@ -1,8 +1,8 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from db import get_connection
-from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, check_ifadmin, book_a_flight
-from .service import update_reservation_seat, update_reservation_status, get_pilot_schedule
+from .service import clear_all_expired_schedules, create_planes, delete_from_inventory, delete_plane, find_user, get_available_planes, get_planes, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, search_user_data, update_inventory, check_ifadmin, book_a_flight
+from .service import update_booking_seat, update_booking_status, get_pilot_schedule, update_plane_ICAO, check_ifpilot
 from .validators import validate_email, validate_password
 from .security import admin_required
 from _models.user import User
@@ -178,8 +178,8 @@ def addItemToInventory():
 def deleteItemFromInventory():
     conn = get_connection()
     data = request.json
-    itemID = data['itemID']
-    result = delete_from_inventory(conn, itemID)
+    # itemID = data['itemID']
+    result = delete_from_inventory(conn, data)
     if result.get("success"):
         return jsonify({
             "success": True,
@@ -302,7 +302,8 @@ def users_data():
 @bp.post('/update-seat')
 def update_seat():
     conn = get_connection()
-    result = update_reservation_seat(conn)
+    data = request.json
+    result = update_booking_seat(conn, data)
     if result.get("success"):
         return jsonify({
             "success": True,
@@ -317,7 +318,8 @@ def update_seat():
 @bp.post('/update-reservation-status')
 def update_reservation_status():
     conn = get_connection()
-    result = update_reservation_status(conn)
+    data = request.json
+    result = update_booking_status(conn, data)
     if result.get("success"):
         return jsonify({
             "success": True,
@@ -331,9 +333,138 @@ def update_reservation_status():
 # Should work, hopefully (praying) no reason for it not to ngl
 # But I'm not testing this rn cause for some reason my mains messed up
 @bp.get('/pilot-schedule')
-def get_pilot_schedule():
+def getPilotSchedule():
     conn = get_connection()
     result = get_pilot_schedule(conn)
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+@bp.post('/planes/add')
+def create_plane():
+    conn = get_connection()
+    data = request.json
+    result = create_planes(conn, data)
+
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Plane successfully created",
+            "data": result.get("data")
+        }), 201
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+@bp.get('/planes')
+def planes():
+    conn = get_connection()
+    result = get_planes(conn)
+
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+# Again, these are seperate. Probably going to display this for something else later,
+# but for now atleast, in inventory, planes will be called, not available planes.
+@bp.get('/planes/available')
+def available_planes():
+    conn = get_connection()
+    result = get_available_planes(conn)
+
+    if result.get("success"):
+        return jsonify(result["data"]), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+@bp.post('/planes/update-ICAO')
+def updatePlaneStatus():
+    conn = get_connection()
+    data = request.json
+    result = update_plane_ICAO(conn, data)
+
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Plane ICAO successfully updated"
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+@bp.post('/planes/delete')
+def deletePlane():
+    conn = get_connection()
+    data = request.json
+    result = delete_plane(conn, data)
+
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Plane successfully deleted"
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+# Read how this works in service.py
+@bp.post('/planes/clear-finished')
+def clear_finished_flights():
+    conn = get_connection()
+    result = clear_all_expired_schedules(conn)
+
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Cleared all finished flight availabilities."
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+        }), 500
+    
+@bp.route('/check-pilot')
+@login_required
+def check_pilot():
+    if check_ifpilot(current_user.get_id()):
+        return jsonify({
+            "isPilot": True
+        }), 200
+    else:
+        return jsonify({
+            "isPilot": False
+        }), 403
+    
+@bp.get('/search-users')
+def search_users():
+    conn = get_connection()
+    searchKey = request.args.get('search')
+    result = search_user_data(conn, searchKey)
+
+    if searchKey is None:
+        return jsonify({
+            "success": False,
+            "message": "Need to type something buddy"
+        }), 400
+    result = search_user_data(conn, searchKey)
     if result.get("success"):
         return jsonify(result["data"]), 200
     else:

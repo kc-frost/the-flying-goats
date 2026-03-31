@@ -16,6 +16,13 @@ type InventoryRow = {
   isReadOnly: boolean;
 };
 
+type PlaneRow = {
+  ICAO: string;
+  planeStatus: string;
+  isReadOnly: boolean;
+  oldICAO?: string;
+};
+
 @Component({
   selector: "app-inventory",
   standalone: true,
@@ -29,6 +36,7 @@ export class Inventory implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   items: InventoryRow[] = [];
+  planes: PlaneRow[] = [];
 
   newItem: {
     itemID: number | null;
@@ -44,10 +52,20 @@ export class Inventory implements OnInit {
     itemDescription: ""
   };
 
+  newPlane: {
+    ICAO: string;
+    planeStatus: string;
+    } = {
+      ICAO: "",
+      planeStatus: ""
+    };
+
   showAddModal = false;
+  showPlaneModal = false;
 
   ngOnInit(): void {
     this.getInventory();
+    this.getPlanes();
   }
 
   getInventory(): void {
@@ -67,6 +85,23 @@ export class Inventory implements OnInit {
       });
   }
 
+getPlanes(): void {
+  this.http
+    .get<Omit<PlaneRow, "isReadOnly">[]>(`${environment.api_url}/api/planes`)
+    .subscribe({
+      next: (rows) => {
+        this.planes = rows.map((row) => ({
+          ...row,
+          isReadOnly: true
+        }));
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        alert("Error loading planes.");
+      }
+    });
+}
+
   addModalShowButton(): void {
     this.showAddModal = true;
   }
@@ -82,6 +117,19 @@ export class Inventory implements OnInit {
       itemDescription: ""
     };
   }
+
+  togglePlaneModal(): void {
+  this.showPlaneModal = !this.showPlaneModal;
+}
+
+closePlaneModal(): void {
+  this.showPlaneModal = false;
+  this.showCreatePlaneForm = false;
+  this.newPlane = {
+    ICAO: "",
+    planeStatus: ""
+  };
+}
 
   addItem(): void {
     if (this.newItem.itemID == null || this.newItem.quantity == null) {
@@ -107,6 +155,26 @@ export class Inventory implements OnInit {
       });
   }
 
+  addPlane(): void {
+    if (!this.newPlane.ICAO) {
+      return;
+    }
+
+    this.http
+      .post(`${environment.api_url}/api/planes/add`, {
+        ICAO: this.newPlane.ICAO
+      })
+      .subscribe({
+        next: () => {
+          this.getPlanes();
+          this.closePlaneModal();
+        },
+        error: () => {
+          alert("Error adding plane.");
+        }
+      });
+  }
+
   deleteItem(itemID: number): void {
     this.http
       .post(`${environment.api_url}/api/inventory/delete`, {
@@ -122,6 +190,38 @@ export class Inventory implements OnInit {
       });
   }
 
+  deletePlane(ICAO: string): void {
+    this.http
+      .post(`${environment.api_url}/api/planes/delete`, {
+        ICAO: ICAO
+      })
+      .subscribe({
+        next: () => {
+          this.getPlanes();
+        },
+        error: () => {
+          alert("Error deleting plane.");
+        }
+      });
+  }
+
+  updatePlaneICAO(ICAO: string, newICAO: string): void {
+    this.http
+      .post(`${environment.api_url}/api/planes/update-ICAO`, {
+        ICAO: newICAO,
+        old_ICAO: ICAO
+      })
+      .subscribe({
+        next: () => {
+          this.getPlanes();
+        },
+        error: () => {
+          alert("Error updating plane ICAO.");
+        }
+      });
+  }
+
+
   closeModal(): void {
     this.router.navigate([{ outlets: { modal: null } }]);
   }
@@ -130,6 +230,7 @@ export class Inventory implements OnInit {
     item.isReadOnly = false;
     this.cdr.detectChanges();
   }
+  
 
   saveChanges(item: InventoryRow): void {
     this.http
@@ -150,6 +251,48 @@ export class Inventory implements OnInit {
         }
       });
   }
+
+  showCreatePlaneForm = false;
+  openCreatePlaneForm(): void {
+    this.showCreatePlaneForm = true;
+  }
+
+  closeCreatePlaneForm(): void {
+    this.showCreatePlaneForm = false;
+    this.newPlane = {
+      ICAO: "",
+      planeStatus: ""
+    };
+  }
+
+  enablePlaneEditing(plane: PlaneRow): void {
+  plane.isReadOnly = false;
+  plane.oldICAO = plane.ICAO;
+  this.cdr.detectChanges();
+}
+
+savePlaneChanges(plane: PlaneRow): void {
+  this.http
+    .post(`${environment.api_url}/api/planes/update-ICAO`, {
+      ICAO: plane.ICAO,
+      old_ICAO: plane.oldICAO
+    })
+    .subscribe({
+      next: () => {
+        plane.isReadOnly = true;
+        plane.oldICAO = undefined;
+        this.getPlanes();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        plane.ICAO = plane.oldICAO ?? plane.ICAO;
+        plane.isReadOnly = true;
+        this.cdr.detectChanges();
+        alert("Error updating plane ICAO.");
+      }
+    });
+}
+
 }
 
 export const inventoryModalRedirect: CanMatchFn = () => {

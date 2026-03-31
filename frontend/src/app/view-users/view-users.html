@@ -3,8 +3,17 @@
     <header class="users-header">
       <h2>View Users</h2>
     </header>
+      <div class="users-search">
+        <div class="search-bar">
+          <input
+            type="text"
+            placeholder="Search by User ID or Email"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="getUsers(searchTerm)"
+          />
+        </div>
+      </div>
 
-    <section class="users-card">
       <div class="table-wrapper">
         <table class="users-table">
           <caption>User Summary</caption>
@@ -22,12 +31,12 @@
 
           <tbody>
             <tr *ngFor="let user of users">
-              <td>{{ user.userID }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.registerLengthDays }}</td>
-              <td>{{ user.totalReservations }}</td>
-              <td>{{ user.totalPastReservations }}</td>
-              <td>{{ user.totalFutureReservations }}</td>
+              <td>{{user.userID}}</td>
+              <td>{{user.email}}</td>
+              <td>{{user.registerLengthDays}}</td>
+              <td>{{user.totalReservations}}</td>
+              <td>{{user.totalPastReservations}}</td>
+              <td>{{user.totalFutureReservations}}</td>
             </tr>
 
             <tr *ngIf="users.length === 0">
@@ -36,6 +45,5 @@
           </tbody>
         </table>
       </div>
-    </section>
   </section>
 </main>

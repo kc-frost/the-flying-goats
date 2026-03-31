@@ -2,15 +2,31 @@
    <section class="header">
       <div class="dim"></div>
    </section>
+
    <section class="modal-dropdown">
       <div class="inv-backdrop" (click)="closeModal()"></div>
-      <section class="inv-panel" (click)="$event.stopPropagation()">
+
+      <button
+         type="button"
+         class="screen-side-arrow"
+         aria-label="Switch Modal"
+         title="Switch Views"
+         (click)="togglePlaneModal()">
+         <img src="/forwardNavigationButton/forwardArrow.png" alt="Nav Arrow" />
+      </button>
+
+      <section
+         class="inv-panel plane-panel-slide"
+         [class.inv-shift-left]="showPlaneModal"
+         (click)="$event.stopPropagation()">
+
          <header class="inv-header">
             <h1>Manage &amp; View Inventory</h1>
             <button type="button" class="inv-close-btn" (click)="closeModal()">
                <img src="/xButton/maybe-virus.svg" alt="red X" />
             </button>
          </header>
+
          <div class="inv-body">
             <section class="inv-body-forms" *ngFor="let item of items">
                <button
@@ -21,6 +37,7 @@
                   title="Delete item">
                   <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
                </button>
+
                <button
                   type="button"
                   class="inv-edit-btn"
@@ -29,34 +46,54 @@
                   (click)="enableEditing(item)">
                   <img src="/editIcon/pencilIcon.png" alt="Edit" />
                </button>
+
                <div class="item-card">
                   <h2>{{ item.itemName }}</h2>
                </div>
+
                <div class="item-forms">
                   <div class="input-fields">
                      <span class="field-name">Item ID</span>
                      <input class="field-input" [value]="item.itemID" [readonly]="true" />
                   </div>
+
                   <div class="input-fields">
                      <span class="field-name">Total Quantity</span>
-                     <input class="field-input" [(ngModel)]="item.quantity" [readonly]="item.isReadOnly" (blur)="!item.isReadOnly && saveChanges(item)"/>
+                     <input
+                        class="field-input"
+                        [(ngModel)]="item.quantity"
+                        [readonly]="item.isReadOnly"
+                        (blur)="!item.isReadOnly && saveChanges(item)" />
                   </div>
+
                   <div class="input-fields">
                      <span class="field-name">Is Available</span>
                      <input class="field-input" [value]="item.isAvailable" [readonly]="true" />
                   </div>
+
                   <div class="input-fields">
                      <span class="field-name">Type</span>
-                     <input class="field-input" [(ngModel)]="item.type" [readonly]="true"/>
+                     <input class="field-input" [(ngModel)]="item.type" [readonly]="true" />
                   </div>
+
                   <div class="input-fields">
                      <span class="field-name">Description</span>
-                     <input class="field-input" [(ngModel)]="item.itemDescription" [readonly]="item.isReadOnly" (blur)="!item.isReadOnly && saveChanges(item)"/>
+                     <input
+                        class="field-input"
+                        [(ngModel)]="item.itemDescription"
+                        [readonly]="item.isReadOnly"
+                        (blur)="!item.isReadOnly && saveChanges(item)" />
                   </div>
                </div>
             </section>
+
             <div class="add-btn">
-               <button type="button" class="inv-add-btn" aria-label="Add" (click)="addModalShowButton()" title="Add Item">
+               <button
+                  type="button"
+                  class="inv-add-btn"
+                  aria-label="Add"
+                  (click)="addModalShowButton()"
+                  title="Add Item">
                   <div class="btn-img">
                      <img src="/addItem/greenPlus.png" alt="PlusSign" />
                   </div>
@@ -65,7 +102,78 @@
             </div>
          </div>
       </section>
-      <!-- Add Item Modal -->
+
+      <section
+         class="inv-panel plane-panel-slide plane-panel-main"
+         [class.plane-panel-active]="showPlaneModal"
+         (click)="$event.stopPropagation()">
+
+         <header class="inv-header">
+            <h1>Manage &amp; View Planes</h1>
+            <button type="button" class="inv-close-btn" (click)="closePlaneModal()">
+               <img src="/xButton/maybe-virus.svg" alt="Close" />
+            </button>
+         </header>
+
+         <div class="inv-body">
+            <section class="inv-body-forms" *ngFor="let plane of planes">
+               <button
+                  type="button"
+                  class="inv-delete-btn"
+                  aria-label="Delete Plane"
+                  (click)="deletePlane(plane.ICAO)"
+                  title="Delete plane">
+                  <img src="/deleteButton/redTrashcanTransparent.png" alt="Trashcan" />
+               </button>
+
+               <button
+                  type="button"
+                  class="inv-edit-btn"
+                  aria-label="Edit Plane"
+                  title="Edit plane"
+                  (click)="enablePlaneEditing(plane)">
+                  <img src="/editIcon/pencilIcon.png" alt="Edit" />
+               </button>
+
+               <div class="item-card">
+                  <h2>{{plane.ICAO}}</h2>
+               </div>
+
+               <div class="item-forms">
+                  <div class="input-fields">
+                     <span class="field-name">ICAO</span>
+                     <input
+                        class="field-input"
+                        [(ngModel)]="plane.ICAO"
+                        [readonly]="plane.isReadOnly"
+                        (blur)="!plane.isReadOnly && savePlaneChanges(plane)" />
+                  </div>
+                  <div class="input-fields">
+                     <span class="field-name">Status</span>
+                     <input
+                        class="field-input"
+                        [value]="plane.planeStatus"
+                        readonly />
+                  </div>
+               </div>
+            </section>
+
+            <div class="add-btn">
+               <button
+                  type="button"
+                  class="inv-add-btn"
+                  aria-label="Add Plane"
+                  (click)="openCreatePlaneForm()"
+                  title="Add Plane">
+                  <div class="btn-img">
+                     <img src="/addItem/greenPlus.png" alt="PlusSign" />
+                  </div>
+                  Add Plane
+               </button>
+            </div>
+         </div>
+      </section>
+
       <section class="add-item-modal" *ngIf="showAddModal">
          <div class="inv-backdrop" (click)="closeAddModal()"></div>
          <div class="add-panel" (click)="$event.stopPropagation()">
@@ -75,6 +183,7 @@
                   <img src="/xButton/maybe-virus.svg" alt="Close" />
                </button>
             </header>
+
             <div class="add-body">
                <div class="input-fields">
                   <span class="field-name">Add</span>
@@ -84,24 +193,51 @@
                      <option value="misc">misc</option>
                   </select>
                </div>
+
                <div class="input-fields">
                   <span class="field-name">Item ID</span>
                   <input class="field-input" type="number" [(ngModel)]="newItem.itemID" />
                </div>
+
                <div class="input-fields">
                   <span class="field-name">Item Name</span>
                   <input class="field-input" [(ngModel)]="newItem.itemName" />
                </div>
+
                <div class="input-fields">
                   <span class="field-name">Quantity</span>
                   <input class="field-input" type="number" [(ngModel)]="newItem.quantity" />
                </div>
+
                <div class="input-fields">
                   <span class="field-name">Item Description</span>
                   <input class="field-input" [(ngModel)]="newItem.itemDescription" />
                </div>
+
                <div class="add-actions">
                   <button type="button" (click)="addItem()">Add Item</button>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <section class="add-item-modal" *ngIf="showCreatePlaneForm">
+         <div class="inv-backdrop" (click)="closeCreatePlaneForm()"></div>
+         <div class="add-panel" (click)="$event.stopPropagation()">
+            <header class="add-header">
+               <h2>Create Plane</h2>
+               <button type="button" class="inv-close-btn" (click)="closeCreatePlaneForm()">
+                  <img src="/xButton/maybe-virus.svg" alt="Close" />
+               </button>
+            </header>
+
+            <div class="add-body">
+               <div class="input-fields">
+                  <span class="field-name">ICAO</span>
+                  <input class="field-input" [(ngModel)]="newPlane.ICAO" />
+               </div>
+               <div class="add-actions">
+                  <button type="button" (click)="addPlane()">Create Plane</button>
                </div>
             </div>
          </div>
