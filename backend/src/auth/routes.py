@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_user, login_required, current_user, logout_user
 from db import get_connection
 from .service import delete_from_inventory, find_user, get_reservations, get_user_data, insert_into_inventory, insert_user, find_inventory, update_inventory, check_ifadmin, book_a_flight
+from .service import update_reservation_seat, update_reservation_status, get_pilot_schedule
 from .validators import validate_email, validate_password
 from .security import admin_required
 from _models.user import User
@@ -298,6 +299,34 @@ def users_data():
 # Gotta ask about Kai's table for this
 # def get_airports():
 
+@bp.post('/update-seat')
+def update_seat():
+    conn = get_connection()
+    result = update_reservation_seat(conn)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Seat successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500
+    
+# Again, right now there's no restrictions to this. Need to add restrictions later.
+@bp.post('/update-reservation-status')
+def update_reservation_status():
+    conn = get_connection()
+    result = update_reservation_status(conn)
+    if result.get("success"):
+        return jsonify({
+            "success": True,
+            "message": "Reservation status successfully updated"}), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": result.get("error")
+         }), 500
 
 # Should work, hopefully (praying) no reason for it not to ngl
 # But I'm not testing this rn cause for some reason my mains messed up

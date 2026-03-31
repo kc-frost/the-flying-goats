@@ -227,6 +227,35 @@ def get_user_data(conn):
             return {"success": False, 
                     "error": str(e)}
 
+# Update seat function. I don't have a single "update" function, because it would get messy with admin perms coming soon. Restrictions to updating seat is already in SQL db
+def update_booking_seat(conn):
+    query = """
+    update booking set seat = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
+
+# Currently no restrictions on updating booking status. Will change later, but for now just getting the method out. Most likely going to add restrictions on monday.
+def update_booking_status(conn):
+    query = """
+    update booking set status = %s
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return {"success": True,
+                    "data": result}
+        except Exception as e:
+            return {"success": False, 
+                    "error": str(e)}
 # Gunna change I gotta ask about Kai's table cause she didn't push it
 # def getairportsorsomethingjlkajsdflkjklsas():
 
