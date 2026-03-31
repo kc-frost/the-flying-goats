@@ -1,63 +1,169 @@
-<section class="main">
-  <h1> Book a Flight </h1>
-  <hr>
-  <section class="form">
-    <form [formGroup]="newFlightDetails" (ngSubmit)="onSubmit()" id="newFlightDetails">
-      <div class="form-item">
-        <label for="origin">Where are you flying from?</label>
-        <select name="origin" id="origin" formControlName="origin">
-          <option>--Select a city--</option>
-          <option>Austin</option>
-        </select>
+<main>
+  <section class="book-flight">
+    <form id="searchTerms" [formGroup]="searchTerms" (ngSubmit)="searchFlights()">
+    <header>Book a Flight</header>
+    <section class="flight-options">
+      <div class="location">
+        <section class="from">
+          <img src="/book-flight/map-marker.svg" />
+          <div class="wrapper">
+            <label class="origin-input" for="origin">From</label>
+            <input formControlName="origin" id="origin" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="onOriginFocused()" (blur)="originFocused = false" required/>
+            @if (originFocused) {
+              <div class="suggest-airports" (mousedown)="$event.preventDefault()">
+                <p>Filter by Region</p>
+                  <ul class="filters">
+                    @for (filter of filters; track filter.id) {
+                      <li [class]="activeOutboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="setFilter('outbound', filter)">{{filter.name}}</li>
+                    }
+                  </ul>
+                <ul class="suggestions">
+                  @for (airport of originAirports$ | async; track $index) {
+                    <li (mousedown)="setOrigin(airport)">
+                      <span class="place">{{airport.place}}</span> 
+                      <span class="code">{{airport.IATA}}</span>
+                    </li>
+                  } @empty {
+                    <li>No results found.</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </section>
+        <section class="to">
+          <img src="/book-flight/map-marker.svg" />
+          <div class="wrapper">
+            <label class="dest-input" for="destination">To</label>
+            <input formControlName="destination" id="destination" type="text" placeholder="Enter City or Airport" autocomplete="off" spellcheck="false" (focus)="onDestFocused()" (blur)="destFocused = false" required/>
+            @if (destFocused) {
+              <div class="suggest-airports" (mousedown)="$event.preventDefault()">
+                <p>Filter by Region</p>
+                <ul class="filters">
+                  @for (filter of filters; track filter.id) {
+                    <li [class]="activeInboundFilter === filter.id ? 'filter-item checked' : 'filter-item'" (mousedown)="setFilter('inbound', filter)">{{filter.name}}</li>
+                  }
+                </ul>
+                <ul class="suggestions">
+                    @for (airport of destinationAirports$ | async; track $index) {
+                      <li (mousedown)="setDestination(airport)">
+                        <span class="place">{{airport.place}}</span> 
+                        <span class="code">{{airport.IATA}}</span>
+                      </li>
+                    } @empty {
+                      <li>No results found.</li>
+                    }
+                </ul>
+              </div>
+              }
+          </div>
+        </section>
       </div>
-      
-      <div class="form-item">
-        <label for="departureDate">When do you want to fly?</label>
-        <input type="datetime-local" id="departureDate" formControlName="departureDate"
-        min="2026-02-01T15:00"
-        max="2026-04-31T18:00" />
-
-        <div class="alert-warning">
-          @if (newFlightDetails.hasError('departBeforeToday')) {
-            <p>Date has to be after today.</p>
-          }
-          @if (newFlightDetails.hasError('leaveAfterArrive')) {
-            <p>Date has to be after return date.</p>
-          }
-        </div>
+      <div class="dates">
+        <img src="/book-flight/calendar.svg" />
+        <section>
+          <label>Depart & Return</label>
+          <mat-form-field class="mat-dates">
+            <mat-date-range-input [formGroup]="searchTerms" [rangePicker]="picker" [min]="MIN_DATE" [max]="MAX_DATE">
+            <input matStartDate placeholder="Depart date" formControlName="departureDate" required>
+            <input matEndDate placeholder="Return date" formControlName="arrivalDate" required>
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker startView="month" [startAt]="currentDate"></mat-date-range-picker>
+          </mat-form-field>
+        </section>
       </div>
-
-      <div class="form-item">
-        <label for="arrivalDate">When do you want to go back?</label>
-        <input type="datetime-local" id="arrivalDate" formControlName="arrivalDate"
-        min="2026-02-01T15:00"
-        max="2026-04-31T18:00" />
-
-        <div class="alert-warning">
-          @if (newFlightDetails.hasError('arriveBeforeToday')) {
-            <p>Date has to be after today.</p>
-          }
-        </div>
+      <div class="submit">
+        <button type="submit" [disabled]="!searchTerms.valid">Search Flights</button>
+        <button type="button" (click)="onSubmit()" [disabled]="!(outboundFlight.valid && inboundFlight.valid)">Book Flight</button>
       </div>
-      
-      <div class="form-item">
-        <label for="destination">Where do you want to go?</label>
-        <select name="destination" id="destination" formControlName="destination">
-          <option>--Select a city--</option>
-          <option>Paris</option>
-          <option>Japan</option>
-        </select>
-      </div>
-      <h1> Available Flights</h1>
-      <select name="flightID" id="flightID" formControlName="flightID">
-        <option>--Select a city--</option>
-        @for (flight of availableFlights; track flight) {
-          <option>{{flight.code}}</option>
-        }
-      </select>
+    </section>
     </form>
   </section>
 
-  <button form="newFlightDetails" type="submit" (click)="printResults()" [disabled]="!newFlightDetails.valid">Confirm Details</button>
+  <section class="pick-flight">
+    <header>Available Flights</header>
+    <section class="tab">
+      <div class="depart">
+        <input type="radio" name="tab" id="depart" (change)="activeTab = 'depart'" checked/>
+        <label for="depart">Departing Flights</label>
+      </div>
+      <div class="return">
+        <input type="radio" name="tab" id="return" (change)="activeTab = 'return'" [disabled]="!hasSelectedDeparture"/>
+        <label for="return">Returning Flights</label>
+      </div>
+    </section>
+    <section class="flight-choices">
+      @switch(activeTab) {
+        @case ("depart") {
+          @for (flight of departingFlights$ | async; track $index) {
+            <div class="choice">
+            <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="activeOutboundFlight === $index" (change)="selectFlight($index, flight, 'outbound')" required/>
+            <label [for]=$index>
+              <div class="header">
+                <p>DEPART</p>
+                <p>→</p>
+                <p>ARRIVE</p>
+              </div>
+              <div class="time">
+                <p>{{flight.liftOff}}</p>
+                <span class="duration">
+                  {{flight.duration}}
+                </span>
+                <p>{{flight.landing}}</p>
+              </div>
+              <div class="airport">
+                <p>{{flight.origin_IATA}}</p>
+                <p>→</p>
+                <p>{{flight.destination_IATA}}</p>
+              </div>
+            </label>
+    
+            <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeOutboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity" [scheduleID]="flight.scheduleID!" [currentActiveSeat]="activeOutboundSeat!" (seatID)="setSeatID($event, 'outbound')"/>
+            </dialog>
+          </div>
+          } @empty {
+            <p>No flights matched.</p>
+          }
+        }
+        @case ("return") {
+          @for (flight of returningFlights$ | async; track $index) {
+            <div class="choice">
+            <input name="flight" type="radio" [id]="$index" [value]="$index" [checked]="activeInboundFlight === $index" (change)="selectFlight($index, flight, 'inbound')" required/>
+            <label [for]=$index>
+              <div class="header">
+                <p>DEPART</p>
+                <p>→</p>
+                <p>ARRIVE</p>
+              </div>
+              <div class="time">
+                <p>{{flight.liftOff}}</p>
+                <span class="duration">
+                  {{flight.duration}}
+                </span>
+                <p>{{flight.landing}}</p>
+              </div>
+              <div class="airport">
+                <p>{{flight.origin_IATA}}</p>
+                <p>→</p>
+                <p>{{flight.destination_IATA}}</p>
+              </div>
+            </label>
+    
+            <button [attr.popovertarget]="'seat-modal-' + $index" [disabled]="activeInboundFlight !== $index">Select Seat</button>
+            <dialog class="seat-modal" #seatModal [id]="'seat-modal-'+$index" popover>
+              <app-seat-selector-modal [planeCapacity]="flight.capacity!" [scheduleID]="flight.scheduleID!" [currentActiveSeat]="activeInboundSeat!" (seatID)="setSeatID($event, 'inbound')"/>
+            </dialog>
+          </div>
+          } @empty {
+            <p>No flights matched.</p>
+          }
+        }
+      }
+    </section>
+  </section>
 
-</section>
+</main>

@@ -1,18 +1,18 @@
 import { Routes } from '@angular/router';
 
 import { Home } from './home/home';
-import { Login } from './user-auth/login/login';
-import { Register } from './user-auth/register/register';
-import { ProfilePage } from './profile-page/profile-page/profile-page';
-import { ProfileDropdown } from './profile-page/profile-dropdown/profile-dropdown';
-import { Inventory, inventoryModalRedirect } from './inventory/inventory';
+import { Login } from './auth-dropdown/login/login';
+import { Register } from './auth-dropdown/register/register';
+import { DropdownProfile } from './auth-dropdown/profile/profile';
+import { ProfilePage } from './profile-page/profile-page';
+import { Inventory } from './admin/inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
 import { adminAuthGuard } from './_shared/guards/admin-auth-guard';
-import { ViewAppointments } from './view-appointments/view-appointments';
-import { ViewUsers } from './view-users/view-users';
+import { ViewAppointments } from './admin/view-appointments/view-appointments';
+import { ViewUsers } from './admin/view-users/view-users';
 import { PilotView } from './pilot-view/pilot-view';
-import { pilotAuthGuard } from './_shared/services/pilot-auth-guard';
+import { pilotAuthGuard } from './_shared/guards/pilot-auth-guard';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -42,6 +42,16 @@ export const routes: Routes = [
         component: ProfilePage,
         canActivate: [userAuthGuard],
     },
+    {
+        path: 'view-appointments',
+        component: ViewAppointments,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
+    {
+        path: 'view-users',
+        component: ViewUsers,
+        canActivate: [userAuthGuard, adminAuthGuard],
+    },
     // dropdown outlet
     {
         path: 'login',
@@ -56,7 +66,7 @@ export const routes: Routes = [
     {
         path: 'profile-page',
         outlet: 'dropdown',
-        component: ProfileDropdown
+        component: DropdownProfile
     },
     
     // modal outlet
@@ -64,22 +74,12 @@ export const routes: Routes = [
         path: 'inventory',
         outlet: 'modal',
         component: Inventory,
-        // canActivate: [userAuthGuard, adminAuthGuard],
-    },
-    {
-        path: 'view-appointments',
-        component: ViewAppointments,
-        // canActivate: [userAuthGuard, adminAuthGuard],
-    },
-    {
-        path: 'view-users',
-        component: ViewUsers,
-        // canActivate: [userAuthGuard, adminAuthGuard],
+        canActivate: [userAuthGuard, adminAuthGuard],
     },
     {
         path: 'pilot-view',
         component: PilotView,
-        // canActivate: [userAuthGuard, pilotAuthGuard],
+        canActivate: [userAuthGuard, pilotAuthGuard],
     }
 ];
 

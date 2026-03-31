@@ -24,9 +24,12 @@ the HTML file. */
 
     /* Since we want to cover the entire screen, set distance (inset) to the parent view (.bg) to be 0 on all sides. */
     inset: 0;
+
+    /* We can get away with this as long as 'forwards' exists in the animation property */
     background-color: black;
-    opacity: 0.3;
     z-index: 0;
+
+    animation: bg-opacity 1800ms forwards;
 }
 
 /* Raise ALL direct child elements of .bg to be closer to the screen
@@ -38,7 +41,54 @@ the HTML file. */
 
 /* Home Page Content */
 .center {
-    gap: 100px;
+    /* Removing this will apply a scrollbar to the plane image, so pls don't */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 65px;
+
+    & .left {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-direction: column;
+        color: white;
+        
+        margin: -20% 0 0 18%;
+
+        & h1 {
+            font-size: 3em;
+        }
+
+        & a {
+            align-self: flex-start;
+            margin-top: 100px;
+            font-weight: 600;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        & .goats {
+            font-size: 3.1em;
+            font-style: italic;
+            animation: margin-slide-left 2000ms;
+        }
+    }
+
+    & .right {
+        margin: -90px 50px 0 0;
+        animation: slide-up 1800ms;
+
+        & img {
+        width: 100%;
+        animation: slide-up 1800ms;
+        }
+    }
 }
 
 .box {
@@ -53,6 +103,32 @@ the HTML file. */
     justify-content: center;
 }
 
-.center h1 {
-    color: white;
+@keyframes margin-slide-left {
+    from {
+        margin-left: 50%;
+        opacity: 0;
+    }
+    to {
+        margin-left: 0%;
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+/* Background Animations */
+@keyframes bg-opacity {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.5;
+    }
 }

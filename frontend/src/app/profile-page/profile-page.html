@@ -1,0 +1,117 @@
+<section class="main">
+    <section class="profile-view">
+        <section class="info">
+            <img [src]="userService.profilePicture == '' ? staticProfileImage : userService.profilePicture" />
+            <h2> {{ userService.currentUsername$ | async }} </h2>
+        </section>
+        <hr>
+        <section class="textarea">
+            @if (isEditing$ | async) {
+                <label for="userText">{{ editMode == 'bio' ? 'Enter a new bio!' : 'Upload a new profile picture! (Url links only!)'}}</label>
+                <textarea id="userText" [formControl]="userTextForm"></textarea>
+                <div class="textarea-options">
+                    <button class="save" (click)="save()">Save</button>
+                    <button class="close" (click)="close()">Close</button>
+                </div>
+            } @else {
+                <p>{{userBio$ | async }}</p>
+            }
+        </section>
+        <section class="buttons">
+            <button class="update"(click)="updateBio()">Update Bio</button>
+            <button class="upload"(click)="updateProfile()">Upload New Profile</button>
+        </section>
+    </section>
+
+    <section class="reservation-view">
+        <div class="header">
+            <header><h1>Your Reservations</h1></header>
+            <section class="tab">
+                <div class="depart">
+                    <input id="past" name="tab" type="radio" (click)="selectedTab = 'past'">
+                    <label for="past">Past</label>
+                </div>
+                <div class="upc">
+                    <input id="upc" name="tab" type="radio" checked (click)="selectedTab = 'upcoming'">
+                    <label for="upc">Upcoming</label>
+                </div>
+            </section>
+        </div>
+        <section class="content">
+            @for (reservation of filteredReservations; track $index) {
+                <details open>
+                    <summary> {{reservation.bookingDate | date:'MMM d, y, HH:mm':'+00:00'}}</summary>
+                    <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                        <th>Seat Number</th>
+                    </tr>
+                    
+                    <!-- DEPART DETAILS -->
+                    <tr>
+                        <td>
+                            <p>{{reservation.departLift | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.departLift | date:'hh:mma'}} / {{reservation.departLift | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departIATA}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departOrigin}}</p>
+                            <p>{{reservation.departLift | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departLift | date:'hh:mma'}} / {{reservation.departLift | date:'HH:mm'}}</p>
+                            <p>{{reservation.departAP}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnOrigin}}</p>
+                            <p>{{reservation.departLand | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departLand | date:'hh:mma'}} / {{reservation.departLand | date:'HH:mm'}}</p>
+                            <p>{{reservation.returnAP}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departSeat}}</p>
+                        </td>
+                    </tr>
+
+                    <!-- RETURN DETAILS -->
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                        <th>Seat Number</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>{{reservation.returnLift | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.returnLift | date:'hh:mma'}} / {{reservation.returnLift | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnIATA}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnOrigin}}</p>
+                            <p>{{reservation.returnLift | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnLift | date:'hh:mma'}} / {{reservation.returnLift | date:'HH:mm'}}</p>
+                            <p>{{reservation.returnAP}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departOrigin}}</p>
+                            <p>{{reservation.returnLand | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnLand | date:'hh:mma'}} / {{reservation.returnLand | date:'HH:mm'}}</p>
+                            <p>{{reservation.departAP}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnSeat}}</p>
+                        </td>
+                    </tr>
+                </table>
+                </details>
+            }
+                
+        </section>
+    </section>
+</section>

@@ -1,0 +1,59 @@
+import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../_shared/services/auth-service';
+
+@Component({
+  selector: 'app-register',
+  imports: [ReactiveFormsModule],
+  templateUrl: './register.html',
+  styleUrls: ['../user-auth.css', './register.css'],
+})
+export class Register {
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  newUserProfile = this.formBuilder.group({
+    firstName: ['',
+      [Validators.required]
+    ],
+    lastName: ['',
+      [Validators.required]
+    ],
+    phoneNum: ['',
+      [Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]
+    ],
+    username: ['',
+      [Validators.required]
+    ],
+    email: ['',
+      [Validators.required, Validators.email]
+    ],
+    password: ['',
+      [Validators.required, Validators.minLength(8)]
+    ],
+  })
+
+  onSubmit() {
+    this.authService.register(this.newUserProfile).subscribe({
+      next: (res) => {
+        this.goToLogin();
+      },
+      error: (err) => {
+        console.log("REGISTER FAILED:", err);
+      }
+    })
+  }
+
+  goToLogin() {
+    this.router.navigate([{ outlets: 
+      { dropdown: ['login']}}],
+    {
+      skipLocationChange: true
+    })
+  }
+}

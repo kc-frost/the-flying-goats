@@ -1,172 +1,305 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { invalidDateValidator } from './utils/invalid-date-validator';
-import { environment } from '../../_environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-
-interface Flights {
-  id: string,
-  code: string
-}
+import { Component, inject, ChangeDetectionStrategy} from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { SeatSelectorModal } from './seat-selector-modal/seat-selector-modal';
+import { UserService } from '../_shared/services/user-service';
+import { FlightService } from './utils/flight-service/flight-service';
+import { BehaviorSubject, debounceTime } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-book-flight',
   templateUrl: './book-flight.html',
   styleUrl: './book-flight.css',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SeatSelectorModal, MatDatepickerModule, MatFormFieldModule, AsyncPipe,],
+  providers: [provideNativeDateAdapter()],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
+// This file is gonna be separated into commented categories because even after reorganizing everything it's still so fucking long
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private router = inject(Router);
-  
-  // some fields don't have a validator because they are automatically filled in (for now)
-  newFlightDetails = this.formBuilder.group({
-    reservationDate: [''],
-    flightID: ['',
-      [Validators.required]
-    ],
-    username: [''
-    ],
-    origin: ['',
-      [Validators.required]
-    ],
-    destination: ['',
-      [Validators.required]
-    ],
-    departureDate: ['',
-      [Validators.required]
-    ],
-    arrivalDate: ['',
-      [Validators.required]
-    ],
-    seatNumber: ['',],
-    seatClass: ['Economy'],
-  },
-  { validators: invalidDateValidator}
-);
+  private userService = inject(UserService);
+  private flightService = inject(FlightService);
 
-  
-  onSubmit() {
-  this.http.post(
-    `${environment.api_url}/api/book-flight`, 
-    this.newFlightDetails.value,
-    { withCredentials: true }
-  ).subscribe({
-    next: () => {
-      alert("Booking received!")
-    },
-    error: (err) => {
-      console.log(err);
+  // === ON INIT ===
+  ngOnInit() {
+    this.searchTerms.get('origin')?.valueChanges.pipe(
+      // Wait for 400ms of inactivity before subscribing
+      debounceTime(400)
+    )
+    .subscribe({
+      next: (search_term) => {
+        this.searchAirports(search_term!, "origin");
+      }
     }
-  });
-}
+    );
 
-  printResults() {
-    var deptDate = this.newFlightDetails.get('departureDate')?.value
-    console.log(this.newFlightDetails.value);
-  }
-
-  validateUserAccess() {
-    this.http.get(`${environment.api_url}/api/check-authenticated`).subscribe({
-      error: () => {
-        this.router.navigate([''])
+    this.searchTerms.get('destination')?.valueChanges.pipe(
+      // Wait for 400ms of inactivity before subscribing
+      debounceTime(400)
+    )
+    .subscribe({
+      next: (search_term) => {
+        this.searchAirports(search_term!, "destination");
       }
-    })
+    }
+    );
   }
 
-  availableFlights!: Flights[]
-  currentDate: Date
+  // === FIELDS AND PROPERTIES ===
+
+  readonly MIN_DATE = new Date();
+  readonly MAX_DATE = new Date(
+    this.MIN_DATE.getFullYear(),
+    this.MIN_DATE.getMonth() + 3,
+    this.MIN_DATE.getDate()
+  )
+
+  private originAirports = new BehaviorSubject<any[]>([]);
+  private destinationAirports = new BehaviorSubject<any[]>([]);
+  originAirports$ = this.originAirports.asObservable();
+  destinationAirports$ = this.destinationAirports.asObservable();
+
+  private departingFlights = new BehaviorSubject<any[]>([]);
+  private returningFlights = new BehaviorSubject<any[]>([]);
+  departingFlights$ = this.departingFlights.asObservable();
+  returningFlights$ = this.returningFlights.asObservable();
+
+  currentDate!: Date
   currentUser!: string
-
-  // temporarily hardcode everyone to have seat 1
-  seatNumber = "110";
   
-  constructor() {
-    this.validateUserAccess();
+  originFocused: boolean = false;
+  destFocused: boolean = false;
+
+  hasSelectedDeparture = false;
+  activeTab: "depart" | "return" = "depart";
+
+  filters = [
+    {id: 'none', name: 'None', region_id: '0'},
+    {id: 'n-am', name: 'North America', region_id: '1'},
+    {id: 's-am', name: 'South America', region_id: '2'},
+    {id: 'asia', name: 'Asia', region_id: '3'},
+    {id: 'eur', name: 'Europe', region_id: '4'},
+    {id: 'africa', name: 'Africa', region_id: '5'},
+
+  ]
+
+  activeOutboundFilter: string | undefined = 'none';
+  activeInboundFilter: string | undefined = 'none';
+
+  activeOutboundFlight: number | null = null;
+  activeOutboundSeat: string | null = null;
+  
+  activeInboundFlight: number | null = null;
+  activeInboundSeat: string | null = null;
+
+  // === FORMS ===
+  // searches for flights
+  searchTerms: FormGroup = this.formBuilder.group({
+    origin: ['', [Validators.required]],
+    destination: ['', [Validators.required]],
+    departureDate: ['', [Validators.required]],
+    arrivalDate: ['', [Validators.required]],
+  })
+
+  // round-trip flight forms to create a booking from
+  outboundFlight = this.createFlightForm();
+  inboundFlight = this.createFlightForm();
+
+  // === ON SUBMIT ===
+  onSubmit() {
+    this.flightService.bookFlight(this.outboundFlight, this.inboundFlight).subscribe({
+      next: () => {
+        alert("Booking created! Safe travels :)");
+      },
+      error: (err) => {
+        console.log("BOOKING NOT RECEIVED:", err);
+      }
+    });
+}
+
+// === HELPER FUNCTIONS ===
+  createFlightForm() {
+    // set timezone offset
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     
-    this.availableFlights = []
-    this.currentDate = new Date();
-    this.currentUser = localStorage.getItem('username')!
-    
-    this.newFlightDetails.valueChanges.subscribe({
-      next: (changes) => {
-        this.updateFlights(changes.departureDate!, changes.arrivalDate!);
+    return this.formBuilder.group({
+      // match mysql datetime format
+      reservationDate: [local.toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
+      username: [this.userService.getUsername(), [Validators.required]],
+      email: [this.userService.getEmail(), [Validators.required]],
+      flightID: ['', [Validators.required]], // this field is to make queries easier when POSTed
+      origin: ['', [Validators.required]],
+      destination: ['', [Validators.required]],
+      departureDate: ['', [Validators.required]],
+      arrivalDate: ['', [Validators.required]],
+      seatNumber: ['', [Validators.required]],
+      seatClass: ['1', [Validators.required]],
+    })
+  }
+
+  searchAirports(search_term: string, leg: string) {
+    this.flightService.getAirports(search_term).subscribe({
+      next: (res) => {
+        if (leg == "origin") {
+          this.originAirports.next(res);
+        } else if (leg == "destination") {
+          this.destinationAirports.next(res);
+        }
       }
     })
-  
-    this.newFlightDetails.get("reservationDate")?.setValue(this.currentDate.toDateString());
-    this.newFlightDetails.get("username")?.setValue(this.currentUser);
-    this.newFlightDetails.get("seatNumber")?.setValue(this.seatNumber);
   }
 
-  updateFlights(departureDate: string, arrivalDate: string) {
-  if (!departureDate || !arrivalDate) return;
+  searchFlights() {
+    // if the user has a selected flight from a previous search, and queries new flights based on another search
+    // delay the select seat button from turning gray until the api call returns
+    // (150 isnt exactly how long it takes, but this is more for visual purposes anyway)
+    setTimeout(() => {
+      this.activeOutboundFlight = null;
+      this.activeInboundFlight = null;
+    }, 150);
 
-  const dept = new Date(departureDate).toISOString().split('T')[0];
-  const arr = new Date(arrivalDate).toISOString().split('T')[0];
+    this.hasSelectedDeparture = false;
 
-  this.http.get<Flights[]>(
-    `${environment.api_url}/api/available-flights`,
-    { params: { departureDate: dept, arrivalDate: arr }, withCredentials: true }
-  ).subscribe({
-    next: (flights) => this.availableFlights = flights,
-    error: (err) => console.log(err)
-  });
-}
+    const origin = this.searchTerms.get('origin')?.value!;
+    const destination = this.searchTerms.get('destination')?.value!;
 
-  // // get destination and time of departure date
-  // updateFlights(time: string, destination: string) {
-  //   var deptHours = new Date(time).getHours()
-  //   var destination = destination
-  //   var timeSlot = ""
-  //   if (deptHours >= 0 && deptHours < 12) timeSlot = "morning";
-  //   else if (deptHours >= 12 && deptHours < 18 ) timeSlot = "afternoon";
-  //   else if (deptHours >= 18 && deptHours <=23) timeSlot = "evening";
-  
-  
-  //   this.availableFlights = this.flightsByTimeAndDest[timeSlot][destination];
-  // }
-
-  // hardcoded flights
-  flightsByTimeAndDest: any = {
-    morning: {
-    Paris: [
-      { id: 'morning-paris-1', code: 'TP1002' },
-      { id: 'morning-paris-2', code: 'TP1003' },
-      { id: 'morning-paris-3', code: 'TP1004' },
-    ],
-    Japan: [
-      { id: 'morning-japan-1', code: 'TP1006' },
-      { id: 'morning-japan-2', code: 'TP1005' },
-      { id: 'morning-japan-3', code: 'TP1004' },
-    ]
-  },
-  afternoon: {
-    Paris: [
-      { id: 'afternoon-paris-1', code: 'TP1007' },
-      { id: 'afternoon-paris-2', code: 'TP1003' },
-      { id: 'afternoon-paris-3', code: 'TP1002' },
-    ],
-    Japan: [
-      { id: 'afternoon-japan-1', code: 'TP1007' },
-      { id: 'afternoon-japan-2', code: 'TP1006' },
-      { id: 'afternoon-japan-3', code: 'TP1005' },
-    ]
-  },
-  evening: {
-    Paris: [
-      { id: 'evening-paris-1', code: 'TP1001' },
-      { id: 'evening-paris-2', code: 'TP1004' },
-      { id: 'evening-paris-3', code: 'TP1007' },
-    ],
-    Japan: [
-      { id: 'evening-japan-1', code: 'TP1003' },
-      { id: 'evening-japan-2', code: 'TP1001' },
-      { id: 'evening-japan-3', code: 'TP1002' },
-    ]
+    this.flightService.getFlights(origin, destination).subscribe({
+      next: (res: any) => {
+        this.departingFlights.next(res.depart);
+        this.returningFlights.next(res.return);
+      }
+    });
   }
+
+  setFilter(leg: string, filter: {id: string, name: string, region_id: string}) {
+    var isOutbound = (leg === 'outbound');
+    isOutbound ? this.activeOutboundFilter = filter.id : this.activeInboundFilter = filter.id;
+    
+    if (filter.id === 'none') {
+      isOutbound ? this.onOriginFocused() : this.onDestFocused()
+      return;
+    } 
+
+    this.flightService.getFilteredAirports(filter.region_id).subscribe({
+      next: (res) => {
+        if (isOutbound) {
+          this.originAirports.next(res);
+        } else {
+          this.destinationAirports.next(res);
+        }
+      }
+    })
+
+  }
+
+  // Replaces text in input element
+  setOrigin(airport: any) {
+    this.searchTerms.get('origin')?.setValue(airport.IATA)!;
+  }
+
+  onOriginFocused() {
+    if (this.activeOutboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeOutboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("origin")?.value) {
+      this.searchAirports(" ", "origin");
+    }
+    this.originFocused = true;
+  }
+  
+  onDestFocused() {
+    if (this.activeInboundFilter !== 'none') {
+      var filter = this.filters.find(({ id }) => id === this.activeInboundFilter);
+      this.setFilter('outbound', filter!);
+    } else if (!this.searchTerms.get("destination")?.value) {
+      this.searchAirports(" ", "destination");
+    }
+    
+    this.destFocused = true;
+
+  }
+
+  // Replaces text in input element
+  setDestination(airport: any) {
+    this.searchTerms.get('destination')?.setValue(airport.IATA)!;
+  }
+
+  // separated function since seatID is determined from the child component
+  setSeatID(seatID: string, leg: string) {
+    var isOutbound = (leg === "outbound");
+    var flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
+
+    if (isOutbound) {
+      this.activeOutboundSeat = seatID;
+    } else {
+      this.activeInboundSeat = seatID;
+    }
+
+    flightForm.patchValue({
+      seatNumber: seatID
+    });
+  }
+
+  selectFlight(flightIndex: number, flight: any, leg: string) {
+    var isOutbound = (leg === "outbound");
+    
+    if (isOutbound) {
+      this.activeOutboundFlight = flightIndex;
+
+      // when a user selects a new flight, reset their seat choices
+      this.activeOutboundSeat = null;
+      
+      // let user select return flight
+      this.hasSelectedDeparture = true;
+    } else {
+      this.activeInboundFlight = flightIndex;
+      this.activeInboundSeat = null;
+    }
+
+    const dateKey = isOutbound ? "departureDate" : "arrivalDate";
+    const origin = isOutbound ? "origin" : "destination";
+    const destination = isOutbound ? "destination" : "origin";
+    const flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
+
+    // extract date out of the calendar
+    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
+
+    // set timezone offset
+    const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 19).replace("T", " ");
+    
+    // match mysql datetime format
+    var newDeptDate = toLocal(new Date(`${tripDate} ${flight.liftOff}`));
+    var newArrDate = toLocal(new Date(`${tripDate} ${flight.landing}`));
+
+    // update form values
+    flightForm.patchValue({
+      origin: this.searchTerms.get(`${origin}`)!.value.toUpperCase(),
+      destination: this.searchTerms.get(`${destination}`)!.value.toUpperCase(),
+      flightID: flight.IATA,
+      departureDate: newDeptDate,
+      arrivalDate: newArrDate
+    })
+
+  }
+
+  // TESTING FUNCTIONS
+  printOutbound() {
+    console.log(this.outboundFlight.value);
+  }
+
+  printInBound() {
+    console.log(this.inboundFlight.value);
+  }
+
+  printAllFlights() {
+    this.printOutbound();
+    this.printInBound();
+  }
+
 };
-
-}

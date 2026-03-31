@@ -1,53 +1,28 @@
-import { Component, signal, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './_shared/services/auth-service';
-import { Inventory } from './inventory/inventory';
-import { BookFlight } from './book-flight/book-flight';
 import { UserService } from './_shared/services/user-service';
+import { OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Inventory, BookFlight],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('tfg');
   private router = inject(Router);
-  private authService = inject(AuthService);
-  private userService = inject(UserService);
-  private cdr = inject(ChangeDetectorRef);
+  authService = inject(AuthService);
+  userService = inject(UserService);
 
-  // check on instantiation of App if user is logged in
-  // to let angular know even when the page is refreshed
-  constructor() {
-    this.authService.getUserSummary().subscribe({
-      next: (res) => {
-        // this basically obtains username and email
-        // fix after sprint 3
-        const savedEmail = localStorage.getItem('email');
-        var savedUsername = localStorage.getItem('username');
-
-        // update 'username' if it's either nonexistent or doesn't match (a different user is logged in)
-        var newUsername = JSON.parse(JSON.stringify(res))['username']
-        if (savedUsername == null || savedUsername != newUsername) {
-          localStorage.setItem('username', newUsername)
-        }
-
-        if (savedEmail) {
-          this.userService.setEmail(savedEmail);
-          this.cdr.detectChanges();
-        }
-
-        this.authService.setAuthenticatedTrue();
-        console.log(res);
-      },
+  ngOnInit() {
+    this.authService.setCurrentAfterRefresh().subscribe({
       error: (err) => {
-        console.log("App constructor:", err);
-        this.authService.setAuthenticatedFalse();
+        console.log("CHECK-SESSION FAILED:", err);
       }
-    })
+    });
   }
 
   defaultImg = "/header/profile-dropdown/profile-dropdown.svg";
@@ -62,7 +37,7 @@ export class App {
   // If a session exists, clicking on the profile picture should also show ProfileDropdown
   // Otherwise (including errors), show Login
   handleProfileClick() {
-    if (this.authService.isAuthenticated()) {
+    if (this.authService.getAuthenticated()) {
       this.navigateToProfile()
     } else {
       this.navigateToLogin();

@@ -1,0 +1,57 @@
+<main class="reservations-page">
+  <section class="reservations-container">
+    <header class="reservations-header">
+      <h1>View Reservations</h1>
+    </header>
+
+    <section class="reservations-card">
+      <div class="table-wrapper">
+        <table class="reservation-table">
+          <caption>Reservation List</caption>
+
+          <thead>
+            <tr>
+              <th>Booking #</th>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Depart FlightID</th>
+              <th>Depart Seat</th>
+              <th>Class</th>
+              <th>Return FlightID</th>
+              <th>Return Seat</th>
+              <th>Class</th>
+              <th>Reserved</th>
+              <th>Lift Off</th>
+              <th>Arrival</th>
+              <th>Origin</th>
+              <th>Destination</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let reservation of reservations">
+              <td>{{ reservation.bookingNumber }}</td>
+              <td>{{ reservation.userID }}</td>
+              <td>{{ reservation.username }}</td>
+              <td>{{ reservation.departIATA }}</td>
+              <td>{{ reservation.departSeat }}</td>
+              <td>{{ reservation.departClass }}</td>
+              <td>{{ reservation.returnIATA }}</td>
+              <td>{{ reservation.returnSeat }}</td>
+              <td>{{ reservation.departClass }}</td>
+              <td>{{ reservation.bookingDate | date:'d MMM y HH:mm':'+00:00' }}</td>
+              <td>{{ reservation.departLift | date:'d MMM y' }}</td>
+              <td>{{ reservation.returnLift | date:'d MMM y' }}</td>
+              <td>{{ reservation.departOrigin }}</td>
+              <td>{{ reservation.returnOrigin }}</td>
+            </tr>
+
+            <tr *ngIf="reservations.length === 0">
+              <td colspan="11" class="empty-state">No reservations found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
