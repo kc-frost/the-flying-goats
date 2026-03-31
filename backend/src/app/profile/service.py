@@ -14,7 +14,7 @@ def get_user_reservations(userID: str):
             cursor.execute(query, (userID,))
             user = cursor.fetchone()
             if user is None:
-                return jsonify({"error": "User not found"}), 404
+                return jsonify({"err": "User not found"}), 404
             
             query = """
                 SELECT *
@@ -34,4 +34,40 @@ def get_user_reservations(userID: str):
 
     return result
 
+def get_profile_picture(user_id: str):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT `profilePicture`
+                FROM `users`
+                WHERE `userID` = %s
+            """
+
+            cursor.execute(query, (user_id,))
+            profile_picture = cursor.fetchone()
+            if profile_picture is None:
+                return {"err": "User not found"}
+            
+        except Exception as e:
+            return {"err": str(e)}
     
+    return profile_picture
+
+def save_profile_picture(url: str, user_id: str):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                UPDATE `users`
+                SET `profilePicture` = %s
+                WHERE `userID` = %s
+            """
+            cursor.execute(query, (url, user_id))
+            conn.commit()
+            return {"message": "profile picture uploaded"}
+        except Exception as e:
+            conn.rollback()
+            return {"err": str(e)}

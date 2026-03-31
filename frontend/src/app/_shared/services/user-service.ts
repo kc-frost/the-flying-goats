@@ -9,11 +9,13 @@ export class UserService {
   // Defaults to ""
   private currentEmail = new BehaviorSubject<string>("");
   private currentUsername = new BehaviorSubject<string>("");
+  private currentProfilePicture = new BehaviorSubject<string>('');
   
   // Exposes the 'current' values of currentEmail and currentUsername
   // Subscribe to these (in a component) to automatically react when the value changes via async pipe
   currentEmail$ = this.currentEmail.asObservable();
   currentUsername$ = this.currentUsername.asObservable();
+  currentProfilePicture$ = this.currentProfilePicture.asObservable()
 
   setEmail(email: string): void {
     this.currentEmail.next(email);
@@ -31,5 +33,13 @@ export class UserService {
   // Use for one-time synchronous reads
   getUsername(): string {
     return this.currentUsername.getValue();
+  }
+
+  set profilePicture(url: string) {
+    this.currentProfilePicture.next(url);
+  }
+
+  get profilePicture() {
+    return this.currentProfilePicture.getValue() == null ? '' : this.currentProfilePicture.getValue();
   }
 }

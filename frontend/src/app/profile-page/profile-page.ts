@@ -25,13 +25,15 @@ export class ProfilePage {
   selectedTab: 'past' | 'upcoming' = 'upcoming'
   staticProfileImage = "/profile/static-profile-image.svg";
   
+  editMode: 'bio' | 'profile' | null = null;
   isEditing$ = this.isEditing.asObservable();
   userBio$ = this.userBio.asObservable();
-  userBioForm = new FormControl('');
+  userTextForm = new FormControl('');
 
   ngOnInit() {
     this.loadReservations();
     this.loadBio();
+    this.loadProfilePicture();
   }
 
   loadReservations() {
@@ -87,21 +89,61 @@ export class ProfilePage {
     });
   }
 
-  saveBio() {
-    this.http.post(
-      `${environment.api_url}/api/save-bio`, 
-      { bio: this.userBioForm.value }, 
-    ).subscribe({
-      next: () => {
-        this.isEditing.next(false);
-        this.userBio.next(this.userBioForm.value!);
+  loadProfilePicture() {
+    this.http.get<any>(`${environment.api_url}/api/get-profile-pic`,)
+    .subscribe({
+      next: (data) => {
+        this.userService.profilePicture = data['profilePicture'];
+        this.cdr.detectChanges();
       },
-      error: (err) => console.log("SAVE BIO ERROR:", err)
-    });
+      error: (err) => console.log(err)
+    })
+  }
+
+  save() {
+    if (this.editMode == 'bio') {
+      this.http.post(`${environment.api_url}/api/save-bio`, 
+        { bio: this.userTextForm.value }, 
+      ).subscribe({
+        next: () => {
+          this.isEditing.next(false);
+          this.userBio.next(this.userTextForm.value!);
+        },
+        error: (err) => console.log("SAVE BIO ERROR:", err)
+      });
+    } else {
+      this.http.post(`${environment.api_url}/api/save-profile-picture`,
+        { profileURL: this.userTextForm.value},
+      ).subscribe({
+        next: () => {
+          console.log(this.userTextForm.value);
+          this.isEditing.next(false);
+          this.userService.profilePicture = this.userTextForm.value!;
+        },
+        error: (err) => console.log("SAVE PROFILE PICTURE ERROR:", err)
+      })
+    }
   }
 
   updateBio() { 
+    this.editMode = 'bio';
     this.isEditing.next(true);
+  }
+
+  updateProfile() {
+    this.editMode = 'profile';
+    this.userTextForm.reset();
+    this.isEditing.next(true);
+  }
+
+  close() {
+    this.editMode = null;
+    this.isEditing.next(false);
+  }
+
+  get userProfile() {
+    // if its empty, then load the static image
+    return this.userService.profilePicture;
   }
 
 }

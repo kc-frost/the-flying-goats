@@ -11,6 +11,7 @@ username varchar(255) not null,
 email varchar(255) not null,
 password varchar(255) not null,
 isStaff boolean default false,
+profilePicture text,
 bio text,
 registeredDate datetime
 -- maybe add passport or some sorta identification?
