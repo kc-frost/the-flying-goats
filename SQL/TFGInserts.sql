@@ -104,18 +104,18 @@ insert into flightclass (className, price) values
 -- plane seat inserts
 -- classID: 1 = Economy, 2 = First Class, 3 = Goat Class
 insert into planeseat (seatNumber, scheduleID, classID) values
-("101", 1, 1),
-("102", 1, 2),
-("103", 2, 1),
-("104", 2, 2),
-("105", 3, 1),
-("106", 3, 3),
-("107", 4, 1),
-("108", 4, 2),
-("109", 5, 1),
-("110", 5, 2),
-("111", 6, 1),
-("112", 6, 3);
+("1A", 1, 1),
+("2A", 1, 2),
+("1A", 2, 1),
+("3A", 2, 2),
+("1A", 3, 1),
+("4A", 3, 3),
+("3A", 4, 1),
+("2A", 4, 2),
+("4A", 5, 1),
+("3A", 5, 2),
+("2A", 6, 1),
+("1A", 6, 3);
 
 -- booking inserts
 insert into booking (bookingDate, userID, departSeat, returnSeat, departDate, departSchedule, returnDate, returnSchedule) values
