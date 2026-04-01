@@ -67,7 +67,6 @@ create table airports(
 );
 
 create table flight(
-    flightID int auto_increment unique,
     IATA varchar(7) primary key,
     ICAO varchar(4),
     planeName varchar(255),
@@ -99,8 +98,7 @@ create table schedule(
     liftOff time,
     landing time,
     status enum('On Time', 'Delayed', 'Boarding', 'Taxiing', 'Airborne', 'Landing', 'Grounded'),
-    constraint fk_schedule_flight
-        foreign key (flightID) references flight(IATA)
+    constraint fk_schedule_flight foreign key (flightID) references flight(IATA)
 );
 
 create table flightclass(
@@ -219,31 +217,50 @@ from inventory i
 join item it on it.itemID = i.itemID;
 
 -- Reservation ticket view with all attributes needed for view reservations
-create view reservationticket as
+create or replace view reservationticket as
 select
--- booking
+-- booking b join for the basic booking info
 b.bookingNumber as bookingNumber, b.userID as userID, b.bookingDate as reservationDate,
+-- Still booking, but these are for the seat assignment for the depart and return
 b.departSeat as departSeatNumber, b.returnSeat as returnSeatNumber,
+-- return and depart travelling dates
 b.departDate as departDate, b.returnDate as returnDate,
+-- ScheduleIDs for both depart and return
 b.departSchedule as departScheduleID, b.returnSchedule as returnScheduleID,
 -- usersD
 u.username as username,
--- depart schedule
+
+-- only the depart info
 ds.liftOff as departLiftOffDate, ds.landing as departArrivingDate,
--- depart flight
-df.flightID as departFlightID, df.IATA as departFlight,
-df.origin as departOrigin, df.destination as departDestination,
--- return schedule
+df.IATA as departFlight,
+-- This is the name of the airports for the tickets, dFAO stands for depart flight airport origin, dfad stands for depart flight airport destination
+dfAO.name as departOrigin, dfAD.name as departDestination,
+
+-- return info
 rs.liftOff as returnLiftOffDate, rs.landing as returnArrivingDate,
--- return flight
-rf.flightID as returnFlightID, rf.IATA as returnFlight,
-rf.origin as returnOrigin, rf.destination as returnDestination
+rf.IATA as returnFlight,
+-- same naming scheme, again this is the name of the airports for the tickets.
+rfAO.name as returnOrigin, rfAD.name as returnDestination
 from booking b
+
+
+-- joins
 left join users u using(userID)
+-- Joining for depart schedule, connecting through departSchedule (an id)
 left join schedule ds on ds.scheduleID = b.departSchedule
+-- get the origin flightID
 left join flight df on df.IATA = ds.flightID
+-- Duplicate joins for the names of the airports on both destination and origin
+left join airports dfAO on dfAO.airportID = df.origin
+left join airports dfAD on dfAD.airportID = df.destination
+-- joining for the return schedule, connecting through return this time
 left join schedule rs on rs.scheduleID = b.returnSchedule
-left join flight rf on rf.IATA = rs.flightID;
+-- actually getting the return flight
+left join flight rf on rf.IATA = rs.flightID
+-- duplicate joisn for the names of the airports on for the rturn destination and origin
+left join airports rfAO on rfAO.airportID = rf.origin
+left join airports rfAD on rfAD.airportID = rf.destination;
+
 
 -- view for view all users 
 create view userreservationsummary as
@@ -279,6 +296,23 @@ from staff s
 join users u on u.userID = s.staffID
 join flight f on f.assignedPilot = s.staffID
 join schedule sc on sc.flightID = f.IATA;
+
+create or replace view available_flights as
+select
+s.scheduleID,
+ao.IATA as origin_IATA, 
+ad.IATA as destination_IATA, 
+f.IATA, f.capacity,
+TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
+TIME_FORMAT(s.landing, "%H:%i") as landing, 
+CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
+from flight f
+join airports ao on f.origin = ao.airportID
+join airports ad on f.destination = ad.airportID
+join schedule s on f.IATA = s.flightID;
+
+select * from available_flights;
+
 delimiter //
 
 
@@ -287,18 +321,15 @@ delimiter //
 create procedure clearpilotandflightavailability()
 begin
     update hanger
-    join flight
-        on hanger.ICAO = flight.ICAO
-    join schedule
-        on schedule.flightID = flight.IATA
+    join flight f on hanger.ICAO = f.ICAO
+    join schedule s on s.flightID = f.IATA
     set hanger.planeStatus = 'Available'
     where schedule.landing is not null
       and now() >= schedule.landing;
 
-    update flight
-    join schedule
-        on schedule.flightID = flight.IATA
-    set flight.assignedPilot = null
+    update flight f
+    join schedule s on s.flightID = f.IATA
+    set f.assignedPilot = null
     where schedule.landing is not null
       and now() >= schedule.landing;
 end//
@@ -369,16 +400,16 @@ for each row
 begin
 	if exists (
         select 1
-        from flight
-        join schedule on flight.IATA = schedule.flightID
-        where flight.assignedPilot = (
+        from flight f
+        join schedule s on f.IATA = s.flightID
+        where f.assignedPilot = (
             select assignedPilot
-            from flight
+            from flight f
             where IATA = new.flightID
         )
-        and flight.IATA <> new.flightID
-        and new.liftOff < schedule.landing
-        and new.landing > schedule.liftOff
+        and f.IATA <> new.flightID
+        and new.liftOff < s.landing
+        and new.landing > s.liftOff
     ) then
         signal sqlstate '45000'
         set message_text = 'Pilot is already assigned to another active flight during that time.';
@@ -392,16 +423,16 @@ for each row
 begin
     if exists (
         select 1
-        from flight
-        join schedule on flight.IATA = schedule.flightID
-        where flight.assignedPilot = (
+        from flight f
+        join schedule s on f.IATA = s.flightID
+        where f.assignedPilot = (
             select assignedPilot
-            from flight
+            from flight f
             where IATA = new.flightID
         )
-        and flight.IATA <> old.flightID
-        and new.liftOff < schedule.landing
-        and new.landing > schedule.liftOff
+        and f.IATA <> old.flightID
+        and new.liftOff < s.landing
+        and new.landing > s.liftOff
     ) then
         signal sqlstate '45000'
         set message_text = 'Pilot is already assigned to another active flight during that time.';
@@ -454,8 +485,8 @@ begin
 	if old.ICAO <> new.ICAO then
 		if exists (
 			select 1
-			from flight
-			where flight.ICAO = old.ICAO
+			from flight f
+			where f.ICAO = old.ICAO
 		) then
 			signal sqlstate '45000'
 			set message_text = 'This plane is in use, editing the name is probably not the right call right now.';
@@ -463,8 +494,8 @@ begin
 
 		if exists (
 			select 1
-			from plane
-			where plane.ICAO = new.ICAO
+			from plane p
+			where p.ICAO = new.ICAO
 		) then
 			signal sqlstate '45000'
 			set message_text = 'That ICAO already exists in the system.';
