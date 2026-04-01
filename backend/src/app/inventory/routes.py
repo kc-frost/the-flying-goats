@@ -47,8 +47,6 @@ def deleteItemFromInventory():
             "success": False,
             "message": result.get("error")
         }), 500
-    
-# def update inventory(conn, data):
 
 @bp.post("/inventory/edit")
 @admin_required

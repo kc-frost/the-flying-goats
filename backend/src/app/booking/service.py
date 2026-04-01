@@ -126,6 +126,38 @@ def get_available_flights(origin, destination):
     return {"depart": departFlights,
             "return": returnFlights}
 
+""" Read this when you can, I found out what coalesce is and it's pretty useful ngl
+# https://www.w3schools.com/sql/func_sqlserver_coalesce.asp
+Basically it returns the first non null value from the list of arguments. 
+So if you only wanna update one thing in an update query, you can only change that one value, and coalesce the rest so they'll stay the same.
+"""
+def update_reservation_seat(departSeat, returnSeat, bookingID):
+    conn = get_connection()
+    query = """
+        update booking set departSeat = coalesce(%s, departSeat), returnSeat = coalesce(%s, returnSeat) where bookingNumber = %s;
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (departSeat, returnSeat, bookingID))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"error": str(e)}
+
+# If a user wants to change their reservation time, they just gotta cancel and rebook, ggs :100:, will implement a better version later
+def cancel_reservation(bookingID):
+    conn = get_connection()
+    query = """
+        delete from booking where bookingNumber = %s;
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (bookingID,))
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"error": str(e)}
+
 def insert_planeseat(seatNumber, scheduleID, classID):
     """Insert an occupied seat into the planeseat table
 

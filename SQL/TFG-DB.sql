@@ -2,6 +2,8 @@ drop database TFG;
 create database TFG;
 use TFG;
 
+describe booking;
+
 create table users(
     userID int primary key auto_increment,
     phoneNumber char(10) not null,
@@ -144,13 +146,17 @@ create table booking(
 );
 
 create table bookingHistory(
-bookingNumber int primary key,
-userID int,
-flightID varchar(7),
-seat varchar(3),
-bookingDate datetime,
-bookingStatus enum("Cancelled", "Completed"),
-assignedPilot int
+    bookingNumber int primary key,
+    userID int,
+    departFlightID varchar(7),
+    returnFlightID varchar(7),
+    departSeat varchar(3),
+    returnSeat varchar(3),
+    departDate date,
+    returnDate date,
+    bookingDate datetime,
+    bookingStatus enum("Cancelled", "Completed"),
+    assignedPilot int
 );
 
 create table item (
@@ -362,6 +368,17 @@ create trigger createstaff
 after insert on users
 for each row
 begin
+    if new.isStaff = true
+		then
+			insert into staff(staffID, email) values
+            (new.userID, new.email);
+    end if;
+end//
+
+create trigger createstaffAfterUpdate
+after update on users
+for each row
+begin
     if new.isStaff = true 
 		then
 			insert into staff(staffID, email) values
@@ -450,7 +467,7 @@ create trigger validReservationChange
 before update on booking
 for each row 
 begin
-	if new.bookingDate > CURDATE()
+	if new.bookingDate < CURDATE()
 		then
 			signal sqlstate '45000'
 			set message_text = "Updated reservation isn't valid";
@@ -599,4 +616,16 @@ begin
     end if;
 end//
 
+-- To remember old bookings before deletion
+create trigger rememberBookingBeforeDelete
+before delete on booking
+for each row
+begin
+	insert into bookingHistory(bookingNumber, userID, departFlightID, returnFlightID, departSeat, returnSeat, departDate, returnDate, bookingDate, bookingStatus, assignedPilot) 
+    select old.bookingNumber, old.userID, ds.flightID, rs.flightID, old.departSeat, old.returnSeat, old.departDate, old.returnDate, old.bookingDate, "Cancelled", df.assignedPilot
+    from schedule ds
+    join flight df on df.IATA = ds.flightID
+    join schedule rs on rs.scheduleID = old.returnSchedule
+    where ds.scheduleID = old.departSchedule;
+end//
 delimiter ;

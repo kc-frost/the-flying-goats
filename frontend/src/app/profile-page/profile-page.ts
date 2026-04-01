@@ -20,6 +20,13 @@ export class ProfilePage {
   private userReservations = new BehaviorSubject<any[]>([]);
   private userBio = new BehaviorSubject<string>("");
   private isEditing = new BehaviorSubject<boolean>(false);
+  // added these for editing -Richard
+  reservationModalOpen = false;
+  selectedReservation: any = null;
+  departSeatControl = new FormControl('');
+  returnSeatControl = new FormControl('');
+  departTakenSeats: string[] = [];
+  returnTakenSeats: string[] = []
 
   userService = inject(UserService);
   selectedTab: 'past' | 'upcoming' = 'upcoming'
@@ -152,4 +159,105 @@ export class ProfilePage {
     return this.userService.profilePicture;
   }
 
+  // Adding these for editing - Richard
+  loadTakenSeats(departScheduleID: number, returnScheduleID: number) {
+    if (departScheduleID) {
+      this.http.get<string[]>(`${environment.api_url}/api/taken-seats`, {
+        params: { scheduleID: departScheduleID }
+      }).subscribe({
+        next: (data) => {
+          this.departTakenSeats = (Array.isArray(data) ? data : []).filter(
+            seat => seat !== this.selectedReservation.departSeatNumber
+          );
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
+  if (returnScheduleID) {
+    this.http.get<string[]>(`${environment.api_url}/api/taken-seats`, {
+      params: { scheduleID: returnScheduleID }
+    }).subscribe({
+      next: (data) => {
+        this.returnTakenSeats = (Array.isArray(data) ? data : []).filter(
+          seat => seat !== this.selectedReservation.returnSeatNumber
+        );
+        this.cdr.detectChanges();
+      }
+    });
+  }
+  }
+
+  // Actions themselves (update and delete)
+    updateReservationSeats() {
+    if (!this.selectedReservation) return;
+    if (
+      this.isSeatTaken('depart', this.departSeatControl.value) || this.isSeatTaken('return', this.returnSeatControl.value)
+    ) {
+      return;
+    }
+
+    this.http.post(`${environment.api_url}/api/user-update-reservation`, {
+      bookingID: this.selectedReservation.bookingNumber,
+      departSeat: this.departSeatControl.value,
+      returnSeat: this.returnSeatControl.value
+    }).subscribe({
+      next: () => {
+        this.loadReservations();
+        this.closeReservationModal();
+      },
+    error: (err) => {
+      console.log("Oops! Something went wrong!:", err);
+      alert(err.error?.message || "It looks like you made a bad input! Try again with another input!");
+    }
+    });
+  }
+// That includes this too
+// This is a soft delete, the booking is still saved in the database in a history table
+  deleteReservation() {
+    if (!this.selectedReservation) return;
+    this.http.post(`${environment.api_url}/api/user-cancel-reservation`, {
+      bookingID: this.selectedReservation.bookingNumber
+    }).subscribe({
+      next: () => {
+        this.loadReservations();
+        this.closeReservationModal();
+      }
+    });
+  }
+
+  isSeatTaken(type: 'depart' | 'return', seat: string | null) {
+    if (!seat) return false;
+
+    // if the seat is the user's current selection, it won't be counted as taken
+    return type === 'depart'
+      ? this.departTakenSeats.includes(seat) : this.returnTakenSeats.includes(seat);
+  }
+  openReservationModal(reservation: any, event?: Event) {
+    if (this.selectedTab !== 'upcoming') return;
+    if (event) {
+      // prevent default behavior of the click event like navigating, and then after stop propagation
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.selectedReservation = reservation;
+    // pre-fill update form with current seat selection
+    this.departSeatControl.setValue(reservation.departSeatNumber || '');
+    this.returnSeatControl.setValue(reservation.returnSeatNumber || '');
+    this.departTakenSeats = [];
+    this.returnTakenSeats = [];
+    this.reservationModalOpen = true;
+    this.loadTakenSeats(reservation.departScheduleID, reservation.returnScheduleID);
+    this.cdr.detectChanges();
+  }
+  closeReservationModal() {
+    this.reservationModalOpen = false;
+    this.selectedReservation = null;
+    this.departSeatControl.reset();
+    this.returnSeatControl.reset();
+    // clear taken seats
+    this.departTakenSeats = [];
+    this.returnTakenSeats = [];
+    this.cdr.detectChanges();
+  }
 }

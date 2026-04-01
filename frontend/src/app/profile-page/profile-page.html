@@ -39,8 +39,13 @@
         </div>
         <section class="content">
             @for (reservation of filteredReservations; track $index) {
-                <details open>
+                <details open class="reservation-card">
                     <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm':'+00:00'}}</summary>
+                        @if (selectedTab === 'upcoming') {
+                            <button class="edit-reservation-btn" (click)="openReservationModal(reservation, $event)">
+                                <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
+                            </button>
+                        }
                     <table>
                     <tr>
                         <th>Date</th>
@@ -109,5 +114,47 @@
             }
                 
         </section>
+
+        <!-- Editing reservations-->
+        @if (reservationModalOpen && selectedReservation) {
+            <div class="reservation-modal-backdrop" (click)="closeReservationModal()">
+                <div class="reservation-modal" (click)="$event.stopPropagation()">
+                    <div class="reservation-modal-header">
+                        <h2>Edit Reservation</h2>
+                        <button class="reservation-modal-close" (click)="closeReservationModal()">✕</button>
+                    </div>
+
+                    <section class="reservation-modal-body">
+                        <div class="seat-edit-group">
+                            <label for="departSeat">Depart Seat:</label>
+                            <input id="departSeat" [formControl]="departSeatControl" placeholder="Enter new depart seat" />
+                            @if (departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) {
+                                <p class="seat-taken">Someone's already sitting there.</p>
+                            }
+                        </div>
+
+                        <div class="seat-edit-group">
+                            <label for="returnSeat">Return Seat:</label>
+                            <input id="returnSeat" [formControl]="returnSeatControl" placeholder="Enter new return seat" />
+                            @if (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value)) {
+                                <p class="seat-taken">Someone's already sitting there.</p>
+                            }
+                        </div>
+                    </section>
+
+                    <footer class="reservation-modal-actions">
+                        <button type="button" class="save-btn"
+                            (click)="updateReservationSeats()"
+                            [disabled]="(departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) || (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value))">
+                            Save
+                        </button>
+                        <button type="button" class="delete-btn" (click)="deleteReservation()">
+                            Delete Reservation
+                        </button>
+                    </footer>
+                </div>
+            </div>
+        }
+
     </section>
 </section>

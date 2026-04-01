@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 from flask_login import login_required
 
-from .service import get_taken_seats, get_airports, filtered_airports, get_available_flights, book_a_flight, user_details_match
+from .service import cancel_reservation, get_taken_seats, get_airports, filtered_airports, get_available_flights, book_a_flight, update_reservation_seat, user_details_match
 
 bp = Blueprint("booking", __name__)
 
@@ -84,3 +84,28 @@ def book_flight():
     if result and "error" in result:
         return jsonify(result), 500
     return jsonify({"message": "booking confirmed"}), 200
+
+
+@bp.route("/user-update-reservation", methods=["POST"])
+@login_required
+def update_reservation():
+    data = request.json
+    bookingID = data.get("bookingID")
+    departSeat = data.get("departSeat")
+    returnSeat = data.get("returnSeat")
+
+    result = update_reservation_seat(departSeat, returnSeat, bookingID)
+    if isinstance(result, dict) and "error" in result:
+        return jsonify({"success": False, "message": result.get("error")}), 500
+    return jsonify({"success": True, "message": "Reservation successfully updated"}), 200
+
+@bp.route("/user-cancel-reservation", methods=["POST"])
+@login_required
+def cancel_reservation_route():
+    data = request.json
+    bookingID = data.get("bookingID")
+
+    result = cancel_reservation(bookingID)
+    if isinstance(result, dict) and "error" in result:
+        return jsonify({"success": False, "message": result.get("error")}), 500
+    return jsonify({"success": True, "message": "Reservation successfully cancelled"}), 200
