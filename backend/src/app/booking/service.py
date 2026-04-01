@@ -189,21 +189,21 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             
             # find flightID based on IATA
             query = """
-                SELECT `flightID` FROM `flight` WHERE `IATA` = %s
+                SELECT `IATA` FROM `flight` WHERE `IATA` = %s
             """
             cursor.execute(query, (outboundFlight.get("flightID"),))
             row = cursor.fetchone()
             if row is None:
                 raise ValueError("Plane not found")
 
-            outboundFlightID = row.get("flightID")
+            outboundFlightID = row.get("IATA")
 
             cursor.execute(query, (inboundFlight.get("flightID")))
             row = cursor.fetchone()
             if row is None:
                 raise ValueError("Plane not found")
             
-            inboundFlightID = row.get("flightID")
+            inboundFlightID = row.get("IATA")
 
             # find flight schedule user booked
             query = """

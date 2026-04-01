@@ -22,18 +22,26 @@ def get_user_reservations(userID: str):
                 FROM `reservationticket`
                 WHERE `userID` = %s
             """
-            cursor.execute(query, (user['userID']))
+            cursor.execute(query, (user['userID'],))
             result = cursor.fetchall()
-            
+
             for row in result:
                 for key in row:
                     if isinstance(row[key], timedelta):
                         row[key] = str(row[key])
 
+            # dedup by bookingNumber
+            seen = set()
+            unique_result = []
+            for row in result:
+                if row['bookingNumber'] not in seen:
+                    seen.add(row['bookingNumber'])
+                    unique_result.append(row)
+
         except Exception as e:
             return jsonify({"err": str(e)}), 500
 
-    return result
+    return unique_result
 
 def get_profile_picture(user_id: str):
     conn = get_connection()
