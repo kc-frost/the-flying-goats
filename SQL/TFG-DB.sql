@@ -67,7 +67,7 @@ create table airports(
 );
 
 create table flight(
-    IATA varchar(7) primary key,
+    IATA varchar(7)
     ICAO varchar(4),
     planeName varchar(255),
     gate varchar(2),
@@ -75,7 +75,7 @@ create table flight(
     destination int,
     capacity int,
     assignedPilot int,
-    unique(IATA, origin, destination),
+    primary key(IATA, origin, destination),
     constraint chk_capacity
         check (capacity <= 36 and capacity >= 0 and capacity % 4 = 0),
     constraint fk_staffID
