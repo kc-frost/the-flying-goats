@@ -36,6 +36,12 @@ export class ProfilePage {
     this.loadProfilePicture();
   }
 
+  getDateTime(date: string, time: string) {
+    const dateOnly = new Date(`${date}`).toISOString().split('T')[0];
+    // console.log(dateOnly);
+    return new Date(`${dateOnly} ${time}`);
+  }
+
   loadReservations() {
     this.http.get<any[]>(`${environment.api_url}/api/user-reservations`).subscribe({
       next: (data) => {
@@ -52,8 +58,6 @@ export class ProfilePage {
   }
 
   get filteredReservations() {
-    // change this to sort by the full date of the initial liftOff of the trip
-
     const pastCutoff = new Date();
 
     // currently, if the creation of a booking is at least 3 days ago
@@ -62,19 +66,20 @@ export class ProfilePage {
 
     // past: descending (most recent first)
     if (this.selectedTab == 'past') {
-      return allReservations.filter((reservation) => new Date(reservation.departLift) < pastCutoff)
+      return allReservations.filter((reservation) => this.getDateTime(reservation.departDate, reservation.departLiftOffDate) < pastCutoff)
       .sort((a,b) => 
-        new Date(b.departLift).getTime() - new Date(a.departLift).getTime()
+        this.getDateTime(b.departDate, b.departLiftOffDate).getTime() - this.getDateTime(a.departDate, a.departLiftOffDate).getTime()
       )
     } 
 
     // upcoming: ascending (soonest first)
     else {
-      return allReservations.filter((reservation) => new Date(reservation.departLift) >= pastCutoff)
+      return allReservations.filter((reservation) => this.getDateTime(reservation.departDate, reservation.departLiftOffDate) >= pastCutoff)
       .sort((a,b) => 
-        new Date(a.departLift).getTime() - new Date(b.departLift).getTime()
+        this.getDateTime(a.departDate, a.departLiftOffDate).getTime() - this.getDateTime(b.departDate, b.departLiftOffDate).getTime()
       )
     }
+
   }
 
   loadBio() {
@@ -127,6 +132,7 @@ export class ProfilePage {
 
   updateBio() { 
     this.editMode = 'bio';
+    this.userTextForm.reset();
     this.isEditing.next(true);
   }
 
