@@ -14,29 +14,25 @@ insert into plane (ICAO) values
 insert into users (phoneNumber, fname, lname, username, email, password, isStaff, registeredDate) values
 ("5127997308", "Alan", "Gascon", "McTails", "alangascon@gmail.com", sha2("password123", 224), 0, "2026-03-01 09:00:00"),
 ("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", sha2("password234", 224), 1, "2026-03-01 09:15:00"),
-("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", sha2("password345",224), 1, "2026-03-01 09:30:00"),
-("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", sha2("password456",224), 1, "2026-03-01 09:45:00"),
-("5125550103", "Erin", "Choi", "ErinCo", "erinchoi@tfg.com", sha2("password567",224), 1, "2026-03-01 10:00:00"),
-("5125550104", "Omar", "Singh", "OmarSec", "omarsingh@tfg.com", sha2("password678",224), 0, "2026-03-01 10:15:00"),
-("5125550105", "Tess", "Nguyen", "TessFA", "tessnguyen@tfg.com", sha2("password789",224), 0, "2026-03-01 10:30:00"),
-("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", sha2("password890",224), 0, "2026-03-01 10:45:00"),
-("5125550201", "Bongo", "Meatwagon", "bongojet", "bongomeatwagon@tfg.com", sha2("password901",224), 1, "2026-03-01 11:00:00"),
-("5125550202", "Crunch", "Spaghetti", "crunchpilot", "crunchspaghetti@tfg.com", sha2("password902",224), 1, "2026-03-01 11:15:00"),
-("5125550203", "Toaster", "Goblin", "toastgob", "toastergoblin@tfg.com", sha2("password903",224), 1, "2026-03-01 11:30:00"),
-("5125550204", "Toe", "Enjoyer", "toeLiker", "toelover@tfg.com", sha2("password904",224), 1, "2026-03-01 11:45:00"),
-("5125550205", "Soggy", "Waffle", "sogwaff", "soggywaffle@tfg.com", sha2("password905",224), 0, "2026-03-01 12:00:00"),
-("5125550206", "Grease", "McChicken", "greasemc", "greasemcchicken@tfg.com", sha2("password906",224), 0, "2026-03-01 12:15:00"),
-("5125550207", "Wiggles", "Funk", "wigglefunk", "wigglesfunk@tfg.com", sha2("password907",224), 0, "2026-03-01 12:30:00"),
-("5125550208", "Cheddar", "Blaster", "chedblast", "cheddarblaster@tfg.com", sha2("password908",224), 0, "2026-03-01 12:45:00");
+("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@gmail.com", sha2("password345",224), 1, "2026-03-01 09:30:00"),
+("5125550102", "Richard", "Walker", "rich93147", "richardwalker@gmail.com", sha2("password456",224), 1, "2026-03-01 09:45:00"),
+("5125550103", "Erin", "Choi", "ErinCo", "erinchoi@gmail.com", sha2("password567",224), 1, "2026-03-01 10:00:00"),
+("5125550104", "Omar", "Singh", "OmarSec", "omarsingh@gmail.com", sha2("password678",224), 0, "2026-03-01 10:15:00"),
+("5125550105", "Tess", "Nguyen", "TessFA", "tessnguyen@gmail.com", sha2("password789",224), 0, "2026-03-01 10:30:00"),
+("5125550106", "Luis", "Martinez", "LuisOps", "luismartinez@gmail.com", sha2("password890",224), 0, "2026-03-01 10:45:00"),
+("5125550201", "Bongo", "Gigglefart", "bongojet", "bongogigglefart@gmail.com", sha2("password901",224), 1, "2026-03-01 11:00:00"),
+("5125550202", "Crunch", "Giggler", "crunchpilot", "crunchgiggler@gmail.com", sha2("password902",224), 1, "2026-03-01 11:15:00"),
+("5125550203", "Toaster", "Giggleblast", "toastgob", "toastergiggleblast@gmail.com", sha2("password903",224), 1, "2026-03-01 11:30:00"),
+("5125550204", "Toe", "Gigglesnort", "toeLiker", "toegigglesnort@gmail.com", sha2("password904",224), 1, "2026-03-01 11:45:00"),
+("5125550205", "Soggy", "Gigglenoodle", "sogwaff", "soggygigglenoodle@gmail.com", sha2("password905",224), 0, "2026-03-01 12:00:00"),
+("5125550206", "Grease", "Gigglechunk", "greasemc", "greasegigglechunk@gmail.com", sha2("password906",224), 0, "2026-03-01 12:15:00"),
+("5125550207", "Wiggles", "Gigglepants", "wigglefunk", "wigglesgigglepants@gmail.com", sha2("password907",224), 0, "2026-03-01 12:30:00"),
+("5125550208", "Cheddar", "Gigglecheese", "chedblast", "cheddargigglecheese@gmail.com", sha2("password908",224), 0, "2026-03-01 12:45:00"),
+("5125551000", "Rex", "Gigglefart", "rexhar", "rexgigglefart@gmail.com", sha2("password1000",224), 1, "2026-03-15 08:00:00"),
+("5125551001", "Nadia", "Giggler", "nadiavos", "nadiagiggler@gmail.com", sha2("password1001",224), 1, "2026-03-15 08:00:00"),
+("5125551002", "Colt", "Giggleblast", "coltbla", "coltgiggleblast@gmail.com", sha2("password1002",224), 1, "2026-03-15 08:00:00"),
+("5125551003", "Inez", "Gigglesnort", "inezfer", "inezgigglesnort@gmail.com", sha2("password1003",224), 1, "2026-03-15 08:00:00");
 
-insert into users (phoneNumber, fname, lname, username, email, password, isStaff, registeredDate) values
-("5125551000", "Rex", "Harmon", "rexhar", "rex.harmon@tfg.com", sha2("password1000", 224), 1, "2026-03-15 08:00:00"),
-("5125551001", "Nadia", "Voss", "nadiavos", "nadia.voss@tfg.com", sha2("password1001", 224), 1, "2026-03-15 08:00:00"),
-("5125551002", "Colt", "Blaine", "coltbla", "colt.blaine@tfg.com", sha2("password1002", 224), 1, "2026-03-15 08:00:00"),
-("5125551003", "Inez", "Ferris", "inezfer", "inez.ferris@tfg.com", sha2("password1003", 224), 1, "2026-03-15 08:00:00");
-
-select * from users;
-select * from staff;
 
 -- position enums inserts
 insert into positionenums (position) values
@@ -82,13 +78,13 @@ insert into airports (regionID, place, name, IATA) values
 (5, "Atlanta", "Hartsfield-Jackson Atlanta International Airport", "ATL");
 
 -- flight inserts
-insert into flight (IATA, planeName, gate, origin, destination, assignedPilot) values
-("TP1001", "Goated67Plane", "A1", 1, 2, 3),
-("TP1002", "SkyRam900", "A2", 1, 3, 3),
-("TP1003", "HornetJet11", "B1", 1, 4, 4),
-("TP1004", "Nimbus220", "B2", 1, 5, 5),
-("TP1005", "CrownCruiser", "C1", 1, 6, 10),
-("TP1006", "AtlasSprint", "C2", 1, 7, 12);
+insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, assignedPilot) values
+("TP1001", "A676", "Goated67Plane", "A1", 1, 2, 20, 3),
+("TP1002", "B212", "SkyRam900", "A2", 1, 3, 24, 3),
+("TP1003", "C909", "HornetJet11", "B1", 1, 4, 16, 4),
+("TP1004", "D404", "Nimbus220", "B2", 1, 5, 20, 5),
+("TP1005", "E777", "CrownCruiser", "C1", 1, 6, 24, 10),
+("TP1006", "F101", "AtlasSprint", "C2", 1, 7, 28, 12);
 
 -- schedule inserts
 insert into schedule (flightID, liftOff, landing, status) values
@@ -123,7 +119,7 @@ insert into planeseat (seatNumber, scheduleID, classID) values
 
 -- booking inserts
 insert into booking (bookingDate, userID, departSeat, returnSeat, departDate, departSchedule, returnDate, returnSchedule) values
-("2026-03-01 12:00:00", 17, "101", "103", "2026-03-10", 1, "2026-03-10", 2),
+("2026-03-01 12:00:00", 1, "101", "103", "2026-03-10", 1, "2026-03-10", 2),
 ("2026-03-01 12:10:00", 2, "102", "104", "2026-03-10", 1, "2026-03-10", 2),
 ("2026-03-01 12:20:00", 1, "105", "107", "2026-03-11", 3, "2026-03-11", 4),
 ("2026-03-01 12:30:00", 2, "106", "108", "2026-03-11", 3, "2026-03-11", 4),
@@ -161,55 +157,3 @@ insert into inventory(itemID, quantity) values
 
 select * from staff;
 select * from positionenums;
-
--- Test flight inserts for testing pilot schedule
--- April 1st test flight
-insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX101", "Boeing 737", "A1", 1, 2, 17);
-
-insert into schedule (flightID, liftOff, landing, status)
-values (
-    "TX101",
-    "10:00:00",
-    "11:30:00",
-    "On Time"
-);
-
--- April 3rd (pilot 3)
-insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX203", "Boeing 777", "D4", 1, 6, 18);
-
-insert into schedule (flightID, liftOff, landing, status)
-values (
-    "TX203",
-    "14:00:00",
-    "17:30:00",
-    "On Time"
-);
-
--- Today (pilot 3)
-insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX204", "Embraer 175", "E5", 1, 8, 19);
-
-insert into schedule (flightID, liftOff, landing, status)
-values (
-    "TX204",
-    "12:00:00",
-    "14:30:00",
-    "On Time"
-);
-
--- April 1st flight for pilot 4
-insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX205", "Boeing 737", "F6", 1, 7, 20);
-
-insert into schedule (flightID, liftOff, landing, status)
-values (
-    "TX205",
-    "15:00:00",
-    "17:15:00",
-    "On Time"
-);
-
-select * from users;
-select * from staff;
