@@ -5,12 +5,22 @@ services:
   backend:
     build: ./backend
     container_name: goats-backend
+    restart: always
+    environment:
+      - USER = root
+      - PASSWORD = password123
+      - HOST = localhost
+      - DATABASE = TFG
+      - SECRET_KEY = "6679c5c079ce0faff2cc3dcf4a3b1f91258fea7595b180eb48b5dcffd1a368dc"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "5000:5000"
 
   frontend:
     build: ./frontend
     container_name: goats-frontend
+    restart: always
     ports:
       - "80:80"
     depends_on:
