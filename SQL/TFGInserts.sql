@@ -1,57 +1,5 @@
 use TFG;
 
--- regions
-insert into regions() values
-(1, "North America"),
-(2, "South America"),
-(3, "Asia"),
-(4, "Europe"),
-(5, "Africa");
-
--- plane status enums inserts
-insert into planestatusenums (psEnumID, status, ICAO) values
-(1, "On Time", null),
-(2, "Delayed", null),
-(3, "Boarding", null),
-(4, "Taxiing", null),
-(5, "Airborne", null),
-(6, "Landing", null),
-(7, "Grounded", null);
-
--- airports
-insert into airports(regionID, place, name, IATA) values
--- North America
-(1, "Austin, TX", "Austin-Bergstrom Intl", "AUS"),
-(1, "New York, NYC", "John F Kennedy Intl", "JFK"),
-(1, "San Francisco, CA", "San Francisco Intl.", "SFO"),
-(1, "Atlanta, GA", "Hartsfield-Jackson Int", "ATL"),
-(1, "Toronto, ON", "Lester B. Pearson Intl", "YYZ"),
-(1, "Mexico City, Mexico", "Benito Juarez Intl", "MEX"),
--- South America
-(2, "São Paulo, Brazil", "Guarulhos Intl", "GRU"),
-(2, "Buenos Aires, Argentina", "Ministro Pistarini Intl", "EZE"),
-(2, "Bogotá, Colombia", "El Dorado Intl", "BOG"),
-(2, "Lima, Peru", "Jorge Chávez Intl", "LIM"),
-(2, "Santiago, Chile", "Arturo Merino Benítez Intl", "SCL"),
--- Asia
-(3, "Manila, Philippines", "Ninoy Aquino Intl", "MNL"),
-(3, "Tokyo, Japan", "Haneda Intl", "HND"),
-(3, "Dubai, UAE", "Dubai Intl", "DXB"),
-(3, "Singapore, Singapore", "Changi Intl", "SIN"),
-(3, "Beijing, China", "Capital Intl", "PEK"),
--- Europe
-(4, "London, UK", "Heathrow Intl", "LHR"),
-(4, "Paris, France", "Charles de Gaulle Intl", "CDG"),
-(4, "Frankfurt, Germany", "Frankfurt am Main Intl", "FRA"),
-(4, "Madrid, Spain", "Adolfo Suárez Madrid-Barajas Intl", "MAD"),
-(4, "Sofia, Bulgaria", "Sofia Airport", "SOF"),
--- Africa
-(5, "Johannesburg, South Africa", "O.R. Tambo Intl", "JNB"),
-(5, "Cairo, Egypt", "Cairo Intl", "CAI"),
-(5, "Nairobi, Kenya", "Jomo Kenyatta Intl", "NBO"),
-(5, "Lagos, Nigeria", "Murtala Muhammed Intl", "LOS"),
-(5, "Casablanca, Morocco", "Mohammed V Intl", "CMN");
-
 -- plane inserts
 insert into plane (ICAO) values
 ("A676"),
@@ -61,42 +9,31 @@ insert into plane (ICAO) values
 ("E777"),
 ("F101");
 
--- flight inserts
-insert into flight (IATA, planeName, gate, origin, destination, capacity) values
-("TP1001", "Goated67Plane", "A1", 1, 2, 4), -- AUS -> NYC
-("TP1002", "SkyRam900", "A2", 1, 3, 18), 	-- AUS -> SFO
-("TP1003", "HornetJet11", "B1", 1, 23, 8),	-- AUS -> CAI
-("TP1004", "Nimbus220", "B2", 1, 13, 12),	-- AUS -> HND
-("TP1005", "CrownCruiser", "C1", 1, 16, 32),	-- AUS -> PEK
-("TP1006", "AtlasSprint", "C2", 1, 21, 20);		-- AUS -> SOF
-
--- schedule inserts
-insert into schedule (flightID, liftOff, landing) values
-("TP1001", "2026-03-10 10:06:07", "2026-03-10 12:00:00"),
-("TP1002", "2026-03-10 13:30:00", "2026-03-10 15:05:00"),
-("TP1003", "2026-03-11 09:15:00", "2026-03-11 10:25:00"),
-("TP1004", "2026-03-11 16:40:00", "2026-03-11 18:10:00"),
-("TP1005", "2026-03-12 07:00:00", "2026-03-12 09:55:00"),
-("TP1006", "2026-03-12 19:20:00", "2026-03-12 22:35:00");
 
 -- users inserts
 insert into users (phoneNumber, fname, lname, username, email, password, isStaff, registeredDate) values
-("5127997308", "Alan", "Gascon", "McTails", "alangascon@gmail.com", "password123", 0, "2026-03-01 09:00:00"),
-("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", "password234", 1, "2026-03-01 09:15:00"),
-("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", "password345", 1, "2026-03-01 09:30:00"),
-("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", "password456", 1, "2026-03-01 09:45:00"),
-("5125550103", "Erin", "Choi", "ErinCo", "erinchoi@tfg.com", "password567", 1, "2026-03-01 10:00:00"),
-("5125550104", "Omar", "Singh", "OmarSec", "omarsingh@tfg.com", "password678", 0, "2026-03-01 10:15:00"),
-("5125550105", "Tess", "Nguyen", "TessFA", "tessnguyen@tfg.com", "password789", 0, "2026-03-01 10:30:00"),
-("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", "password890", 0, "2026-03-01 10:45:00"),
-("5125550201", "Bongo", "Meatwagon", "bongojet", "bongomeatwagon@tfg.com", "password901", 1, "2026-03-01 11:00:00"),
-("5125550202", "Crunch", "Spaghetti", "crunchpilot", "crunchspaghetti@tfg.com", "password902", 1, "2026-03-01 11:15:00"),
-("5125550203", "Toaster", "Goblin", "toastgob", "toastergoblin@tfg.com", "password903", 1, "2026-03-01 11:30:00"),
-("5125550204", "Toe", "Enjoyer", "toeLiker", "toelover@tfg.com", "password904", 1, "2026-03-01 11:45:00"),
-("5125550205", "Soggy", "Waffle", "sogwaff", "soggywaffle@tfg.com", "password905", 0, "2026-03-01 12:00:00"),
-("5125550206", "Grease", "McChicken", "greasemc", "greasemcchicken@tfg.com", "password906", 0, "2026-03-01 12:15:00"),
-("5125550207", "Wiggles", "Funk", "wigglefunk", "wigglesfunk@tfg.com", "password907", 0, "2026-03-01 12:30:00"),
-("5125550208", "Cheddar", "Blaster", "chedblast", "cheddarblaster@tfg.com", "password908", 0, "2026-03-01 12:45:00");
+("5127997308", "Alan", "Gascon", "McTails", "alangascon@gmail.com", sha2("password123", 224), 0, "2026-03-01 09:00:00"),
+("5123005252", "Maria", "Valentine", "ValesMom", "mariavalentine@gmail.com", sha2("password234", 224), 1, "2026-03-01 09:15:00"),
+("5125550101", "Kai", "Cairo", "kcfrost", "kaicairo@tfg.com", sha2("password345",224), 1, "2026-03-01 09:30:00"),
+("5125550102", "Richard", "Walker", "rich93147", "richardwalker@tfg.com", sha2("password456",224), 1, "2026-03-01 09:45:00"),
+("5125550103", "Erin", "Choi", "ErinCo", "erinchoi@tfg.com", sha2("password567",224), 1, "2026-03-01 10:00:00"),
+("5125550104", "Omar", "Singh", "OmarSec", "omarsingh@tfg.com", sha2("password678",224), 0, "2026-03-01 10:15:00"),
+("5125550105", "Tess", "Nguyen", "TessFA", "tessnguyen@tfg.com", sha2("password789",224), 0, "2026-03-01 10:30:00"),
+("5125550106", "Luis", "Martinez", "LuisOps", "luis.martinez@tfg.com", sha2("password890",224), 0, "2026-03-01 10:45:00"),
+("5125550201", "Bongo", "Meatwagon", "bongojet", "bongomeatwagon@tfg.com", sha2("password901",224), 1, "2026-03-01 11:00:00"),
+("5125550202", "Crunch", "Spaghetti", "crunchpilot", "crunchspaghetti@tfg.com", sha2("password902",224), 1, "2026-03-01 11:15:00"),
+("5125550203", "Toaster", "Goblin", "toastgob", "toastergoblin@tfg.com", sha2("password903",224), 1, "2026-03-01 11:30:00"),
+("5125550204", "Toe", "Enjoyer", "toeLiker", "toelover@tfg.com", sha2("password904",224), 1, "2026-03-01 11:45:00"),
+("5125550205", "Soggy", "Waffle", "sogwaff", "soggywaffle@tfg.com", sha2("password905",224), 0, "2026-03-01 12:00:00"),
+("5125550206", "Grease", "McChicken", "greasemc", "greasemcchicken@tfg.com", sha2("password906",224), 0, "2026-03-01 12:15:00"),
+("5125550207", "Wiggles", "Funk", "wigglefunk", "wigglesfunk@tfg.com", sha2("password907",224), 0, "2026-03-01 12:30:00"),
+("5125550208", "Cheddar", "Blaster", "chedblast", "cheddarblaster@tfg.com", sha2("password908",224), 0, "2026-03-01 12:45:00");
+
+insert into users (phoneNumber, fname, lname, username, email, password, isStaff, registeredDate) values
+("5125551000", "Rex", "Harmon", "rexhar", "rex.harmon@tfg.com", sha2("password1000", 224), 1, "2026-03-15 08:00:00"),
+("5125551001", "Nadia", "Voss", "nadiavos", "nadia.voss@tfg.com", sha2("password1001", 224), 1, "2026-03-15 08:00:00"),
+("5125551002", "Colt", "Blaine", "coltbla", "colt.blaine@tfg.com", sha2("password1002", 224), 1, "2026-03-15 08:00:00"),
+("5125551003", "Inez", "Ferris", "inezfer", "inez.ferris@tfg.com", sha2("password1003", 224), 1, "2026-03-15 08:00:00");
 
 select * from users;
 select * from staff;
@@ -118,6 +55,12 @@ update staff set positionID = 1 where staffID = 9;
 update staff set positionID = 2 where staffID = 10;
 update staff set positionID = 5 where staffID = 11;
 update staff set positionID = 2 where staffID = 12;
+update staff set positionID = 2 where staffID = 17;
+update staff set positionID = 2 where staffID = 18;
+update staff set positionID = 2 where staffID = 19;
+update staff set positionID = 2 where staffID = 20;
+
+select * from users;
 
 -- regions inserts
 insert into regions (regionID, region) values
@@ -139,22 +82,22 @@ insert into airports (regionID, place, name, IATA) values
 (5, "Atlanta", "Hartsfield-Jackson Atlanta International Airport", "ATL");
 
 -- flight inserts
-insert into flight (IATA, ICAO, planeName, gate, origin, destination, assignedPilot) values
-("TP1001", "A676", "Goated67Plane", "A1", 1, 2, 3),
-("TP1002", "B212", "SkyRam900", "A2", 1, 3, 3),
-("TP1003", "C909", "HornetJet11", "B1", 1, 4, 4),
-("TP1004", "D404", "Nimbus220", "B2", 1, 5, 5),
-("TP1005", "E777", "CrownCruiser", "C1", 1, 6, 10),
-("TP1006", "F101", "AtlasSprint", "C2", 1, 7, 12);
+insert into flight (IATA, planeName, gate, origin, destination, assignedPilot) values
+("TP1001", "Goated67Plane", "A1", 1, 2, 3),
+("TP1002", "SkyRam900", "A2", 1, 3, 3),
+("TP1003", "HornetJet11", "B1", 1, 4, 4),
+("TP1004", "Nimbus220", "B2", 1, 5, 5),
+("TP1005", "CrownCruiser", "C1", 1, 6, 10),
+("TP1006", "AtlasSprint", "C2", 1, 7, 12);
 
 -- schedule inserts
 insert into schedule (flightID, liftOff, landing, status) values
-("TP1001", "2026-03-10 10:06:07", "2026-03-10 12:00:00", "On Time"),
-("TP1002", "2026-03-10 13:30:00", "2026-03-10 15:05:00", "On Time"),
-("TP1003", "2026-03-11 09:15:00", "2026-03-11 10:25:00", "On Time"),
-("TP1004", "2026-03-11 16:40:00", "2026-03-11 18:10:00", "On Time"),
-("TP1005", "2026-03-12 07:00:00", "2026-03-12 09:55:00", "On Time"),
-("TP1006", "2026-03-12 19:20:00", "2026-03-12 22:35:00", "On Time");
+("TP1001", "10:06:07", "12:00:00", "On Time"),
+("TP1002", "13:30:00", "15:05:00", "On Time"),
+("TP1003", "09:15:00", "10:25:00", "On Time"),
+("TP1004", "16:40:00", "18:10:00", "On Time"),
+("TP1005", "07:00:00", "09:55:00", "On Time"),
+("TP1006", "19:20:00", "22:35:00", "On Time");
 
 -- flight class inserts
 insert into flightclass (className, price) values
@@ -180,7 +123,7 @@ insert into planeseat (seatNumber, scheduleID, classID) values
 
 -- booking inserts
 insert into booking (bookingDate, userID, departSeat, returnSeat, departDate, departSchedule, returnDate, returnSchedule) values
-("2026-03-01 12:00:00", 1, "101", "103", "2026-03-10", 1, "2026-03-10", 2),
+("2026-03-01 12:00:00", 17, "101", "103", "2026-03-10", 1, "2026-03-10", 2),
 ("2026-03-01 12:10:00", 2, "102", "104", "2026-03-10", 1, "2026-03-10", 2),
 ("2026-03-01 12:20:00", 1, "105", "107", "2026-03-11", 3, "2026-03-11", 4),
 ("2026-03-01 12:30:00", 2, "106", "108", "2026-03-11", 3, "2026-03-11", 4),
@@ -213,7 +156,8 @@ insert into inventory(itemID, quantity) values
 (3, 3),
 (4, 2),
 (5, 1),
-(6, 18);
+(6, 18),
+(7, 12);
 
 select * from staff;
 select * from positionenums;
@@ -221,49 +165,49 @@ select * from positionenums;
 -- Test flight inserts for testing pilot schedule
 -- April 1st test flight
 insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX101", "Boeing 737", "A1", 1, 2, 3);
+values ("TX101", "Boeing 737", "A1", 1, 2, 17);
 
 insert into schedule (flightID, liftOff, landing, status)
 values (
     "TX101",
-    "2026-04-01 10:00:00",
-    "2026-04-01 11:30:00",
+    "10:00:00",
+    "11:30:00",
     "On Time"
 );
 
 -- April 3rd (pilot 3)
 insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX203", "Boeing 777", "D4", 1, 6, 3);
+values ("TX203", "Boeing 777", "D4", 1, 6, 18);
 
 insert into schedule (flightID, liftOff, landing, status)
 values (
     "TX203",
-    "2026-04-03 14:00:00",
-    "2026-04-03 17:30:00",
+    "14:00:00",
+    "17:30:00",
     "On Time"
 );
 
 -- Today (pilot 3)
 insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX204", "Embraer 175", "E5", 1, 8, 3);
+values ("TX204", "Embraer 175", "E5", 1, 8, 19);
 
 insert into schedule (flightID, liftOff, landing, status)
 values (
     "TX204",
-    CONCAT(CURDATE(), " 12:00:00"),
-    CONCAT(CURDATE(), " 14:30:00"),
+    "12:00:00",
+    "14:30:00",
     "On Time"
 );
 
 -- April 1st flight for pilot 4
 insert into flight (IATA, planeName, gate, origin, destination, assignedPilot)
-values ("TX205", "Boeing 737", "F6", 1, 7, 4);
+values ("TX205", "Boeing 737", "F6", 1, 7, 20);
 
 insert into schedule (flightID, liftOff, landing, status)
 values (
     "TX205",
-    "2026-04-01 15:00:00",
-    "2026-04-01 17:15:00",
+    "15:00:00",
+    "17:15:00",
     "On Time"
 );
 

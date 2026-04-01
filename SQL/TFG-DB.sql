@@ -26,7 +26,6 @@ username varchar(255) not null,
 email varchar(255) not null,
 password varchar(255) not null,
 isStaff boolean default false,
-profilePicture text,
 bio text,
 registeredDate datetime
 );
@@ -89,7 +88,6 @@ create table flight(
     constraint fk_flight_destination
         foreign key (destination) references airports(airportID)
 );
-
 -- On time: 1 hour before take off
 -- Boarding: 30 minutes before take off
 -- Airborne: Duration of flight
@@ -98,8 +96,8 @@ create table flight(
 create table schedule(
     scheduleID int primary key auto_increment,
     flightID varchar(7),
-    liftOff datetime,
-    landing datetime,
+    liftOff time,
+    landing time,
     status enum('On Time', 'Delayed', 'Boarding', 'Taxiing', 'Airborne', 'Landing', 'Grounded'),
     constraint fk_schedule_flight
         foreign key (flightID) references flight(IATA)
@@ -223,49 +221,30 @@ join item it on it.itemID = i.itemID;
 -- Reservation ticket view with all attributes needed for view reservations
 create view reservationticket as
 select
-b.bookingNumber, b.bookingDate,
-u.userID, u.username,
-f_depart.IATA as departIATA, 
-a_depart.place as departOrigin,
-a_depart.name as departAP,
-DATE_FORMAT(CONCAT(b.departDate, ' ', s_depart.liftOff), '%Y-%m-%dT%H:%i:%s') as departLift,
-DATE_FORMAT(CONCAT(
-  CASE WHEN s_depart.landing < s_depart.liftOff 
-    THEN ADDDATE(b.departDate, 1) 
-    ELSE b.departDate 
-  END, 
-  ' ', s_depart.landing
-), '%Y-%m-%dT%H:%i:%s') as departLand,
-b.departSeat,
-fc_depart.className as departClass,
-f_return.IATA as returnIATA,
-a_return.place as returnOrigin,
-a_return.name as returnAP,
-DATE_FORMAT(CONCAT(b.returnDate, ' ', s_return.liftOff), '%Y-%m-%dT%H:%i:%s') as returnLift,
-DATE_FORMAT(CONCAT(
-  CASE WHEN s_return.landing < s_return.liftOff 
-    THEN ADDDATE(b.returnDate, 1) 
-    ELSE b.returnDate 
-  END, 
-  ' ', s_return.landing
-), '%Y-%m-%dT%H:%i:%s') as returnLand,
-b.returnSeat,
-fc_return.className as returnClass
+-- booking
+b.bookingNumber as bookingNumber, b.userID as userID, b.bookingDate as reservationDate,
+b.departSeat as departSeatNumber, b.returnSeat as returnSeatNumber,
+b.departDate as departDate, b.returnDate as returnDate,
+b.departSchedule as departScheduleID, b.returnSchedule as returnScheduleID,
+-- usersD
+u.username as username,
+-- depart schedule
+ds.liftOff as departLiftOffDate, ds.landing as departArrivingDate,
+-- depart flight
+df.flightID as departFlightID, df.IATA as departFlight,
+df.origin as departOrigin, df.destination as departDestination,
+-- return schedule
+rs.liftOff as returnLiftOffDate, rs.landing as returnArrivingDate,
+-- return flight
+rf.flightID as returnFlightID, rf.IATA as returnFlight,
+rf.origin as returnOrigin, rf.destination as returnDestination
 from booking b
-left join users u on b.userID = u.userID
-left join schedule s_depart on b.departSchedule = s_depart.scheduleID
-left join flight f_depart on s_depart.flightID = f_depart.flightID
-left join schedule s_return on b.returnSchedule = s_return.scheduleID
-left join flight f_return on s_return.flightID = f_return.flightID
-left join airports a_depart on f_depart.origin = a_depart.airportID
-left join airports a_return on f_return.origin = a_return.airportID
-left join planeseat ps_depart on (b.departSeat = ps_depart.seatNumber and b.departSchedule = ps_depart.scheduleID)
-left join planeseat ps_return on (b.returnSeat = ps_return.seatNumber and b.returnSchedule = ps_return.scheduleID)
-left join flightclass fc_depart on (ps_depart.classID = fc_depart.classID)
-left join flightclass fc_return on (ps_return.classID = fc_return.classID);
+left join users u using(userID)
+left join schedule ds on ds.scheduleID = b.departSchedule
+left join flight df on df.IATA = ds.flightID
+left join schedule rs on rs.scheduleID = b.returnSchedule
+left join flight rf on rf.IATA = rs.flightID;
 
-
-select * from reservationticket;
 -- view for view all users 
 create view userreservationsummary as
 select
@@ -302,23 +281,6 @@ join flight f on f.assignedPilot = s.staffID
 join schedule sc on sc.flightID = f.IATA;
 delimiter //
 
--- Shows available flights (typically queried through origin and destination
--- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)
-create view available_flights as
-select
-s.scheduleID,
-ao.IATA as origin_IATA, 
-ad.IATA as destination_IATA, 
-f.IATA, f.capacity,
-TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
-TIME_FORMAT(s.landing, "%H:%i") as landing, 
-CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
-from flight f
-join airports ao on f.origin = ao.airportID
-join airports ad on f.destination = ad.airportID
-join schedule s on f.flightID = s.flightID;
-
-select * from available_flights;
 
 -- procedures
 -- Resets a pilots and planes availability after a schedule is done
