@@ -2,12 +2,15 @@ use TFG;
 
 -- plane inserts
 insert into plane (ICAO) values
-("A676"),
-("B212"),
-("C909"),
-("D404"),
-("E777"),
-("F101");
+("A676"), ("B212"), ("C909"), ("D404"), ("E777"), ("F101"),
+("H404"), ("I505"), ("J606"), ("K707"), ("L808"), ("M909"),
+("O111"), ("P212"), ("N010"), ("Q313"), ("R414"), ("S515"), 
+("U717"), ("V818"), ("W919"), ("X020"), ("Y121"), ("T616"), 
+("AA23"), ("AB24"), ("AC25"), ("AD26"), ("AE27"), ("G303"), 
+("AF28"), ("AG29"), ("AH30"), ("AI31"), ("AJ32"), ("AK33"), 
+("AP38"), ("AQ39"), ("AR40"), ("AS41"), ("AT42"), ("AL34"), 
+("AU43"), ("AV44"), ("AW45"), ("AX46"), ("AY47"), ("AM35"), 
+("AN36"), ("AO37"), ("Z222"), ("Y676");
 
 
 -- users inserts
@@ -58,7 +61,7 @@ update staff set positionID = 2 where staffID = 20;
 
 select * from users;
 
--- regions inserts
+-- region inserts
 insert into regions (regionID, region) values
 (1, "Texas"),
 (2, "Colorado"),
@@ -66,16 +69,32 @@ insert into regions (regionID, region) values
 (4, "Arizona"),
 (5, "Georgia");
 
--- airports inserts
+-- flight class inserts
+insert into flightclass (className, price) values
+("Economy", 100.00),
+("First Class", 200.00),
+("Goat Class", 10000.00);
+
+-- airports 
 insert into airports (regionID, place, name, IATA) values
-(1, "Austin", "Austin-Bergstrom International Airport", "AUS"),
-(1, "Dallas", "Dallas Love Field", "DAL"),
-(1, "Houston", "George Bush Intercontinental Airport", "IAH"),
-(1, "San Antonio", "San Antonio International Airport", "SAT"),
-(2, "Denver", "Denver International Airport", "DEN"),
-(3, "Chicago", "O'Hare International Airport", "ORD"),
-(4, "Phoenix", "Phoenix Sky Harbor International Airport", "PHX"),
-(5, "Atlanta", "Hartsfield-Jackson Atlanta International Airport", "ATL");
+(1, "Austin, TX", "Austin-Bergstrom Intl", "AUS"),
+(1, "New York, NYC", "John F Kennedy Intl", "JFK"),
+(1, "San Francisco, CA", "San Francisco Intl", "SFO"),
+(2, "São Paulo, Brazil", "Guarulhos Intl", "GRU"),
+(2, "Buenos Aires, Argentina", "Ministro Pistarini Intl", "EZE"),
+(2, "Bogotá, Colombia", "El Dorado Intl", "BOG"),
+(3, "Tokyo, Japan", "Haneda Intl", "HND"),
+(3, "Dubai, UAE", "Dubai Intl", "DXB"),
+(3, "Singapore, Singapore", "Changi Intl", "SIN"),
+(4, "London, UK", "Heathrow Intl", "LHR"),
+(4, "Paris, France", "Charles de Gaulle Intl", "CDG"),
+(4, "Frankfurt, Germany", "Frankfurt am Main Intl", "FRA"),
+(5, "Johannesburg, South Africa", "O.R. Tambo Intl", "JNB"),
+(5, "Cairo, Egypt", "Cairo Intl", "CAI"),
+(5, "Nairobi, Kenya", "Jomo Kenyatta Intl", "NBO");
+
+select  * from staff;
+select * from positionEnums;
 
 -- flight inserts
 insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, assignedPilot) values
@@ -84,38 +103,77 @@ insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, 
 ("TP1003", "C909", "HornetJet11", "B1", 1, 4, 16, 4),
 ("TP1004", "D404", "Nimbus220", "B2", 1, 5, 20, 5),
 ("TP1005", "E777", "CrownCruiser", "C1", 1, 6, 24, 10),
-("TP1006", "F101", "AtlasSprint", "C2", 1, 7, 28, 12);
+("TP1006", "F101", "AtlasSprint", "C2", 1, 7, 28, 12),
+("TP1007", "G303", "GoatedFlight", "A1", 1, 2, 20, 3),
+("TP1009", "H404", "GoatPlane", "D3", 1, 3, 24, 4),
+("TP1011", "I505", "StormRider", "C3", 1, 4, 16, 5),
+("TP1013", "J606", "NovaStar", "A1", 2, 3, 4, 10),
+("TP1015", "K707", "ArcticBreeze", "D1", 2, 1, 20, 12),
+("TP1017", "L808", "CoastalAce", "B2", 2, 5, 8, 17),
+("TP1019", "M909", "ApexGlider", "A3", 3, 1, 12, 3),
+("TP1021", "N010", "MidnightRun", "B3", 3, 2, 28, 4),
+("TP1023", "O111", "CloudPiercer", "B2", 3, 4, 16, 5),
+("TP1025", "P212", "EclipseJet", "B2", 4, 1, 28, 10),
+("TP1027", "Q313", "SwiftArrow", "A1", 4, 2, 28, 12),
+("TP1029", "R414", "CycloneX", "B3", 4, 5, 32, 17),
+("TP1031", "S515", "TwilightAce", "C2", 5, 3, 32, 3),
+("TP1033", "T616", "SkyLancer", "A2", 5, 1, 16, 4),
+("TP1035", "U717", "NorthStar", "C3", 5, 4, 16, 5),
+("TP1037", "V818", "TurboCondor", "A1", 6, 3, 12, 10),
+("TP1039", "W919", "HighRoller", "B1", 6, 5, 32, 12),
+("TP1041", "X020", "MachRacer", "D3", 7, 4, 8, 17),
+("TP1043", "Y121", "CobaltJet", "D2", 7, 8, 8, 3),
+("TP1045", "Z222", "HorizonX", "C1", 8, 9, 20, 4),
+("TP1047", "AA23", "AltitudePro", "A3", 9, 1, 4, 5),
+("TP1049", "AB24", "BlackKite", "B1", 10, 3, 28, 10),
+("TP1051", "AC25", "MercuryWing", "A1", 10, 2, 12, 12),
+("TP1053", "AD26", "CrimsonAce", "D3", 11, 3, 28, 17),
+("TP1055", "AE27", "BronzeArrow", "B3", 11, 1, 28, 3),
+("TP1057", "AF28", "DiamondAir", "D2", 12, 4, 28, 4),
+("TP1059", "AG29", "SapphireGlide", "C2", 12, 5, 20, 5),
+("TP1061", "AH30", "AmethystWing", "D1", 13, 4, 32, 10),
+("TP1063", "AI31", "OpalSky", "D3", 13, 1, 32, 12),
+("TP1065", "AJ32", "PeridotFlight", "C2", 14, 2, 8, 17),
+("TP1067", "AK33", "QuartzSprint", "B3", 14, 5, 32, 3),
+("TP1069", "AL34", "MarbleAce", "B2", 15, 3, 32, 4),
+("TP1071", "AM35", "SlateHawk", "D1", 15, 1, 32, 5),
+("TP1073", "AN36", "CanyonRunner", "B2", 1, 2, 32, 10),
+("TP1075", "AO37", "DeltaGlide", "A3", 2, 3, 24, 12),
+("TP1077", "AP38", "ZetaWing", "B3", 3, 4, 28, 17),
+("TP1079", "AQ39", "ThetaStar", "A1", 4, 1, 8, 3),
+("TP1081", "AR40", "KappaAir", "A2", 5, 9, 4, 4),
+("TP1083", "AS41", "MuWing", "C3", 6, 3, 24, 5),
+("TP1085", "AT42", "XiGlide", "C2", 7, 1, 24, 10),
+("TP1087", "AU43", "PiAce", "D3", 8, 2, 24, 12),
+("TP1089", "AV44", "SigmaFlight", "B2", 9, 4, 24, 17),
+("TP1091", "AW45", "UpsilonJet", "D2", 10, 1, 20, 3),
+("TP1093", "AX46", "ChiHawk", "C3", 11, 2, 16, 4),
+("TP1095", "AY47", "OmegaAce", "D1", 12, 3, 16, 5);
 
 -- schedule inserts
-insert into schedule (flightID, liftOff, landing, status) values
-("TP1001", "10:06:07", "12:00:00", "On Time"),
-("TP1002", "13:30:00", "15:05:00", "On Time"),
-("TP1003", "09:15:00", "10:25:00", "On Time"),
-("TP1004", "16:40:00", "18:10:00", "On Time"),
-("TP1005", "07:00:00", "09:55:00", "On Time"),
-("TP1006", "19:20:00", "22:35:00", "On Time");
+insert into schedule (flightID, liftOff, landing) values
+("TP1001", "10:06:07", "12:00:00"),
+("TP1002", "13:30:00", "15:05:00"),
+("TP1003", "09:15:00", "10:25:00"),
+("TP1004", "16:40:00", "18:10:00"),
+("TP1005", "07:00:00", "09:55:00"),
+("TP1006", "19:20:00", "22:35:00");
 
 -- flight class inserts
-insert into flightclass (className, price) values
-("Economy", 100.00),
-("First Class", 200.00),
-("Goat Class", 10000.00);
-
--- plane seat inserts
 -- classID: 1 = Economy, 2 = First Class, 3 = Goat Class
 insert into planeseat (seatNumber, scheduleID, classID) values
-("1A", 1, 1),
-("2A", 1, 2),
-("1A", 2, 1),
-("3A", 2, 2),
-("1A", 3, 1),
-("4A", 3, 3),
-("3A", 4, 1),
-("2A", 4, 2),
-("4A", 5, 1),
-("3A", 5, 2),
-("2A", 6, 1),
-("1A", 6, 3);
+("101", 1, 1),
+("102", 1, 2),
+("103", 2, 1),
+("104", 2, 2),
+("105", 3, 1),
+("106", 3, 3),
+("107", 4, 1),
+("108", 4, 2),
+("109", 5, 1),
+("110", 5, 2),
+("111", 6, 1),
+("112", 6, 3);
 
 -- booking inserts
 insert into booking (bookingDate, userID, departSeat, returnSeat, departDate, departSchedule, returnDate, returnSchedule) values
@@ -157,3 +215,5 @@ insert into inventory(itemID, quantity) values
 
 select * from staff;
 select * from positionenums;
+
+select * from reservationticket;

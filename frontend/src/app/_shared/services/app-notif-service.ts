@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { environment } from '../../../_environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from './auth-service';
+import { UserService } from './user-service';
 
 
 @Injectable({
@@ -10,11 +12,26 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AppNotifService {
   private http = inject(HttpClient);
   private snackbar = inject(MatSnackBar);
+  private ngZone = inject(NgZone);
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+
   private alertedFlights = new Set<string>();
+  private lastChecked = new Date();
 
   startAlerts() {
-    this.checkUpcomingFlights();
-    setInterval(() => this.checkUpcomingFlights(), 120 * 1000 );
+    this.ngZone.runOutsideAngular(() => {
+      this.checkUpcomingFlights();
+      setInterval(() => {
+        this.ngZone.run(() => {
+          if (this.authService.getAuthenticated()) {
+            this.checkUpcomingFlights();
+            // console.log(this.userService.role);
+            if (this.userService.role == 'Pilot') this.checkNewPilotAssignments(this.lastChecked);
+          }
+          });
+        }, 10 * 1000);
+      });
   }
 
   private checkUpcomingFlights() {
@@ -44,8 +61,37 @@ export class AppNotifService {
       )
   }
 
-  private showToast(message: string) {
-    this.snackbar.open(message, 'Dismiss', {
+  private checkNewPilotAssignments(lastChecked: Date) {
+    this.lastChecked = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const d = lastChecked;
+    const sinceFormat = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+    const until = new Date(lastChecked.getTime() + 4 * 60 * 1000);
+    const untilFormat = `${until.getFullYear()}-${pad(until.getMonth()+1)}-${pad(until.getDate())} ${pad(until.getHours())}:${pad(until.getMinutes())}:${pad(until.getSeconds())}`;
+
+
+    // please keep just in case for testing
+    // console.log("this.lastChecked:", this.lastChecked);
+    // console.log("lastChecked:", lastChecked);
+
+    this.http.get<{amount: number}>(`${environment.api_url}/api/new-assignments-amount`,
+      { params: {
+        since: sinceFormat,
+        until: untilFormat
+      }}
+    )
+    .subscribe({
+      next: (res) => {
+        if (res.amount > 0) {
+          this.showToast(`You have ${res.amount} new assignments!`, "View here");
+        }
+      }
+    })
+  }
+
+  private showToast(message: string, action: string = "Dismiss") {
+    this.snackbar.open(message, action, {
       verticalPosition: 'top',
       horizontalPosition: 'center',
     });

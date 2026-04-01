@@ -10,12 +10,14 @@ export class UserService {
   private currentEmail = new BehaviorSubject<string>("");
   private currentUsername = new BehaviorSubject<string>("");
   private currentProfilePicture = new BehaviorSubject<string>('');
+  private currentRole = new BehaviorSubject<string>('');
   
   // Exposes the 'current' values of currentEmail and currentUsername
   // Subscribe to these (in a component) to automatically react when the value changes via async pipe
   currentEmail$ = this.currentEmail.asObservable();
   currentUsername$ = this.currentUsername.asObservable();
   currentProfilePicture$ = this.currentProfilePicture.asObservable()
+  currentRole$ = this.currentRole.asObservable();
 
   setEmail(email: string): void {
     this.currentEmail.next(email);
@@ -41,5 +43,13 @@ export class UserService {
 
   get profilePicture() {
     return this.currentProfilePicture.getValue() == null ? '' : this.currentProfilePicture.getValue();
+  }
+
+  set role(role_value: string) {
+    this.currentRole.next(role_value);
+  }
+
+  get role() {
+    return this.currentRole.getValue();
   }
 }

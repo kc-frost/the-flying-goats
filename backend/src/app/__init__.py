@@ -6,7 +6,7 @@ from app.extensions import cors, login_manager
 from app.db import get_connection
 
 from app.models import User
-from app.auth import if_admin
+from app.auth import if_admin, check_role
 
 def create_app(config_class=Config):
     """Instatiates app.
@@ -75,11 +75,17 @@ def load_user(user_id: str):
         result = cursor.fetchone()
 
     if result is not None:
+        role_value = "none"
+        if result['isStaff']:
+            role = check_role(result['email'])
+            role_value = str(role.get('role')) if 'err' not in role else "none"
+    
         return User(
             str(result['userID']), 
             result['username'], 
             result['email'], 
             if_admin(result['email']),
-            result['isStaff'])
+            result['isStaff'],
+            role_value)
     
     return None
