@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 
 from app.models import User
 
-from .service import find_user, if_admin, insert_user, check_ifpilot
+from .service import find_user, if_admin, insert_user, check_ifpilot, check_role
 from .validators import validate_email, validate_password
 
 # first param: name of parent folder
@@ -56,13 +56,22 @@ def login():
 
     result = find_user(email, password)
     if result is not None:
+        # check if theyre an admin
         is_admin = if_admin(result['email'])
+
+        # only check for role if they're staff
+        role_value = "none"
+        if result['isStaff']:
+            role = check_role(result['email'])
+            role_value = str(role.get('role')) if 'err' not in role else "none"
+
         user = User(
             str(result['userID']), 
             result['username'], 
             result['email'], 
             is_admin,
-            result['isStaff'])
+            result['isStaff'],
+            role_value)
 
         login_user(user)
 

@@ -98,3 +98,34 @@ def check_ifpilot(email: str) -> bool:
         cursor.execute(query, (email,))
         result = cursor.fetchone()
         return result is not None
+
+def check_role(staff_email: str):
+    """Get role of a staff via their email
+
+    Args:
+        staff_email (str): The email of a staff user
+
+    Returns:
+        str: Role of a staff
+    """    
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+            SELECT st.*, pe.position
+            FROM staff st
+            INNER JOIN positionenums pe on st.positionID = pe.positionID
+            WHERE email = %s
+            """
+
+            cursor.execute(query, (staff_email,))
+            result = cursor.fetchone()
+
+            if result is None:
+                return {"err": "user doesn't exist/user is not a staff"}
+        
+        except Exception as e:
+            return {"err": str(e)}
+
+    return {"role": result}
