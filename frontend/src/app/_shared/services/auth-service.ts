@@ -41,6 +41,7 @@ export class AuthService {
         // Save user details for app-wide use
         this.userService.setEmail(res.body.email);
         this.userService.setUsername(res.body.username);
+        this.userService.role = res.body.role;
 
         // Notify the rest of the app (guards) that the check-sesssion call completed
         this.authReady.next(true);

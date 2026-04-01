@@ -17,13 +17,16 @@ def upcoming_flights():
 @bp.route('/new-assignments-amount', methods=['GET'])
 @login_required
 def new_assignments_amount():
-    last_checked = request.args.get("since")
+    since = request.args.get("since")
+    until = request.args.get("until")
     staff_email = current_user.email
 
-    if last_checked is None:
+    if since is None:
         return jsonify({"err": "since parameter is required"}), 400
+    if until is None:
+        return jsonify({"err": "until parameter is required"}), 400
 
-    result = get_new_assignments_amount(last_checked, staff_email)
+    result = get_new_assignments_amount(since, until, staff_email)
 
     if isinstance(result, dict) and 'err' in result:
         return jsonify(result), 500

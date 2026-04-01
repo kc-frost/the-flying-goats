@@ -29,7 +29,8 @@ def check_session():
             "is_admin": current_user.is_admin,
             "is_staff": current_user.is_staff,
             "username": current_user.username,
-            "email": current_user.email
+            "email": current_user.email,
+            "role": current_user.role
         }), 200
     else:
         return jsonify({

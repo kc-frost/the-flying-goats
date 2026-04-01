@@ -128,4 +128,4 @@ def check_role(staff_email: str):
         except Exception as e:
             return {"err": str(e)}
 
-    return {"role": result}
+    return {"role": result['position']}

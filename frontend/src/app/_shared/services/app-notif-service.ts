@@ -15,20 +15,20 @@ export class AppNotifService {
   private ngZone = inject(NgZone);
   private authService = inject(AuthService);
   private userService = inject(UserService);
+
   private alertedFlights = new Set<string>();
   private lastChecked = new Date();
 
   startAlerts() {
     this.ngZone.runOutsideAngular(() => {
-      this.checkNewPilotAssignments(this.lastChecked);
+      this.checkUpcomingFlights();
       setInterval(() => {
         this.ngZone.run(() => {
           if (this.authService.getAuthenticated()) {
             this.checkUpcomingFlights();
-            this.checkNewPilotAssignments(this.lastChecked);
-            console.log(this.userService.role);
+            // console.log(this.userService.role);
+            if (this.userService.role == 'Pilot') this.checkNewPilotAssignments(this.lastChecked);
           }
-          // check if a user is a pilot
           });
         }, 10 * 1000);
       });
@@ -62,20 +62,30 @@ export class AppNotifService {
   }
 
   private checkNewPilotAssignments(lastChecked: Date) {
-    // update lastChecked
     this.lastChecked = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');
     const d = lastChecked;
-    const mysqlFormat = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const sinceFormat = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+    const until = new Date(lastChecked.getTime() + 4 * 60 * 1000);
+    const untilFormat = `${until.getFullYear()}-${pad(until.getMonth()+1)}-${pad(until.getDate())} ${pad(until.getHours())}:${pad(until.getMinutes())}:${pad(until.getSeconds())}`;
+
+
+    // please keep just in case for testing
+    // console.log("this.lastChecked:", this.lastChecked);
+    // console.log("lastChecked:", lastChecked);
 
     this.http.get<{amount: number}>(`${environment.api_url}/api/new-assignments-amount`,
       { params: {
-        since: mysqlFormat
+        since: sinceFormat,
+        until: untilFormat
       }}
     )
     .subscribe({
       next: (res) => {
-        this.showToast(`You have ${res.amount} new assignments!`, "View here");
+        if (res.amount > 0) {
+          this.showToast(`You have ${res.amount} new assignments!`, "View here");
+        }
       }
     })
   }

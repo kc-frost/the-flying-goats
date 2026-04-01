@@ -34,7 +34,7 @@ def get_upcoming_flights(user_id: str):
     
     return rows
 
-def get_new_assignments_amount(last_checked: str, staff_email: str):
+def get_new_assignments_amount(since: str, then:str, staff_email: str):
     """Get all new reservations assigned to a pilot since `last_checked` time
 
     Args:
@@ -55,7 +55,7 @@ def get_new_assignments_amount(last_checked: str, staff_email: str):
             JOIN schedule s on b.departSchedule = s.scheduleID
             JOIN flight f on s.flightID = f.IATA
             JOIN staff st on f.assignedPilot = st.staffID
-            WHERE b.bookingDate >= %s AND st.email = %s
+            WHERE b.bookingDate >= %s AND b.bookingDate <=%s AND st.email = %s
             
             UNION
             
@@ -64,10 +64,10 @@ def get_new_assignments_amount(last_checked: str, staff_email: str):
             JOIN schedule s on b.returnSchedule = s.scheduleID
             JOIN flight f on s.flightID = f.IATA
             JOIN staff st on f.assignedPilot = st.staffID
-            WHERE b.bookingDate >= %s AND st.email = %s
+            WHERE b.bookingDate >= %s AND b.bookingDate <=%s AND st.email = %s
             """
 
-            cursor.execute(query, (last_checked, staff_email, last_checked, staff_email,))
+            cursor.execute(query, (since, then, staff_email, since, then, staff_email,))
             rows = cursor.fetchall()
 
         except Exception as e:
