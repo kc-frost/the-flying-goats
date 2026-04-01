@@ -81,6 +81,7 @@ export class AuthService {
       tap((res: any) => {
         this.userService.setEmail(userProfile.get('email')!.value);
         this.userService.setUsername(res.body.username);
+        this.userService.role = res.body.role;
 
         this.setAuthenticatedTrue();
         if (res.body.is_admin) {

@@ -80,7 +80,8 @@ def login():
             "authenticated": True,
             "is_admin": current_user.is_admin,
             "is_staff": current_user.is_staff,
-            "username": current_user.username
+            "username": current_user.username,
+            "role": role_value
             }), 200
     else:
         # user doesn't exist
