@@ -148,7 +148,29 @@ insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, 
 ("TP1089", "AV44", "SigmaFlight", "B2", 9, 4, 24, 17),
 ("TP1091", "AW45", "UpsilonJet", "D2", 10, 1, 20, 3),
 ("TP1093", "AX46", "ChiHawk", "C3", 11, 2, 16, 4),
-("TP1095", "AY47", "OmegaAce", "D1", 12, 3, 16, 5);
+("TP1095", "AY47", "OmegaAce", "D1", 12, 3, 16, 5),
+-- added return routes (swapped origin/destination)
+("TP1006", "F101", "AtlasSprint", "C2", 6, 1, 28, 12),  -- was 1,6 now 6,1
+("TP1017", "L808", "CoastalAce", "B2", 5, 2, 8, 17),    -- was 2,5 now 5,2
+("TP1027", "Q313", "SwiftArrow", "A1", 2, 4, 28, 12),   -- was 4,2 now 2,4
+("TP1031", "S515", "TwilightAce", "C2", 3, 5, 32, 3),   -- was 5,3 now 3,5
+("TP1081", "AR40", "KappaAir", "A2", 9, 5, 4, 4),       -- was 5,9 now 9,5
+("TP1041", "X020", "MachRacer", "D3", 4, 7, 8, 17),     -- was 7,4 now 4,7
+("TP1043", "Y121", "CobaltJet", "D2", 8, 7, 8, 3),      -- was 7,8 now 8,7
+("TP1045", "Z222", "HorizonX", "C1", 9, 8, 20, 4),      -- was 8,9 now 9,8
+("TP1047", "AA23", "AltitudePro", "A3", 1, 9, 4, 5),    -- was 9,1 now 1,9
+("TP1049", "AB24", "BlackKite", "B1", 3, 10, 28, 10),   -- was 10,3 now 3,10
+("TP1051", "AC25", "MercuryWing", "A1", 2, 10, 12, 12), -- was 10,2 now 2,10
+("TP1053", "AD26", "CrimsonAce", "D3", 3, 11, 28, 17),  -- was 11,3 now 3,11
+("TP1055", "AE27", "BronzeArrow", "B3", 1, 11, 28, 3),  -- was 11,1 now 1,11
+("TP1057", "AF28", "DiamondAir", "D2", 4, 12, 28, 4),   -- was 12,4 now 4,12
+("TP1059", "AG29", "SapphireGlide", "C2", 5, 12, 20, 5),-- was 12,5 now 5,12
+("TP1061", "AH30", "AmethystWing", "D1", 4, 13, 32, 10),-- was 13,4 now 4,13
+("TP1063", "AI31", "OpalSky", "D3", 1, 13, 32, 12),     -- was 13,1 now 1,13
+("TP1065", "AJ32", "PeridotFlight", "C2", 2, 14, 8, 17),-- was 14,2 now 2,14
+("TP1067", "AK33", "QuartzSprint", "B3", 5, 14, 32, 3), -- was 14,5 now 5,14
+("TP1069", "AL34", "MarbleAce", "B2", 3, 15, 32, 4),    -- was 15,3 now 3,15
+("TP1071", "AM35", "SlateHawk", "D1", 1, 15, 32, 5); 
 
 -- schedule inserts
 insert into schedule (flightID, liftOff, landing) values
