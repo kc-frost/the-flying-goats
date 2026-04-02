@@ -39,6 +39,7 @@ export class PilotView implements OnInit {
     this.getPilotSchedule();
   }
 
+  pilotName?: string;
   getPilotSchedule(): void {
     this.http
       .get<Omit<PilotScheduleRow, "isReadOnly">[]>(
@@ -51,6 +52,10 @@ export class PilotView implements OnInit {
             isReadOnly: true,
           }));
 
+          if (rows.length > 0) {
+            const first = rows[0];
+            this.pilotName = `${first['fname'] ?? ''} ${first['lname'] ?? ''}`.trim();
+          }
           this.buildRollingCalendar();
           this.cdr.detectChanges();
         },
@@ -156,40 +161,48 @@ export class PilotView implements OnInit {
   getSelectedDayEvents(): PilotScheduleRow[] {
     return this.selectedDay?.events ?? [];
   }
+  // Changed to account for the change in attributes on the table (schedule used to return datetime, now just date for some reason. Don't remember doing that, but too late to change it)
 
-  getEventStartDate(event: PilotScheduleRow): Date | null {
-    const rawValue =
-      event["liftOff"] ??
-      event["liftoff"] ??
-      event["departure"] ??
-      event["departureDate"] ??
-      event["start"] ??
-      event["startDate"] ??
-      event["date"];
+  // Same with this onevf
+    getEventStartDate(event: PilotScheduleRow): Date | null {
+      const rawDate = event["departDate"];
+      const rawTime = event["liftOff"] ?? event["liftoff"];
 
-    if (!rawValue) {
-      return null;
+      if (!rawDate || !rawTime) return null;
+
+      const baseDate = new Date(rawDate);
+      if (isNaN(baseDate.getTime())) return null;
+
+      const timeParts = String(rawTime).split(":");
+      const hours = Number(timeParts[0] ?? 0);
+      const minutes = Number(timeParts[1] ?? 0);
+      const seconds = Number(timeParts[2] ?? 0);
+
+      const parsed = new Date(baseDate);
+      parsed.setHours(hours, minutes, seconds, 0);
+
+      return isNaN(parsed.getTime()) ? null : parsed;
     }
 
-    const parsed = new Date(rawValue);
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
+    getEventEndDate(event: PilotScheduleRow): Date | null {
+      const rawDate = event["departDate"];
+      const rawTime = event["landing"];
 
-  getEventEndDate(event: PilotScheduleRow): Date | null {
-    const rawValue =
-      event["landing"] ??
-      event["arrival"] ??
-      event["arrivalDate"] ??
-      event["end"] ??
-      event["endDate"];
+      if (!rawDate || !rawTime) return null;
 
-    if (!rawValue) {
-      return null;
+      const baseDate = new Date(rawDate);
+      if (isNaN(baseDate.getTime())) return null;
+
+      const timeParts = String(rawTime).split(":");
+      const hours = Number(timeParts[0] ?? 0);
+      const minutes = Number(timeParts[1] ?? 0);
+      const seconds = Number(timeParts[2] ?? 0);
+
+      const parsed = new Date(baseDate);
+      parsed.setHours(hours, minutes, seconds, 0);
+
+      return isNaN(parsed.getTime()) ? null : parsed;
     }
-
-    const parsed = new Date(rawValue);
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
 
   formatEventTime(event: PilotScheduleRow, type: "start" | "end"): string {
     const date =

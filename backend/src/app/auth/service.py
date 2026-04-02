@@ -89,13 +89,16 @@ def insert_user(data: dict) -> dict:
     
     return {"success": True}
 
-def check_ifpilot(email: str) -> bool:
+# I'm changing this method to return the userID instead of the email
+# It's easier to work with, and better because right now email isn't unique in the database, so it could return duplicates or multiple pilot schedules
+# Hopefully I'm not breaking anything
+def check_ifpilot(userID: str) -> bool:
     conn = get_connection()
     with conn.cursor() as cursor:
         query = """
-        select 1 from users join staff on staff.staffID = users.userID where users.email = %s and users.isStaff = true and staff.positionID = 2
+        select 1 from users join staff on staff.staffID = users.userID where users.userID = %s and users.isStaff = true and staff.positionID = 2
         """
-        cursor.execute(query, (email,))
+        cursor.execute(query, (userID,))
         result = cursor.fetchone()
         return result is not None
 

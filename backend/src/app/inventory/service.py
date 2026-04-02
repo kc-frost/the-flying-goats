@@ -10,7 +10,7 @@ def find_inventory():
     conn = get_connection()
     with conn.cursor() as cursor:
         cursor.execute("select * from inventorynames")
-        result = cursor.fetchall()
+        result = [dict(row) for row in cursor.fetchall()]
     return result
 
 """ 
@@ -109,7 +109,7 @@ def create_planes(data):
         try:
             cursor.execute(query, (data['ICAO'],))
             conn.commit()
-            result = cursor.fetchall()
+            result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
         except Exception as e:
@@ -122,12 +122,12 @@ def create_planes(data):
 def get_planes():
     conn = get_connection()
     query = """
-    select * from planeStatus
+    select * from planestatus
     """
     with conn.cursor() as cursor:
         try:
             cursor.execute(query)
-            result = cursor.fetchall()
+            result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
         except Exception as e:
@@ -144,7 +144,7 @@ def get_available_planes():
     with conn.cursor() as cursor:
         try:
             cursor.execute(query)
-            result = cursor.fetchall()
+            result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
         except Exception as e:
@@ -180,7 +180,7 @@ def delete_plane(data):
         try:
             cursor.execute(query, (data['ICAO'],))
             conn.commit()
-            result = cursor.fetchall()
+            result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
         except Exception as e:

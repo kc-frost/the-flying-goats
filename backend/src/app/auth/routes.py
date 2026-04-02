@@ -142,4 +142,3 @@ def check_pilot():
         return jsonify({
             "isPilot": False
         }), 403
-    

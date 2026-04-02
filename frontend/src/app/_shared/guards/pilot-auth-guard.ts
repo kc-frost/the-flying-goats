@@ -12,7 +12,13 @@ export const pilotAuthGuard: CanActivateFn = (route, state) => {
   }
 
   return authService.isPilot().pipe(
-    map(() => true),
+    map((res: any) => {
+      if (res.isPilot) {
+        return true;
+      }
+      alert("Only pilots can access this page.");
+      return false;
+    }),
     catchError(() => {
       alert("Only pilots can access this page.");
       return of(false);
