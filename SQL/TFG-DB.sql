@@ -1,8 +1,6 @@
-drop database TFG;
 create database TFG;
 use TFG;
-
-describe booking;
+select * from USERS;
 
 create table users(
     userID int primary key auto_increment,
@@ -69,7 +67,7 @@ create table airports(
 );
 
 create table flight(
-    IATA varchar(7)
+    IATA varchar(7),
     ICAO varchar(4),
     planeName varchar(255),
     gate varchar(2),
@@ -288,20 +286,28 @@ select h.ICAO, h.planeStatus
 from hanger h
 where h.ICAO in (select * from plane);
 
-create view pilotScheduleInfo as
-select
+create or replace view pilotScheduleInfo as
+select	
 -- User joins
     u.fname, u.lname,
 -- Staff joins
     s.staffID,
 -- flight joins
     f.IATA as flight,
+    f.origin,
+    f.destination,
+-- plane (via hanger)
+    h.ICAO as plane,
 -- schedule joins
-    sc.liftOff, sc.landing, sc.status
+    sc.liftOff, sc.landing, sc.status,
+-- booking join
+	b.departDate, b.bookingNumber
 from staff s
 join users u on u.userID = s.staffID
 join flight f on f.assignedPilot = s.staffID
-join schedule sc on sc.flightID = f.IATA;
+join schedule sc on sc.flightID = f.IATA
+left join hanger h on h.ICAO = f.ICAO
+left join booking b on b.departSchedule = sc.scheduleID;
 
 create or replace view available_flights as
 select

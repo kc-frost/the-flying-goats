@@ -172,9 +172,11 @@ insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, 
 ("TP1069", "AL34", "MarbleAce", "B2", 3, 15, 32, 4),    -- was 15,3 now 3,15
 ("TP1071", "AM35", "SlateHawk", "D1", 1, 15, 32, 5); 
 
+select * from pilotscheduleinfo;
+
 -- schedule inserts
 insert into schedule (flightID, liftOff, landing) values
-("TP1001", "10:06:07", "12:00:00"),
+("TP1001", "10:06:07", "23:00:00"),
 ("TP1002", "13:30:00", "15:05:00"),
 ("TP1003", "09:15:00", "10:25:00"),
 ("TP1004", "16:40:00", "18:10:00"),
