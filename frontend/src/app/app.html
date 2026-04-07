@@ -20,32 +20,34 @@
           <a routerLink="/dashboard">Dashboard</a>
           <img src="/header/navlink/navlink-arrow.svg" />
         </section>
+        <section class="nav-link"> 
+          <!-- lil div class to modify the modal without affecting anything else-->
+            <div class="modal">
+              <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
+              <img src="/header/navlink/navlink-arrow.svg"/>
+            </div>
+        </section>
+        <section class="nav-link"> 
+          <a routerLink="/view-appointments"> View Appointments</a>
+          <img src="/header/navlink/navlink-arrow.svg"/>
+        </section>
+        <section class="nav-link"> 
+          <a routerLink="/view-users"> View Users</a>
+          <img src="/header/navlink/navlink-arrow.svg"/>
+        </section>
       }
-      
+
       <section class="nav-link"> 
         <a routerLink="/book-flight"> Book a Flight</a>
         <img src="/header/navlink/navlink-arrow.svg" />
       </section>
-      
-      <section class="nav-link"> 
-        <!-- lil div class to modify the modal without affecting anything else-->
-          <div class="modal">
-            <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
-            <img src="/header/navlink/navlink-arrow.svg"/>
-          </div>
-      </section>
-      <section class="nav-link"> 
-        <a routerLink="/view-appointments"> View Appointments</a>
-        <img src="/header/navlink/navlink-arrow.svg"/>
-      </section>
-      <section class="nav-link"> 
-        <a routerLink="/view-users"> View Users</a>
-        <img src="/header/navlink/navlink-arrow.svg"/>
-      </section>
+
+      @if (userService.role === "Pilot") {
         <section class="nav-link"> 
           <a routerLink="/pilot-view"> Pilot Schedule</a>
           <img src="/header/navlink/navlink-arrow.svg"/>
       </section>
+      }
     </nav>
 
     <!-- User Profile -->
