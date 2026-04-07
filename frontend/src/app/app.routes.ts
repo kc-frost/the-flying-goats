@@ -5,6 +5,7 @@ import { Login } from './auth-dropdown/login/login';
 import { Register } from './auth-dropdown/register/register';
 import { DropdownProfile } from './auth-dropdown/profile/profile';
 import { ProfilePage } from './profile-page/profile-page';
+import { AdminDashboard } from './admin/admin-dashboard/admin-dashboard';
 import { Inventory } from './admin/inventory/inventory';
 import { BookFlight } from './book-flight/book-flight';
 import { userAuthGuard } from './_shared/guards/user-auth-guard';
@@ -41,6 +42,11 @@ export const routes: Routes = [
         path: 'profile',
         component: ProfilePage,
         canActivate: [userAuthGuard],
+    },
+    {
+        path: 'dashboard',
+        component: AdminDashboard,
+        canActivate: [userAuthGuard, adminAuthGuard],
     },
     {
         path: 'view-appointments',

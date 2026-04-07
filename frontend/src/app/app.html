@@ -14,10 +14,19 @@
 
     <!-- Navigation Links -->
     <nav class="nav-links-group">
+      <!-- Hide AdminDashboard component from non admins -->
+      @if (authService.getAdminStatus()) {
+        <section class="nav-link"> 
+          <a routerLink="/dashboard">Dashboard</a>
+          <img src="/header/navlink/navlink-arrow.svg" />
+        </section>
+      }
+      
       <section class="nav-link"> 
         <a routerLink="/book-flight"> Book a Flight</a>
         <img src="/header/navlink/navlink-arrow.svg" />
       </section>
+      
       <section class="nav-link"> 
         <!-- lil div class to modify the modal without affecting anything else-->
           <div class="modal">
