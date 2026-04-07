@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { About } from './about/about';
 import { Home } from './home/home';
 import { Login } from './auth-dropdown/login/login';
 import { Register } from './auth-dropdown/register/register';
@@ -32,6 +33,11 @@ export const routes: Routes = [
         path: '',
         component: Home,
     },
+    // public routes
+    {
+        path: 'about',
+        component: About
+    },
     // logged in views
     {
         path: 'book-flight',
@@ -43,6 +49,7 @@ export const routes: Routes = [
         component: ProfilePage,
         canActivate: [userAuthGuard],
     },
+    // admin dashboard
     {
         path: 'dashboard',
         component: AdminDashboard,
@@ -84,7 +91,7 @@ export const routes: Routes = [
         outlet: 'dropdown',
         component: DropdownProfile
     },
-    
+    // pilot only
     {
         path: 'pilot-view',
         component: PilotView,
