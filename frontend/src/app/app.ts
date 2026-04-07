@@ -4,10 +4,11 @@ import { AuthService } from './_shared/services/auth-service';
 import { UserService } from './_shared/services/user-service';
 import { OnInit } from '@angular/core';
 import { AppNotifService } from './_shared/services/app-notif-service';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, AsyncPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -27,7 +28,6 @@ export class App implements OnInit {
         console.log("CHECK-SESSION FAILED:", err);
       }
     });
-
 
   }
 

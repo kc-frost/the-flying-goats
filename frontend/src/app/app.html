@@ -15,7 +15,7 @@
     <!-- Navigation Links -->
     <nav class="nav-links-group">
       <!-- Hide AdminDashboard component from non admins -->
-      @if (authService.getAdminStatus()) {
+      @if (authService.adminStatus$ | async) {
         <section class="nav-link"> 
           <a routerLink="/dashboard">Dashboard</a>
           <img src="/header/navlink/navlink-arrow.svg" />
@@ -42,7 +42,7 @@
         <img src="/header/navlink/navlink-arrow.svg" />
       </section>
 
-      @if (userService.role === "Pilot") {
+      @if ((userService.currentRole$ | async ) === "Pilot") {
         <section class="nav-link"> 
           <a routerLink="/pilot-view"> Pilot Schedule</a>
           <img src="/header/navlink/navlink-arrow.svg"/>

@@ -24,10 +24,10 @@ export class DropdownProfile {
   }
 
   backToLogin() {
-    this.userService.reset();
     this.authService.logout().subscribe({
       next: () => {
         this.router.navigate(['']);
+        this.userService.reset();
       }
     });
   }
