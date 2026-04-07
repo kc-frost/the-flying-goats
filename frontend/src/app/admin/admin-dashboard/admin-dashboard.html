@@ -7,9 +7,27 @@
 </section>
 
 <main>
-  <div class="modal">
-    <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
-  </div>
-  <a routerLink="view-appointments"> View Appointments</a>
-  <a routerLink="view-users"> View Users</a>
+  <header>
+    <h1>Admin Tasks</h1>
+  </header>
+  <section class="links">
+    <div class="nav-box" [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">
+      <img src="/book-flight/calendar.svg" />
+      <div class="modal">
+       <span class="nav-title">Manage Inventory</span>
+      </div>
+    </div>
+    <div class="nav-box" [routerLink]="['view-appointments']">
+      <img src="/book-flight/calendar.svg" />
+      <span class="nav-title">All Appointments</span>
+    </div>
+    <div class="nav-box" [routerLink]="['view-users']">
+      <img src="/book-flight/calendar.svg" />
+      <span class="nav-title">All Users</span>
+    </div>
+    <div class="nav-box" [routerLink]="['view-users']">
+      <img src="/book-flight/calendar.svg" />
+      <span class="nav-title">Analytics</span>
+    </div>
+  </section>
 </main>
