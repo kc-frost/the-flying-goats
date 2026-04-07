@@ -19,6 +19,13 @@ export class UserService {
   currentProfilePicture$ = this.currentProfilePicture.asObservable()
   currentRole$ = this.currentRole.asObservable();
 
+  reset(): void {
+    this.currentEmail.next("");
+    this.currentUsername.next("");
+    this.currentProfilePicture.next("");
+    this.currentRole.next("");
+  }
+
   setEmail(email: string): void {
     this.currentEmail.next(email);
   }
