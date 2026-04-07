@@ -47,16 +47,26 @@ export const routes: Routes = [
         path: 'dashboard',
         component: AdminDashboard,
         canActivate: [userAuthGuard, adminAuthGuard],
-    },
-    {
-        path: 'view-appointments',
-        component: ViewAppointments,
-        canActivate: [userAuthGuard, adminAuthGuard],
-    },
-    {
-        path: 'view-users',
-        component: ViewUsers,
-        canActivate: [userAuthGuard, adminAuthGuard],
+        canActivateChild: [userAuthGuard, adminAuthGuard],
+        children: [
+            // modal outlet
+            {
+                path: 'inventory',
+                outlet: 'modal',
+                component: Inventory,
+                canActivate: [userAuthGuard, adminAuthGuard],
+            },
+            {
+                path: 'view-appointments',
+                component: ViewAppointments,
+                canActivate: [userAuthGuard, adminAuthGuard],
+            },
+            {
+                path: 'view-users',
+                component: ViewUsers,
+                canActivate: [userAuthGuard, adminAuthGuard],
+            },
+        ]
     },
     // dropdown outlet
     {
@@ -75,13 +85,6 @@ export const routes: Routes = [
         component: DropdownProfile
     },
     
-    // modal outlet
-    {
-        path: 'inventory',
-        outlet: 'modal',
-        component: Inventory,
-        canActivate: [userAuthGuard, adminAuthGuard],
-    },
     {
         path: 'pilot-view',
         component: PilotView,

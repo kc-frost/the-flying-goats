@@ -1,1 +1,15 @@
-<p>admin-dashboard works!</p>
+<section class="outlets">
+  <!-- Loads the other non-inventory components here -->
+  <router-outlet />
+  <div class="modal-layer">
+    <router-outlet name="modal"></router-outlet>
+  </div>
+</section>
+
+<main>
+  <div class="modal">
+    <a [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">View Inventory</a>
+  </div>
+  <a routerLink="view-appointments"> View Appointments</a>
+  <a routerLink="view-users"> View Users</a>
+</main>

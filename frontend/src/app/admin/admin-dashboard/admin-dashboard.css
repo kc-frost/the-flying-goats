@@ -1,0 +1,9 @@
+.modal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+/* makes the layer invisible */
+.modal-layer:empty {
+    display:none
+}

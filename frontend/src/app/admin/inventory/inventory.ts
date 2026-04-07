@@ -223,7 +223,7 @@ closePlaneModal(): void {
 
 
   closeModal(): void {
-    this.router.navigate([{ outlets: { modal: null } }]);
+    this.router.navigate(['dashboard', { outlets: { modal: null } }]);
   }
 
   enableEditing(item: InventoryRow): void {
