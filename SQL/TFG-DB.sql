@@ -1,6 +1,5 @@
 create database TFG;
 use TFG;
-select * from USERS;
 
 create table users(
     userID int primary key auto_increment,
@@ -17,8 +16,8 @@ create table users(
 );
 
 -- create trigger for this
-create table deletedUsers(
-userID int primary key auto_increment,
+create table userHistory(
+userID int primary key,
 phoneNumber char(10) not null,
 fname varchar(255) not null,
 lname varchar(255) not null,
@@ -27,7 +26,11 @@ email varchar(255) not null,
 password varchar(255) not null,
 isStaff boolean default false,
 bio text,
-registeredDate datetime
+registeredDate datetime,
+-- TODO: Edit trigger for this, shouldn't be automatic
+deletionDate datetime,
+-- update existing view below, whatever tf I named it, to change enum status to one of these
+accountStatus enum("Deleted", "Registered")
 );
 
 create table positionenums (
@@ -37,8 +40,15 @@ position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned")
 
 create table staff(
 staffID int primary key,
-email varchar(255) references users(email),
+email varchar(255) references users(email) ,
 positionID int default 5 references positionenums(positionID)
+);
+
+create table staffHistory(
+staffID int primary key,
+email varchar(255) not null,
+positionID int not null,
+accountStatus enum ("Deleted", "Registered")
 );
 
 create table plane(
@@ -143,6 +153,10 @@ create table booking(
         references planeseat(seatNumber, scheduleID)
 );
 
+-- Will remember ALL bookings,
+-- python will change cancellation status,
+-- trigger will detect updates to the bookingStatus and update cancellationDate and cancelledBy,
+-- trigger will insert that into cancellationNotifs
 create table bookingHistory(
     bookingNumber int primary key,
     userID int,
@@ -154,7 +168,10 @@ create table bookingHistory(
     returnDate date,
     bookingDate datetime,
     bookingStatus enum("Cancelled", "Completed"),
-    assignedPilot int
+    -- TODO: create a trigger for this so we can track dates
+    cancellationDate datetime default null,
+    -- This is the userID/staffID of WHOM cancelled the ID. Mostly likely, this is going to be an update on the python side. Gunna think about logistics later, but can't exactly be trigger. Mostly likely going to default to "Null", and updated on python side
+    cancelledBy int default null
 );
 
 create table item (
@@ -194,6 +211,13 @@ create table inventory(
 itemID int primary key,
 quantity int check (quantity >= 0),
 constraint fk_inventory_item foreign key (itemID) references item(itemID) on delete cascade
+);
+
+-- After deletion/cancellation of an appointment
+create table cancellationNotifs(
+userID int primary key,
+bookingID int, -- This is the ID of what was cancelled. A trigger, after deletion, will insert ALL userIDs related the bookingID EXCLUDING the ID of the one who cancelled it.
+Seen boolean default false -- Will be set in python
 );
 
 -- create table payment
@@ -392,6 +416,11 @@ begin
     end if;
 end//
 
+create trigger rememberStaff
+after insert on staff
+for each row 
+insert into staffHistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered");
+
 create trigger enforceAvailablePilot
 before insert on flight
 for each row
@@ -462,12 +491,12 @@ begin
     end if;
 end//
 
-create trigger rememberDeletedUser
-before delete on users
+create trigger rememberUser
+after insert on users
 for each row
-begin
-insert into deletedUsers values(old.userID, old.phoneNumber, old.fname, old.lname, old.username, old.email, old.password, old.isStaff, old.bio, old.registeredDate);
-end//
+insert into userHistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate, deletionDate, accountStatus)
+values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate, null, "Registered");
+
 
 create trigger validReservationChange
 before update on booking
@@ -581,44 +610,6 @@ begin
         set new.status = 'Grounded';
     else
         set new.status = 'Grounded';
-    end if;
-end//
-
--- This will remember old bookings after the procedure call, remembering the plane and the pilot assigned aswell.
-create trigger rememberBookingsBeforeClearProcedureCall
-before update on flight
-for each row
-begin
-    if old.assignedPilot is not null
-       and new.assignedPilot is null
-       and not exists (
-            select 1
-            from bookingHistory
-            where flightID = old.IATA
-       )
-    then
-        insert into bookingHistory (
-            bookingNumber,
-            userID,
-            flightID,
-            seat,
-            bookingDate,
-            assignedPilot,
-            bookingStatus
-        )
-        select
-            b.bookingNumber, b.userID,
-            ds.flightID,
-            b.departSeat,
-            b.bookingDate,
-            old.assignedPilot,
-            if(ds.landing is not null and now() >= ds.landing,
-               'Completed',
-               'Cancelled')
-        from booking b
-        join schedule ds
-            on ds.scheduleID = b.departSchedule
-        where ds.flightID = old.IATA;
     end if;
 end//
 
