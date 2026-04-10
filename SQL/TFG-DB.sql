@@ -28,14 +28,14 @@ isStaff boolean default false,
 bio text,
 registeredDate datetime,
 -- TODO: Edit trigger for this, shouldn't be automatic
-deletionDate datetime,
+deletionDate datetime default null,
 -- update existing view below, whatever tf I named it, to change enum status to one of these
-accountStatus enum("Deleted", "Registered")
+accountStatus enum("Deleted", "Registered") default "Registered"
 );
 
 create table positionenums (
 positionID int primary key auto_increment, 
-position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned") default "Unassigned"
+position enum("Flight Attendent", "Pilot", "Co-Pilot", "Security", "Unassigned", "Admin") default "Unassigned"
 );
 
 create table staff(
@@ -48,11 +48,14 @@ create table staffHistory(
 staffID int primary key,
 email varchar(255) not null,
 positionID int not null,
+deletionDate datetime default null,
 accountStatus enum ("Deleted", "Registered")
 );
 
+-- Honestly why did I not add planeName to plane in the first place
 create table plane(
-ICAO varchar(4) primary key
+ICAO varchar(4) primary key,
+planeName varchar(255)
 );
 
 create table hanger(
@@ -76,26 +79,19 @@ create table airports(
         foreign key (regionID) references regions(regionID)
 );
 
+-- Cleaned up constraints, no longer has a composite primary key, constraint on capacity now on attribute, not allowing an empty plane.
 create table flight(
-    IATA varchar(7),
+    IATA varchar(7) primary key,
     ICAO varchar(4),
-    planeName varchar(255),
     gate varchar(2),
     origin int,
     destination int,
-    capacity int,
+    capacity int check (capacity <= 36 and capacity > 0),
     assignedPilot int,
-    primary key(IATA, origin, destination),
-    constraint chk_capacity
-        check (capacity <= 36 and capacity >= 0 and capacity % 4 = 0),
-    constraint fk_staffID
-        foreign key (assignedPilot) references staff(staffID),
-    constraint fk_planeICAO
-        foreign key (ICAO) references plane(ICAO),
-    constraint fk_flight_origin
-        foreign key (origin) references airports(airportID),
-    constraint fk_flight_destination
-        foreign key (destination) references airports(airportID)
+    constraint ensure_pilot_exists foreign key (assignedPilot) references staff(staffID),
+    constraint ensure_plane_exists foreign key (ICAO) references plane(ICAO), 
+    constraint ensure_flight_origin_exists foreign key (origin) references airports(airportID),
+    constraint ensure_flight_destination_exists foreign key (destination) references airports(airportID)
 );
 -- On time: 1 hour before take off
 -- Boarding: 30 minutes before take off
@@ -104,11 +100,14 @@ create table flight(
 -- Grounded: 30 minutes after "end" of flight
 create table schedule(
     scheduleID int primary key auto_increment,
-    flightID varchar(7),
-    liftOff time,
-    landing time,
+    flightID varchar(7) not null,
+    liftOff datetime not null,
+    landing datetime not null,
     status enum('On Time', 'Delayed', 'Boarding', 'Taxiing', 'Airborne', 'Landing', 'Grounded'),
-    constraint fk_schedule_flight foreign key (flightID) references flight(IATA)
+    constraint ensure_flight_exists foreign key (flightID) references flight(IATA),
+    -- Don't know why I didn't add this earlier, but a quick constraint to prevent liftOff being before landing
+    -- Honestly with how we have frontend built, this shouldn't really do anything, but it's nice to just have
+    constraint ensure_schedule_times check (landing > liftoff)
 );
 
 create table flightclass(
@@ -131,43 +130,36 @@ create table planeseat(
 -- A table with all the info in one for the view appointment part and cause it's cleaner
 create table booking(
     bookingNumber int primary key auto_increment,
-    bookingDate datetime,
-    userID int,
-    departSeat varchar(3),
-    returnSeat varchar(3),
-    departDate date,
-    departSchedule int not null,
-    returnDate date,
-    returnSchedule int not null,
-    constraint fk_booking_user
-        foreign key (userID) references users(userID),
-    constraint fk_depart_schedule
-        foreign key (departSchedule) references schedule(scheduleID),
-    constraint fk_return_schedule
-        foreign key (returnSchedule) references schedule(scheduleID),
-    constraint fk_departDetails
-        foreign key (departSeat, departSchedule)
-        references planeseat(seatNumber, scheduleID),
-    constraint fk_returnDetails
-        foreign key (returnSeat, returnSchedule)
-        references planeseat(seatNumber, scheduleID)
+    -- Found out this was a thing, going to delete the trigger doing this later
+    bookingDate datetime default current_timestamp,
+    userID int not null,
+    departSeat varchar(3) not null,
+    returnSeat varchar(3) not null,
+    departScheduleID int not null,
+    returnScheduleID int not null,
+    constraint ensure_booking_user_exists foreign key (userID) references users(userID),
+    constraint ensure_depart_schedule_exists foreign key (departScheduleID) references schedule(scheduleID),
+    constraint ensure_return_schedule_exists foreign key (returnScheduleID) references schedule(scheduleID),
+    constraint ensure_depart_seat_exists foreign key (departSeat, departScheduleID) references planeseat(seatNumber, scheduleID),
+    constraint ensure_return_seat_exists foreign key (returnSeat, returnScheduleID) references planeseat(seatNumber, scheduleID)
 );
 
--- Will remember ALL bookings,
--- python will change cancellation status,
--- trigger will detect updates to the bookingStatus and update cancellationDate and cancelledBy,
--- trigger will insert that into cancellationNotifs
-create table bookingHistory(
+-- python will change cancelledBy,
+create table bookinghistory(
     bookingNumber int primary key,
-    userID int,
-    departFlightID varchar(7),
-    returnFlightID varchar(7),
-    departSeat varchar(3),
-    returnSeat varchar(3),
-    departDate date,
-    returnDate date,
     bookingDate datetime,
-    bookingStatus enum("Cancelled", "Completed"),
+    userID int not null,
+    departSeat varchar(3) not null,
+    returnSeat varchar(3) not null,
+    departScheduleID int not null,
+    returnScheduleID int not null,
+    departLiftOff datetime not null,
+    departLanding datetime not null,
+    returnLiftOff datetime not null,
+    returnLanding datetime not null,
+    bookingStatus enum("Cancelled", "Completed", "In Progress") not null default "In Progress",
+    -- possibly needed for archiving, displaying old completed flights and when they were made
+	archiveDate datetime default current_timestamp,
     -- TODO: create a trigger for this so we can track dates
     cancellationDate datetime default null,
     -- This is the userID/staffID of WHOM cancelled the ID. Mostly likely, this is going to be an update on the python side. Gunna think about logistics later, but can't exactly be trigger. Mostly likely going to default to "Null", and updated on python side
@@ -217,8 +209,27 @@ constraint fk_inventory_item foreign key (itemID) references item(itemID) on del
 create table cancellationNotifs(
 userID int primary key,
 bookingID int, -- This is the ID of what was cancelled. A trigger, after deletion, will insert ALL userIDs related the bookingID EXCLUDING the ID of the one who cancelled it.
-Seen boolean default false -- Will be set in python
+primary key(userID, bookingID),
+constraint ensure_user_exists foreign key (userID) references users(userID)
 );
+
+-- no idea how I'ma do this
+create table planeArrivalNotifs(
+userID int,
+scheduleID int,
+primary key(userID, scheduleID),
+constraint ensure_flight_exists foreign key (scheduleID) references schedule(scheduleID)
+);
+
+create table pilotAssignmentNotifs(
+userID int,
+flightID varchar(7),
+primary key(userID, flightID),
+constraint ensure_pilot_exists foreign key (userID) references flight(assignedPilot),
+constraint ensure_flight_exists foreign key (flightID) references flight(IATA)
+);
+
+
 
 -- create table payment
 
@@ -252,10 +263,7 @@ b.bookingNumber as bookingNumber, b.userID as userID, b.bookingDate as reservati
 -- Still booking, but these are for the seat assignment for the depart and return
 b.departSeat as departSeatNumber, b.returnSeat as returnSeatNumber,
 -- return and depart travelling dates
-b.departDate as departDate, b.returnDate as returnDate,
--- ScheduleIDs for both depart and return
-b.departSchedule as departScheduleID, b.returnSchedule as returnScheduleID,
--- usersD
+-- users
 u.username as username,
 
 -- only the depart info
@@ -275,14 +283,14 @@ from booking b
 -- joins
 left join users u using(userID)
 -- Joining for depart schedule, connecting through departSchedule (an id)
-left join schedule ds on ds.scheduleID = b.departSchedule
+left join schedule ds on ds.scheduleID = b.departScheduleID
 -- get the origin flightID
 left join flight df on df.IATA = ds.flightID
 -- Duplicate joins for the names of the airports on both destination and origin
 left join airports dfAO on dfAO.airportID = df.origin
 left join airports dfAD on dfAD.airportID = df.destination
 -- joining for the return schedule, connecting through return this time
-left join schedule rs on rs.scheduleID = b.returnSchedule
+left join schedule rs on rs.scheduleID = b.returnScheduleID
 -- actually getting the return flight
 left join flight rf on rf.IATA = rs.flightID
 -- duplicate joisn for the names of the airports on for the rturn destination and origin
@@ -291,24 +299,24 @@ left join airports rfAD on rfAD.airportID = rf.destination;
 
 
 -- view for view all users 
-create view userreservationsummary as
+create or replace view userreservationsummary as
 select
 u.userID, u.email, u.username,
 datediff(curdate(), date(u.registeredDate)) as registerLengthDays, count(b.bookingNumber) as totalReservations,
-sum(case when ds.liftOff < now() and (rs.liftOff is null or rs.liftOff < now()) then 1 else 0 end) as totalPastReservations,
-sum(case when ds.liftOff >= now() or (rs.liftOff is not null and rs.liftOff >= now()) then 1 else 0 end) as totalFutureReservations
+sum(case when ds.landing < now() and (rs.landing is null or rs.landing < now()) then 1 else 0 end) as totalPastReservations,
+sum(case when ds.liftOff >= now() or (rs.landing is not null and rs.landing >= now()) then 1 else 0 end) as totalFutureReservations
 from users u
 left join booking b on u.userID = b.userID
-left join schedule ds on b.departSchedule = ds.scheduleID
-left join schedule rs on b.returnSchedule = rs.scheduleID
+left join schedule ds on b.departScheduleID = ds.scheduleID
+left join schedule rs on b.returnScheduleID = rs.scheduleID
 group by u.userID, u.email, u.username, u.registeredDate;
 
 -- Grabs the ICAO and plane status from hanger as long as it exists in the plane table
 -- This way, we can get planes that are available for use without grabbing from the memory table directly
-create view planeStatus as
+create or replace view planeStatus as
 select h.ICAO, h.planeStatus
 from hanger h
-where h.ICAO in (select * from plane);
+where h.ICAO in (select ICAO from plane);
 
 create or replace view pilotScheduleInfo as
 select	
@@ -323,24 +331,22 @@ select
 -- plane (via hanger)
     h.ICAO as plane,
 -- schedule joins
-    sc.liftOff, sc.landing, sc.status,
--- booking join
-	b.departDate, b.bookingNumber
+    sc.liftOff, sc.landing, sc.status
 from staff s
 join users u on u.userID = s.staffID
 join flight f on f.assignedPilot = s.staffID
 join schedule sc on sc.flightID = f.IATA
-left join hanger h on h.ICAO = f.ICAO
-left join booking b on b.departSchedule = sc.scheduleID;
+left join hanger h on h.ICAO = f.ICAO;
 
+-- changed from time format to date format, remember to include in commit later
 create or replace view available_flights as
 select
 s.scheduleID,
 ao.IATA as origin_IATA, 
 ad.IATA as destination_IATA, 
 f.IATA, f.capacity,
-TIME_FORMAT(s.liftOff, "%H:%i") as liftOff, 
-TIME_FORMAT(s.landing, "%H:%i") as landing, 
+DATE_FORMAT(s.liftOff, "%Y-%m-%d %H:%i") as liftOff, 
+DATE_FORMAT(s.landing, "%Y-%m-%d %H:%i") as landing, 
 CONCAT(TIMESTAMPDIFF(hour, liftOff, landing), "h ", MOD(TIMESTAMPDIFF(minute, liftOff, landing), 60), 'm') as duration
 from flight f
 join airports ao on f.origin = ao.airportID
@@ -356,18 +362,19 @@ delimiter //
 -- Resets a pilots and planes availability after a schedule is done
 create procedure clearpilotandflightavailability()
 begin
-    update hanger
-    join flight f on hanger.ICAO = f.ICAO
+    update hanger h
+    join flight f on h.ICAO = f.ICAO
     join schedule s on s.flightID = f.IATA
-    set hanger.planeStatus = 'Available'
-    where schedule.landing is not null
-      and now() >= schedule.landing;
+    set h.planeStatus = 'Available'
+    where s.landing is not null
+    -- Found out why this wasn't working, s was instead schedule for some reason
+      and now() >= s.landing;
 
     update flight f
     join schedule s on s.flightID = f.IATA
     set f.assignedPilot = null
-    where schedule.landing is not null
-      and now() >= schedule.landing;
+    where s.landing is not null
+      and now() >= s.landing;
 end//
 delimiter ;
 
@@ -416,10 +423,16 @@ begin
     end if;
 end//
 
+-- WORK ON THIS
 create trigger rememberStaff
 after insert on staff
 for each row 
 insert into staffHistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered");
+
+create trigger deletedStaff
+after delete on staff
+for each row
+update staffHistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID;
 
 create trigger enforceAvailablePilot
 before insert on flight
@@ -494,31 +507,24 @@ end//
 create trigger rememberUser
 after insert on users
 for each row
-insert into userHistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate, deletionDate, accountStatus)
-values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate, null, "Registered");
+-- FIX THIS
+insert into userHistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
+values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate);
 
-
-create trigger validReservationChange
-before update on booking
-for each row 
+create trigger deletedUserAndStaff
+after delete on users
+for each row
 begin
-	if new.bookingDate < CURDATE()
+	if old.isStaff = true
 		then
-			signal sqlstate '45000'
-			set message_text = "Updated reservation isn't valid";
+			delete from staff where old.userID = staffID;
 	end if;
-    if exists (
-    select 1
-    from booking b
-    where b.bookingNumber <> old.bookingNumber
-    and ((b.departSchedule = new.departSchedule and b.departSeat = new.departSeat)
-    or (b.returnSchedule = new.returnSchedule and b.returnSeat = new.returnSeat))
-    )
-		then
-			signal sqlstate '45000'
-            set message_text = "This seat is already taken";
-	end if;
+    update userHistory set accountStatus = "Deleted", deletionDate = curdate() where userID = old.userID;
+    
 end//
+
+
+-- got rid of validReservationChange cause it got deprecated in my DB changes, this comments gunna get removed in later commits next sprint
 
 create trigger storePlaneInHanger
 after insert on plane
@@ -613,16 +619,39 @@ begin
     end if;
 end//
 
--- To remember old bookings before deletion
-create trigger rememberBookingBeforeDelete
-before delete on booking
+-- To remember ALL bookings
+-- new.departLiftOff, new.departLanding, new.returnLiftOff, new.returnLanding,
+create trigger RememberBookings
+after insert on booking
+for each row
+	insert into bookingHistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
+    select new.bookingNumber, new.bookingDate, new.userID, new.departSeat, new.returnSeat, new.departScheduleID, new.returnScheduleID, ds.liftOff, ds.landing, rs.liftOff, rs.landing
+    from schedule ds
+    join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID;
+
+
+create trigger updateBookingHistoryAfterBookingCancellation
+after delete on booking
+for each row
+	update bookingHistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber;
+    
+create trigger createCancellationNotif
+after delete on booking
 for each row
 begin
-	insert into bookingHistory(bookingNumber, userID, departFlightID, returnFlightID, departSeat, returnSeat, departDate, returnDate, bookingDate, bookingStatus, assignedPilot) 
-    select old.bookingNumber, old.userID, ds.flightID, rs.flightID, old.departSeat, old.returnSeat, old.departDate, old.returnDate, old.bookingDate, "Cancelled", df.assignedPilot
-    from schedule ds
-    join flight df on df.IATA = ds.flightID
-    join schedule rs on rs.scheduleID = old.returnSchedule
-    where ds.scheduleID = old.departSchedule;
+    insert into cancellationNotifs(userID, bookingID)
+    values(old.userID, old.bookingNumber);
 end//
+
+create trigger createPilotAssignmentNotifAfterInsert
+after insert on flight
+for each row
+begin
+    if new.assignedPilot is not null then
+        insert into pilotAssignmentNotifs(userID, flightID)
+        values(new.assignedPilot, new.IATA);
+    end if;
+end//
+
 delimiter ;
+

@@ -4,22 +4,22 @@ import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../../_environments/environment";
 import { DatePipe } from "@angular/common";
 
+// Changed cause, you guessed it, DB changes. New datatypes, general attributes, and new names
 type ReservationRow = {
   bookingNumber: number;
   userID: number;
   username: string;
-  departSeat: string;
-  returnSeat: string;
-  seatNumber: number;
-  departClass: string;
-  returnClass: string;
-  bookingDate: string;
-  departIATA: string;
-  returnIATA: string;
-  departLift: string;
-  returnLift: string;
+  departSeatNumber: string;
+  returnSeatNumber: string;
+  reservationDate: string;
+  departFlight: string;
+  returnFlight: string;
+  departLiftOffDate: string;
+  returnLiftOffDate: string;
   departOrigin: string;
+  departDestination: string;
   returnOrigin: string;
+  returnDestination: string;
 };
 
 @Component({

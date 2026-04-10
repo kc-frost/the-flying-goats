@@ -71,3 +71,4 @@ select count(*) from bookingHistory where bookingStatus = "Cancelled" and month(
 
 -- Cancellations this month by category(user, staff, admin)
 -- Gunna be a big boy that I can't really do right now because "admin" isn't a roll, it's one user. Will do later, but I'm planning on using a window function where isStaff from user table is a factor
+
