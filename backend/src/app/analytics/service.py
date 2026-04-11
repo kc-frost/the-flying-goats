@@ -28,3 +28,31 @@ def get_most_active_users():
             return {"error": str(e)}
         
         return rows
+
+def get_reservations_this_month():
+    """Get all reservations that were made within the current month, NOT the last 30 days
+
+    Returns:
+        dict: Number of reservations made this month 
+    """    """"""
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT COUNT(*) as `monthly_reservations`
+                FROM `reservationticket`
+                WHERE MONTH(`reservationDate`) = MONTH(CURDATE())
+                AND YEAR(`reservationDate`) = YEAR(CURDATE())
+            """
+
+            cursor.execute(query,)
+            row = cursor.fetchone()
+
+            if row is None:
+                return {"message": "no reservations made this month"}
+
+        except Exception as e:
+            return {"err": str(e)}
+        
+        return row

@@ -16,9 +16,12 @@ export class Analytics {
   private top3Users = new BehaviorSubject<{ user: string, amount: number }[]>([]);
   top3Users$ = this.top3Users.asObservable();
 
+  private reservationsThisMonth = new BehaviorSubject<number>(0);
+  reservationsThisMonth$ = this.reservationsThisMonth.asObservable(); 
+
   ngOnInit() {
     this.getMostActiveUsers();
-
+    this.getReservationsThisMonth();
   }
 
   getMostActiveUsers() {
@@ -32,6 +35,15 @@ export class Analytics {
         );
       }
     });
+  }
+
+  getReservationsThisMonth() {
+    this.analytics.getReservationsThisMonth().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.reservationsThisMonth.next(res.monthly_reservations);
+      }
+    })
   }
 
   longestRegisteredUsers = [
