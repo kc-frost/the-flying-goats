@@ -1,1 +1,111 @@
-<p>analytics works!</p>
+<main>
+    <header>
+        <h1>Analytics</h1>
+    </header>
+
+    <section class="analytics">
+        <!-- USER STATS -->
+        <div class="stat-group">
+            <!-- top 3 users who book the most often -->
+            <details>
+                <summary>Top 3 Most Active Users</summary>
+                <ul>
+                    @for (row of top3Users; track $index) {
+                        <li>
+                            <strong>{{row.user}}</strong>
+                            <span>
+                                <i>{{row.amt}}</i>
+                                reservations
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </details>
+
+            <!-- users who have been registered the longest -->
+            <details>
+                <summary>Longest Registered Users</summary>
+                <ul>
+                    @for (row of longestRegisteredUsers; track $index) {
+                        <li>
+                            <strong>{{row.user}}</strong>
+                            <span>
+                                <i>{{row.days}}</i>
+                                days
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </details>
+
+            <!-- users who made a reservation this month -->
+            <details>
+                <summary>Active Users This Month</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">5</p>
+                <p style="text-align: center; font-size: small;">booked flights as of this month</p>
+            </details>
+        </div>
+
+        <!-- RESERVATION STATS -->
+        <div class="stat-group">
+            <!-- amount of reservations this month (not last 30 days) -->
+            <details>
+                <summary>Reservations This Month</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">69</p>
+                <p style="text-align: center; font-size: small;">as of this month</p>
+            </details>
+
+            <!-- all reservations this year categorized by month -->
+            <details>
+                <summary>All Reservations This Year</summary>
+                <ul>
+                    @for (row of reservationsThisYear; track $index) {
+                        <li>
+                            <strong>{{row.month}}</strong>
+                            <span>
+                                <i>{{row.amt}}</i>
+                                reservations
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </details>
+        </div>
+
+        <!-- CANCELLATION STATS -->
+        <div class="stat-group">
+            <!-- total cancellations -->
+            <details>
+                <summary>Total Cancellations</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">69</p>
+                <p style="text-align: center; font-size: small;">rip...</p>
+            </details>
+
+            <!-- total cancellations this month -->
+            <details>
+                <summary>Total Cancellations This Month</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">69</p>
+                <p style="text-align: center; font-size: small;">bye bye...</p>
+            </details>
+        </div>
+
+        <!-- STAFF STATS -->
+        <div class="stat-group">
+            <!-- top 3 STAFF who book the most often -->
+            <details>
+                <summary>Top 3 Staff</summary>
+                <ul>
+                    @for (row of top3Users; track $index) {
+                        <li>
+                            <strong>{{row.user}}</strong>
+                            <span>
+                                <i>{{row.amt}}</i>
+                                reservations
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </details>
+        </div>
+    </section>
+</main>

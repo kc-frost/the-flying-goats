@@ -1,0 +1,70 @@
+main {
+    padding: 55px;
+    position: relative;
+
+    min-height: 100vh;
+    background-image: url('/analytics/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    
+    color: whitesmoke;
+}
+
+
+header {
+    margin-bottom: 45px;
+}
+
+.analytics {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 50px;
+    
+    .stat-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 50px;
+        flex-wrap: wrap;
+    }
+    
+    details {
+        border-radius: 5px;
+        backdrop-filter: blur(15px);
+        padding: 10px;
+        height: max-content;
+        border-top: 2px solid var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        overflow: hidden;
+
+        &:open {
+            background-color: rgba(0,0,0, 0.1);
+        }
+
+        ul {
+            margin-top: 10px;
+        }
+        
+        ul li {
+            display: flex;
+            justify-content: space-between;
+        }
+
+    }
+
+    summary {
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        
+        transition: background-color 400ms;
+
+        &:hover {
+            background-color: rgba(0,0,0, 0.1);
+        }
+    }
+}
