@@ -11,11 +11,11 @@ def get_most_active_users():
     with conn.cursor() as cursor:
         try:
             query = """
-            SELECT COUNT(bookingNumber) `bookingAmount`, `userID`, `username`
-            FROM `reservationticket`
-            GROUP BY `userID`
-            ORDER BY `bookingAmount` desc
-            LIMIT 3
+                SELECT COUNT(bookingNumber) `bookingAmount`, `userID`, `username`
+                FROM `reservationticket`
+                GROUP BY `userID`
+                ORDER BY `bookingAmount` desc
+                LIMIT 3
             """
 
             cursor.execute(query)
@@ -26,6 +26,29 @@ def get_most_active_users():
 
         except Exception as e:
             return {"error": str(e)}
+        
+        return rows
+    
+def get_alltime_registered_users():
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT `userID`, `username`, `registerLengthDays`, 
+                RANK() over (ORDER BY `registerLengthDays` DESC) as `user_rank`
+                FROM `userreservationsummary`
+                LIMIT 10;
+            """
+
+            cursor.execute(query,)
+            rows = cursor.fetchall()
+
+            if rows is None:
+                return {'message': 'no one is registered. thats crazy'}
+
+        except Exception as e:
+            return {'err': str(e)}
         
         return rows
 
