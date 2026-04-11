@@ -13,7 +13,13 @@ export class AnalyticsService {
     return this.http.get<{bookingAmount: number, userID: number, username: string}[]>(`${environment.api_url}/admin/most-active-users`);
   }
 
+  // Gets all the reservations made within the current month
   getReservationsThisMonth() {
     return this.http.get<{monthly_reservations: number}>(`${environment.api_url}/admin/reservations-this-month`);
+  }
+
+  // Gets all the reservations made within the current year, binned into the month they were booked
+  getPerMonthReservations() {
+    return this.http.get<{month: number, monthly_reservations: number}[]>(`${environment.api_url}/admin/per-month-reservations`)
   }
 }

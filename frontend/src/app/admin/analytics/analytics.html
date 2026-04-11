@@ -59,11 +59,11 @@
             <details>
                 <summary>All Reservations This Year</summary>
                 <ul>
-                    @for (row of reservationsThisYear; track $index) {
+                    @for (row of perMonthReservations$ | async; track $index) {
                         <li>
                             <strong>{{row.month}}</strong>
                             <span>
-                                <i>{{row.amt}}</i>
+                                <i>{{row.monthlyReservations}}</i>
                                 reservations
                             </span>
                         </li>
