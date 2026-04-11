@@ -13,6 +13,11 @@ export class AnalyticsService {
     return this.http.get<{bookingAmount: number, userID: number, username: string}[]>(`${environment.api_url}/admin/most-active-users`);
   }
 
+  // Get the top 10 users who are registered the longest in days
+  getAllTimeRegisteredUsers() {
+    return this.http.get<{registerLengthDays: number, userID: number, user_rank: number, username: string}[]>(`${environment.api_url}/admin/alltime-registered-users`)
+  }
+
   // Gets all the reservations made within the current month
   getReservationsThisMonth() {
     return this.http.get<{monthly_reservations: number}>(`${environment.api_url}/admin/reservations-this-month`);

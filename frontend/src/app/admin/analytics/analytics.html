@@ -26,7 +26,7 @@
             <details>
                 <summary>Longest Registered Users</summary>
                 <ul>
-                    @for (row of longestRegisteredUsers; track $index) {
+                    @for (row of allTimeRegisteredUsers$ | async; track $index) {
                         <li>
                             <strong>{{row.user}}</strong>
                             <span>
@@ -57,7 +57,7 @@
 
             <!-- all reservations this year categorized by month -->
             <details>
-                <summary>All Reservations This Year</summary>
+                <summary>Reservations Per Month</summary>
                 <ul>
                     @for (row of perMonthReservations$ | async; track $index) {
                         <li>
@@ -69,6 +69,12 @@
                         </li>
                     }
                 </ul>
+            </details>
+
+            <details>
+                <summary>Total Reservations This Year</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">{{reservationsThisMonth$ | async}}</p>
+                <p style="text-align: center; font-size: small;">as of this year</p>
             </details>
         </div>
 

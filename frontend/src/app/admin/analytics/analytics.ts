@@ -13,9 +13,14 @@ export class Analytics {
   private analytics = inject(AnalyticsService);
 
   // analytics fields
+  // USER STATS
   private top3Users = new BehaviorSubject<{ user: string, amount: number }[]>([]);
   top3Users$ = this.top3Users.asObservable();
 
+  private allTimeRegisteredUsers = new BehaviorSubject<{ user: string, days: number }[]>([]);
+  allTimeRegisteredUsers$ = this.allTimeRegisteredUsers.asObservable();
+
+  // RESERVATION STATS
   private reservationsThisMonth = new BehaviorSubject<number>(0);
   reservationsThisMonth$ = this.reservationsThisMonth.asObservable(); 
 
@@ -26,10 +31,12 @@ export class Analytics {
     this.getMostActiveUsers();
     this.getReservationsThisMonth();
     this.getPerMonthReservations();
+    this.getAllTimeRegisteredUsers();
   }
 
   // TODO: Add refresh button
 
+  // USER STATS
   getMostActiveUsers() {
     this.analytics.getMostActiveUsers().subscribe({
       next: (res) => {
@@ -44,6 +51,21 @@ export class Analytics {
     });
   }
 
+  getAllTimeRegisteredUsers() {
+    this.analytics.getAllTimeRegisteredUsers().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.allTimeRegisteredUsers.next(
+          res.map(r => ({
+            user: r.username,
+            days: r.registerLengthDays
+          }))
+        );
+      }
+    });
+  }
+
+  // RESERVATION STATS
   getReservationsThisMonth() {
     this.analytics.getReservationsThisMonth().subscribe({
       next: (res) => {
