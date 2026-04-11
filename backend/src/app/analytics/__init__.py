@@ -1,1 +1,1 @@
-import routes
+from . import routes
