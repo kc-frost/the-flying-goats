@@ -135,11 +135,11 @@ def get_planes():
                     "error": str(e)}
     return {"success": True, "data": result}
 
-# This is for getting available planes. Currently don't have a use for it, but might need it later.
+# Changed inherently cause of DB changes. Still not used, but might as well be consistent.
 def get_available_planes():
     conn = get_connection()
     query = """
-    select * from plane where ICAO in (select ICAO from hanger where status = "Available")
+    select * from plane where ICAO in (select ICAO from hanger where planeStatus = "Available")
     """
     with conn.cursor() as cursor:
         try:

@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    image: richard93147/tfg-backend:latest
+    container_name: goats-backend
+    restart: always
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_USER=your_mysql_user
+      - DB_PASSWORD=your_mysql_password
+      - DB_NAME=tfg
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "5000:5000"
+
+  frontend:
+    image: richard93147/tfg-frontend:latest
+    container_name: goats-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

@@ -283,26 +283,21 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
                 inboundFlight.get("seatClass"))
 
             # insert into booking
+            # Booking no longer has departDate, departSchedule, returnDate, returnSchedule. Changed to IDs, views should still work the same though. :thumbsup:
             query = """
-                INSERT INTO `booking`(bookingDate, userID, 
-                departSeat, returnSeat, 
-                departDate, departSchedule, 
-                returnDate, returnSchedule)
-                VALUES (now(), %s, 
-                %s, %s, 
-                DATE_FORMAT(%s, '%%Y-%%m-%%d'), %s, 
-                DATE_FORMAT(%s, '%%Y-%%m-%%d'), %s)
+                INSERT INTO `booking`(bookingDate, userID,
+                departSeat, returnSeat,
+                departScheduleID, returnScheduleID)
+                VALUES (now(), %s,
+                %s, %s,
+                %s, %s)
             """
-
-            # YYYY-MM-DD this format
 
             cursor.execute(query, (
                 userID,
                 outboundFlight.get("seatNumber"),
                 inboundFlight.get("seatNumber"),
-                outboundFlight.get("departureDate"),
                 departSchedule,
-                inboundFlight.get("departureDate"),
                 returnSchedule,
             ))
 

@@ -162,45 +162,22 @@ export class PilotView implements OnInit {
     return this.selectedDay?.events ?? [];
   }
   // Changed to account for the change in attributes on the table (schedule used to return datetime, now just date for some reason. Don't remember doing that, but too late to change it)
-
-  // Same with this onevf
+  // Changing back to datetime like it should've been, suck it old me (leaving the comment above for now cause I think it's funny)
     getEventStartDate(event: PilotScheduleRow): Date | null {
-      const rawDate = event["departDate"];
-      const rawTime = event["liftOff"] ?? event["liftoff"];
+      const rawDateTime = event["liftOff"] ?? event["liftoff"];
 
-      if (!rawDate || !rawTime) return null;
+      if (!rawDateTime) return null;
 
-      const baseDate = new Date(rawDate);
-      if (isNaN(baseDate.getTime())) return null;
-
-      const timeParts = String(rawTime).split(":");
-      const hours = Number(timeParts[0] ?? 0);
-      const minutes = Number(timeParts[1] ?? 0);
-      const seconds = Number(timeParts[2] ?? 0);
-
-      const parsed = new Date(baseDate);
-      parsed.setHours(hours, minutes, seconds, 0);
-
+      const parsed = new Date(rawDateTime);
       return isNaN(parsed.getTime()) ? null : parsed;
     }
 
     getEventEndDate(event: PilotScheduleRow): Date | null {
-      const rawDate = event["departDate"];
-      const rawTime = event["landing"];
+      const rawDateTime = event["landing"];
 
-      if (!rawDate || !rawTime) return null;
+      if (!rawDateTime) return null;
 
-      const baseDate = new Date(rawDate);
-      if (isNaN(baseDate.getTime())) return null;
-
-      const timeParts = String(rawTime).split(":");
-      const hours = Number(timeParts[0] ?? 0);
-      const minutes = Number(timeParts[1] ?? 0);
-      const seconds = Number(timeParts[2] ?? 0);
-
-      const parsed = new Date(baseDate);
-      parsed.setHours(hours, minutes, seconds, 0);
-
+      const parsed = new Date(rawDateTime);
       return isNaN(parsed.getTime()) ? null : parsed;
     }
 

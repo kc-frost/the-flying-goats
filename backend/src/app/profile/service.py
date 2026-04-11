@@ -81,37 +81,43 @@ def save_profile_picture(url: str, user_id: str):
             conn.rollback()
             return {"err": str(e)}
 
-# Update seat function. I don't have a single "update" function, because it would get messy with admin perms coming soon. Restrictions to updating seat is already in SQL db
+# booking now has depart and return seat attributes, so had to change this
 def update_booking_seat(data):
     conn = get_connection()
     query = """
-    update booking set seat = %s where bookingID = %s
+    update booking
+    set departSeat = coalesce(%s, departSeat),
+        returnSeat = coalesce(%s, returnSeat)
+    where bookingNumber = %s
     """
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query, (data['seatNumber'], data['bookingID']))
+            cursor.execute(query, (
+                data.get('departSeat'),
+                data.get('returnSeat'),
+                data['bookingID']
+            ))
             conn.commit()
-            result = cursor.fetchall()
-            return {"success": True,
-                    "data": result}
+            return {"success": True}
         except Exception as e:
             conn.rollback()
             return {"success": False, 
                     "error": str(e)}
 
-# Currently no restrictions on updating booking status. Will change later, but for now just getting the method out. Most likely going to add restrictions on monday.
+# Booking doesn't have status anymore, that's in bookingHistory
 def update_booking_status(data):
     conn = get_connection()
     query = """
-    update booking set status = %s where bookingID = %s
+    update bookinghistory set bookingStatus = %s where bookingNumber = %s
     """
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (data['status'], data['bookingID']))
             conn.commit()
-            return {"success": True,
-                    "data": result}
+            return {"success": True}
         except Exception as e:
             conn.rollback()
             return {"success": False, 
                     "error": str(e)}
+        
+# Look into adding leftover service files over the weekend
