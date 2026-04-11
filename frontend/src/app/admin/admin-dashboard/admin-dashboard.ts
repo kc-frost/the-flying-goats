@@ -8,5 +8,5 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './admin-dashboard.css',
 })
 export class AdminDashboard {
-
+  isOutletActive = false;
 }
