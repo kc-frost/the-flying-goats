@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { About } from './about/about';
-import { Analytics } from './analytics/analytics';
+import { Analytics } from './admin/analytics/analytics';
 import { Home } from './home/home';
 import { Login } from './auth-dropdown/login/login';
 import { Register } from './auth-dropdown/register/register';
