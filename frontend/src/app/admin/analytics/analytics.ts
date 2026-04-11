@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AnalyticsService } from './utils/analytics-service';
 
 @Component({
   selector: 'app-analytics',
@@ -7,6 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './analytics.css',
 })
 export class Analytics {
+  private analytics = inject(AnalyticsService);
   // return this format in the api
 
   top3Users = [
