@@ -58,6 +58,11 @@ def get_longest_registered_users():
         return rows
 
 def get_active_users_this_month():
+    """Get amount of distinct users who made a reservation this month 
+
+    Returns:
+        dict: Number of distinct users who made a reservation this month
+    """    
     conn = get_connection()
 
     with conn.cursor() as cursor:
