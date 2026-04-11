@@ -70,7 +70,7 @@ def get_active_users_this_month():
             query = """
                 SELECT COUNT(DISTINCT(`userID`)) as `distinct_reservations_this_month`
                 FROM `reservationticket`
-                WHERE MONTH(`reservationDate`) = MONTH(CURDATE()) and YEAR(`departDate`) = YEAR(CURDATE());
+                WHERE MONTH(`reservationDate`) = MONTH(CURDATE()) and YEAR(`departLiftOffDate`) = YEAR(CURDATE());
             """
 
             cursor.execute(query,)

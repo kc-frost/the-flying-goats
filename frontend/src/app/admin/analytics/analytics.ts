@@ -65,7 +65,7 @@ export class Analytics {
   getLongestRegisteredUsers() {
     this.analytics.getLongestRegisteredUsers().subscribe({
       next: (res) => {
-        console.log(res);
+        // console.log(res);
         this.longestRegisteredUsers.next(
           res.map(r => ({
             user: r.username,
@@ -79,7 +79,7 @@ export class Analytics {
   getActiveUsersThisMonth() {
     this.analytics.getActiveUsersThisMonth().subscribe({
       next: (res) => {
-        console.log(res);
+        // console.log(res);
         this.activeUsersThisMonth.next(res.distinct_reservations_this_month);
       }
     })
