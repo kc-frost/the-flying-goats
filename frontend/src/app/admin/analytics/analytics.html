@@ -26,7 +26,7 @@
             <details>
                 <summary>Longest Registered Users</summary>
                 <ul>
-                    @for (row of allTimeRegisteredUsers$ | async; track $index) {
+                    @for (row of longestRegisteredUsers$ | async; track $index) {
                         <li>
                             <strong>{{row.user}}</strong>
                             <span>

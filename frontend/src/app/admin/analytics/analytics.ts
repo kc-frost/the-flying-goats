@@ -17,8 +17,8 @@ export class Analytics {
   private top3Users = new BehaviorSubject<{ user: string, amount: number }[]>([]);
   top3Users$ = this.top3Users.asObservable();
 
-  private allTimeRegisteredUsers = new BehaviorSubject<{ user: string, days: number }[]>([]);
-  allTimeRegisteredUsers$ = this.allTimeRegisteredUsers.asObservable();
+  private longestRegisteredUsers = new BehaviorSubject<{ user: string, days: number }[]>([]);
+  longestRegisteredUsers$ = this.longestRegisteredUsers.asObservable();
 
   // RESERVATION STATS
   private reservationsThisMonth = new BehaviorSubject<number>(0);
@@ -55,7 +55,7 @@ export class Analytics {
     this.analytics.getLongestRegisteredUsers().subscribe({
       next: (res) => {
         console.log(res);
-        this.allTimeRegisteredUsers.next(
+        this.longestRegisteredUsers.next(
           res.map(r => ({
             user: r.username,
             days: r.registerLengthDays
