@@ -56,3 +56,31 @@ def get_reservations_this_month():
             return {"err": str(e)}
         
         return row
+    
+def get_per_month_reservations():
+    """Get all reservations within the current year, binned into the 12 months
+
+    Returns:
+        dict: All reservations booked per month
+    """    
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT MONTH(`reservationDate`) as `month`, COUNT(*) as `monthly_reservations`
+                FROM `reservationticket`
+                GROUP BY `month`
+                ORDER BY `monthly_reservations` DESC;
+            """
+
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+            if rows is None:
+                return {'message': 'no reservations at all this year. woah...'}
+            
+        except Exception as e:
+            return {'err': str(e)}
+        
+        return rows

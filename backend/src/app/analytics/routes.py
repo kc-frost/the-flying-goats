@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 
 from app.auth import admin_required
 
-from .service import get_most_active_users, get_reservations_this_month
+from .service import get_most_active_users, get_reservations_this_month, get_per_month_reservations
 
 bp = Blueprint("analytics", __name__)
 
@@ -19,8 +19,20 @@ def most_active_users():
 
 # This route gets how many reservations were made this month
 @bp.route('/reservations-this-month', methods=['GET'])
+@admin_required
 def reservations_this_month():
     result = get_reservations_this_month()
+
+    if 'err' in result:
+        return jsonify(result), 500
+
+    return jsonify(result), 200
+
+# This route gets per-month reservation count for the current year
+@bp.route('/per-month-reservations', methods=['GET'])
+# @admin_required
+def per_month_reservations():
+    result = get_per_month_reservations()
 
     if 'err' in result:
         return jsonify(result), 500
