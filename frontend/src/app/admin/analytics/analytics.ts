@@ -31,7 +31,7 @@ export class Analytics {
     this.getMostActiveUsers();
     this.getReservationsThisMonth();
     this.getPerMonthReservations();
-    this.getAllTimeRegisteredUsers();
+    this.getLongestRegisteredUsers();
   }
 
   // TODO: Add refresh button
@@ -51,8 +51,8 @@ export class Analytics {
     });
   }
 
-  getAllTimeRegisteredUsers() {
-    this.analytics.getAllTimeRegisteredUsers().subscribe({
+  getLongestRegisteredUsers() {
+    this.analytics.getLongestRegisteredUsers().subscribe({
       next: (res) => {
         console.log(res);
         this.allTimeRegisteredUsers.next(

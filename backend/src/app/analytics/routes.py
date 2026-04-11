@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 
 from app.auth import admin_required
 
-from .service import get_most_active_users, get_reservations_this_month, get_per_month_reservations, get_alltime_registered_users
+from .service import get_most_active_users, get_reservations_this_month, get_per_month_reservations, get_longest_registered_users
 
 bp = Blueprint("analytics", __name__)
 
@@ -17,10 +17,10 @@ def most_active_users():
 
     return jsonify(result), 200
 
-@bp.route('/alltime-registered-users', methods=['GET'])
+@bp.route('/longest-registered-users', methods=['GET'])
 # @admin_required
-def alltime_registered_users():
-    result = get_alltime_registered_users()
+def longest_registered_users():
+    result = get_longest_registered_users()
 
     if 'err' in result:
         return jsonify(result), 500

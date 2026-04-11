@@ -29,8 +29,8 @@ def get_most_active_users():
         
         return rows
     
-def get_alltime_registered_users():
-    """Get alltime registered users, or the top 10 users who are registered with us the longest (in days)
+def get_longest_registered_users():
+    """Get longest registered users, or the top 10 users who are registered with us the longest (in days)
 
     Returns:
         dict: Top 10 users who are registered the longest

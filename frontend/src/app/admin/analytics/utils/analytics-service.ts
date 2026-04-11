@@ -14,8 +14,8 @@ export class AnalyticsService {
   }
 
   // Get the top 10 users who are registered the longest in days
-  getAllTimeRegisteredUsers() {
-    return this.http.get<{registerLengthDays: number, userID: number, user_rank: number, username: string}[]>(`${environment.api_url}/admin/alltime-registered-users`)
+  getLongestRegisteredUsers() {
+    return this.http.get<{registerLengthDays: number, userID: number, user_rank: number, username: string}[]>(`${environment.api_url}/admin/longest-registered-users`)
   }
 
   // Gets all the reservations made within the current month
