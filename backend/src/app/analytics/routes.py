@@ -1,3 +1,13 @@
-from flask import Flask, Blueprint
+from flask import Blueprint, jsonify
+
+from app.auth import admin_required
+
+from .service import get_most_active_users
 
 bp = Blueprint("analytics", __name__)
+
+# This route gets the top 3 most active users, as defined by how many reservations they've made in total
+@bp.route('/most-active-users', methods=['GET'])
+@admin_required
+def most_active_users():
+    return jsonify(get_most_active_users()), 200
