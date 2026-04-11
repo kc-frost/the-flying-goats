@@ -20,8 +20,9 @@ Book your (goated) flight from anywhere* :)
 ### [Backend] Creation of a new module and registering blueprints
 _Initialize directory and files_
 ```bash
+# 📁 backend/src/app
 $ mkdir new_module && cd new_module
-$ echo import . from routes > __init__.py
+$ echo "from . import routes" > __init__.py
 $ touch routes.py service.py
 ```
 <br>

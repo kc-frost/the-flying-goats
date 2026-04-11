@@ -34,30 +34,34 @@ def viewReservations():
 # move this to service properly in the next sprint (kai comment: its here :smiling_imp:)
 @bp.post("/reservations/make")
 @admin_required
+# Updated to match DB
 def makeReservation():
-
     """
     We're taking booking args, meaing:
     
     bookingNumber int primary key auto_increment,
     userID int references users(userID),
-    flightID varchar(7) references flight(IATA),
-    seat int references planeSeat(seatNumber)
-
+    departSeat varchar(3) references planeSeat(seatNumber),
+    returnSeat varchar(3) references planeSeat(seatNumber),
+    departScheduleID int references schedule(scheduleID),
+    returnScheduleID int references schedule(scheduleID)
     """
     data = request.json
 
-    # BookingID is auto increment, unlike inventory it's not needed here
     userID = data['userID']
-    flightID = data['flightID']
-    seat = data['seat']
+    departSeat = data['departSeat']
+    returnSeat = data['returnSeat']
+    departScheduleID = data['departScheduleID']
+    returnScheduleID = data['returnScheduleID']
 
     conn = get_connection()
-    # Right now this assumes user exists in users, flight exists, and seat exists. Wednesday, gunna add more validation and checks, but for now just wanna get it working
-    query = "insert into booking (userID, flightID, seat) values (%s, %s, %s)"
+    query = """
+    insert into booking (userID, departSeat, returnSeat, departScheduleID, returnScheduleID)
+    values (%s, %s, %s, %s, %s)
+    """
     with conn.cursor() as cursor:
         try:
-            cursor.execute(query, (userID, flightID, seat))
+            cursor.execute(query, (userID, departSeat, returnSeat, departScheduleID, returnScheduleID))
             conn.commit()
         except Exception as e:
             conn.rollback()

@@ -43,10 +43,10 @@ export class ProfilePage {
     this.loadProfilePicture();
   }
 
-  getDateTime(date: string, time: string) {
-    const dateOnly = new Date(`${date}`).toISOString().split('T')[0];
-    // console.log(dateOnly);
-    return new Date(`${dateOnly} ${time}`);
+  // Changed cause of DB Changes, I'm not using just date anymore, I'm using datetime
+  // We'll see if that breaks anything 
+  getDateTime(dateTime: string) {
+    return new Date(dateTime);
   }
 
   loadReservations() {
@@ -71,19 +71,20 @@ export class ProfilePage {
     pastCutoff.setDate(pastCutoff.getDate() - 2);
     const allReservations = this.userReservations.value;
 
+    // Changed these two if statements to match DB using datetime now
     // past: descending (most recent first)
     if (this.selectedTab == 'past') {
-      return allReservations.filter((reservation) => this.getDateTime(reservation.departDate, reservation.departLiftOffDate) < pastCutoff)
+      return allReservations.filter((reservation) => this.getDateTime(reservation.departLiftOffDate) < pastCutoff)
       .sort((a,b) => 
-        this.getDateTime(b.departDate, b.departLiftOffDate).getTime() - this.getDateTime(a.departDate, a.departLiftOffDate).getTime()
+        this.getDateTime(b.departLiftOffDate).getTime() - this.getDateTime(a.departLiftOffDate).getTime()
       )
     } 
 
     // upcoming: ascending (soonest first)
     else {
-      return allReservations.filter((reservation) => this.getDateTime(reservation.departDate, reservation.departLiftOffDate) >= pastCutoff)
+      return allReservations.filter((reservation) => this.getDateTime(reservation.departLiftOffDate) >= pastCutoff)
       .sort((a,b) => 
-        this.getDateTime(a.departDate, a.departLiftOffDate).getTime() - this.getDateTime(b.departDate, b.departLiftOffDate).getTime()
+        this.getDateTime(a.departLiftOffDate).getTime() - this.getDateTime(b.departLiftOffDate).getTime()
       )
     }
 
