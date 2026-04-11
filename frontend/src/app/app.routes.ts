@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { About } from './about/about';
+import { Analytics } from './analytics/analytics';
 import { Home } from './home/home';
 import { Login } from './auth-dropdown/login/login';
 import { Register } from './auth-dropdown/register/register';
@@ -73,6 +74,11 @@ export const routes: Routes = [
                 component: ViewUsers,
                 canActivate: [userAuthGuard, adminAuthGuard],
             },
+            {
+                path: 'analytics',
+                component: Analytics,
+                canActivate: [userAuthGuard, adminAuthGuard]
+            }
         ]
     },
     // dropdown outlet
