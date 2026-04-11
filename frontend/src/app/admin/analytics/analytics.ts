@@ -38,7 +38,14 @@ export class Analytics {
     this.getActiveUsersThisMonth();
   }
 
-  // TODO: Add refresh button
+  // does exactly what it says on the tin
+  refresh() {
+    this.getMostActiveUsers();
+    this.getReservationsThisMonth();
+    this.getPerMonthReservations();
+    this.getLongestRegisteredUsers();
+    this.getActiveUsersThisMonth();
+  }
 
   // USER STATS
   getMostActiveUsers() {
