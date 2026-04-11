@@ -20,6 +20,9 @@ export class Analytics {
   private longestRegisteredUsers = new BehaviorSubject<{ user: string, days: number }[]>([]);
   longestRegisteredUsers$ = this.longestRegisteredUsers.asObservable();
 
+  private activeUsersThisMonth = new BehaviorSubject<number>(0);
+  activeUsersThisMonth$ = this.activeUsersThisMonth.asObservable();
+
   // RESERVATION STATS
   private reservationsThisMonth = new BehaviorSubject<number>(0);
   reservationsThisMonth$ = this.reservationsThisMonth.asObservable(); 
@@ -32,6 +35,7 @@ export class Analytics {
     this.getReservationsThisMonth();
     this.getPerMonthReservations();
     this.getLongestRegisteredUsers();
+    this.getActiveUsersThisMonth();
   }
 
   // TODO: Add refresh button
@@ -63,6 +67,15 @@ export class Analytics {
         );
       }
     });
+  }
+
+  getActiveUsersThisMonth() {
+    this.analytics.getActiveUsersThisMonth().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.activeUsersThisMonth.next(res.distinct_reservations_this_month);
+      }
+    })
   }
 
   // RESERVATION STATS

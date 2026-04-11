@@ -18,6 +18,10 @@ export class AnalyticsService {
     return this.http.get<{registerLengthDays: number, userID: number, user_rank: number, username: string}[]>(`${environment.api_url}/admin/longest-registered-users`)
   }
 
+  getActiveUsersThisMonth() {
+    return this.http.get<{distinct_reservations_this_month: number}>(`${environment.api_url}/admin/active-users-this-month`)
+  }
+
   // Gets all the reservations made within the current month
   getReservationsThisMonth() {
     return this.http.get<{monthly_reservations: number}>(`${environment.api_url}/admin/reservations-this-month`);

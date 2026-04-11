@@ -74,7 +74,7 @@ def get_active_users_this_month():
             """
 
             cursor.execute(query,)
-            rows = cursor.fetchall()
+            rows = cursor.fetchone()
 
             if rows is None:
                 return {'message': 'no one made a reservation this month'}
