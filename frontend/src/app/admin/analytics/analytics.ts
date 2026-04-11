@@ -93,10 +93,4 @@ export class Analytics {
       }
     })
   }
-
-  longestRegisteredUsers = [
-    {user: 'me', days: 123},
-    {user: 'you', days: 23},
-    {user: 'someone', days: 9},
-  ];
 }

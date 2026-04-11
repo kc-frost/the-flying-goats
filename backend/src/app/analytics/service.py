@@ -57,6 +57,28 @@ def get_longest_registered_users():
         
         return rows
 
+def get_active_users_this_month():
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT COUNT(DISTINCT(`userID`)) as `distinct_reservations_this_month`
+                FROM `reservationticket`
+                WHERE MONTH(`reservationDate`) = MONTH(CURDATE()) and YEAR(`departDate`) = YEAR(CURDATE());
+            """
+
+            cursor.execute(query,)
+            rows = cursor.fetchall()
+
+            if rows is None:
+                return {'message': 'no one made a reservation this month'}
+
+        except Exception as e:
+            return {'err': str(e)}
+        
+        return rows
+
 def get_reservations_this_month():
     """Get all reservations that were made within the current month, NOT the last 30 days
 
