@@ -62,7 +62,7 @@
                     @for (row of perMonthReservations$ | async; track $index) {
                         <li>
                             <strong>{{row.month}}</strong>
-                            <span>
+                            <span [class.dimmed]="row.monthlyReservations === 0">
                                 <i>{{row.monthlyReservations}}</i>
                                 reservations
                             </span>

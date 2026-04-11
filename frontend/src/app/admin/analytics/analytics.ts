@@ -59,7 +59,7 @@ export class Analytics {
         // console.log(res);
         const monthlyReservations: { month: string, monthlyReservations: number }[] = [];
 
-        for (let month = 1; month <= 13; month++) {
+        for (let month = 1; month < 13; month++) {
           const found = res.find((r) => r.month === month)
           monthlyReservations.push({
             month: new Date(2000, month - 1).toLocaleString('default', { month: 'short' }),
