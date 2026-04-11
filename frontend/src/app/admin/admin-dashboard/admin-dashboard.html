@@ -1,33 +1,35 @@
 <section class="outlets">
   <!-- Loads the other non-inventory components here -->
-  <router-outlet />
+  <router-outlet (activate)="isOutletActive = true" (deactivate)="isOutletActive=false"/>
   <div class="modal-layer">
     <router-outlet name="modal"></router-outlet>
   </div>
 </section>
 
-<main>
-  <header>
-    <h1>Admin Tasks</h1>
-  </header>
-  <section class="links">
-    <div class="nav-box" [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">
-      <img src="/book-flight/calendar.svg" />
-      <div class="modal">
-       <span class="nav-title">Manage Inventory</span>
+@if (!isOutletActive) {
+  <main>
+    <header>
+      <h1>Admin Tasks</h1>
+    </header>
+    <section class="links">
+      <div class="nav-box" [routerLink]="[{ outlets: { modal: ['inventory'], dropdown: null } }]">
+        <img src="/book-flight/calendar.svg" />
+        <div class="modal">
+         <span class="nav-title">Manage Inventory</span>
+        </div>
       </div>
-    </div>
-    <div class="nav-box" [routerLink]="['view-appointments']">
-      <img src="/book-flight/calendar.svg" />
-      <span class="nav-title">All Appointments</span>
-    </div>
-    <div class="nav-box" [routerLink]="['view-users']">
-      <img src="/book-flight/calendar.svg" />
-      <span class="nav-title">All Users</span>
-    </div>
-    <div class="nav-box" [routerLink]="['view-users']">
-      <img src="/book-flight/calendar.svg" />
-      <span class="nav-title">Analytics</span>
-    </div>
-  </section>
-</main>
+      <div class="nav-box" [routerLink]="['view-appointments']">
+        <img src="/book-flight/calendar.svg" />
+        <span class="nav-title">All Appointments</span>
+      </div>
+      <div class="nav-box" [routerLink]="['view-users']">
+        <img src="/book-flight/calendar.svg" />
+        <span class="nav-title">All Users</span>
+      </div>
+      <div class="nav-box" [routerLink]="['analytics']">
+        <img src="/book-flight/calendar.svg" />
+        <span class="nav-title">Analytics</span>
+      </div>
+    </section>
+  </main>
+}
