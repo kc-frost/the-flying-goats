@@ -12,6 +12,33 @@ import { BehaviorSubject } from 'rxjs';
 export class Analytics {
   private analytics = inject(AnalyticsService);
 
+  // --- HOW THIS WORKS --- (thanks claude)
+  // BehaviorSubject is like a variable that can be "watched" for changes.
+  // When you call .next(value), it updates the value and notifies anyone watching.
+  //
+  // Each field here follows the same pattern:
+  //   1. A private BehaviorSubject — this is what we write to (via .next())
+  //   2. A public $ observable — this is what the HTML reads from
+  //
+  // If you're familiar with ChangeDetectorRef, think of BehaviorSubject + async pipe
+  // as a more automatic version. Instead of manually calling detectChanges() to tell
+  // Angular to re-render, the async pipe handles that for you — whenever .next() is
+  // called with a new value, Angular knows to update the UI on its own.
+  //
+  // (kai) Tho in this case, since the page isn't updated until refresh() is called, technically we can swap it out 
+  // for cdr. Using BehaviorSubject however allows us to pivot to a "live" analytics page if we wanted to. I just 
+  // decided to not make it live since functionally they do the same thing. Time is short, why bother lol. Though 
+  // it's nice to have the option to, I'm gonna be honest
+  // Admittedly, it is more typing this way, but 🤷
+  // 
+  // (kai) Either implementation is fine, but if you do decide to go with cdr, make sure the rest don't break in the 
+  // process since I have never experimented with using both at the same time 🙏
+  // 
+  // The refresh() method simply re-calls all the fetch methods, which call
+  // .next() again with fresh data — the HTML updates automatically because
+  // it's already watching the observables via async pipe.
+  // ----------------------
+
   // analytics fields
   // USER STATS
   private top3Users = new BehaviorSubject<{ user: string, amount: number }[]>([]);
@@ -38,7 +65,6 @@ export class Analytics {
     this.getActiveUsersThisMonth();
   }
 
-  // does exactly what it says on the tin
   refresh() {
     this.getMostActiveUsers();
     this.getReservationsThisMonth();
@@ -48,6 +74,7 @@ export class Analytics {
   }
 
   // USER STATS
+  // Get top 3 users with the most bookings
   getMostActiveUsers() {
     this.analytics.getMostActiveUsers().subscribe({
       next: (res) => {
@@ -62,6 +89,7 @@ export class Analytics {
     });
   }
 
+  // Get top 10 users who have been registered the longest
   getLongestRegisteredUsers() {
     this.analytics.getLongestRegisteredUsers().subscribe({
       next: (res) => {
@@ -76,6 +104,7 @@ export class Analytics {
     });
   }
 
+  // Get how many unique users made a reservation in the current month
   getActiveUsersThisMonth() {
     this.analytics.getActiveUsersThisMonth().subscribe({
       next: (res) => {
@@ -86,6 +115,7 @@ export class Analytics {
   }
 
   // RESERVATION STATS
+  // Get how many reservations were booked in the current month
   getReservationsThisMonth() {
     this.analytics.getReservationsThisMonth().subscribe({
       next: (res) => {
@@ -95,6 +125,7 @@ export class Analytics {
     })
   }
 
+  // Get how many reservations per month were made in the current year
   getPerMonthReservations() {
     this.analytics.getPerMonthReservations().subscribe({
       next: (res) => {
