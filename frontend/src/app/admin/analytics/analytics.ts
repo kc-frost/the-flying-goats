@@ -1,21 +1,38 @@
 import { Component, inject } from '@angular/core';
 import { AnalyticsService } from './utils/analytics-service';
+import { AsyncPipe } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './analytics.html',
   styleUrl: './analytics.css',
 })
 export class Analytics {
   private analytics = inject(AnalyticsService);
-  // return this format in the api
 
-  top3Users = [
-    {user: 'me', amt: 123},
-    {user: 'you', amt: 21},
-    {user: 'someone', amt: 12},
-  ];
+  // analytics structures
+  private top3Users = new BehaviorSubject<{ user: string, amount: number }[]>([]);
+  top3Users$ = this.top3Users.asObservable();
+
+  ngOnInit() {
+    this.getMostActiveUsers();
+
+  }
+
+  getMostActiveUsers() {
+    this.analytics.getMostActiveUsers().subscribe({
+      next: (res) => {
+        this.top3Users.next(
+          res.map(booking => ({
+            user: booking.username,
+            amount: booking.bookingAmount
+          }))
+        );
+      }
+    });
+  }
 
   longestRegisteredUsers = [
     {user: 'me', days: 123},

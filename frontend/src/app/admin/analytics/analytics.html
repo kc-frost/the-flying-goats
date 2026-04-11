@@ -10,11 +10,11 @@
             <details>
                 <summary>Top 3 Most Active Users</summary>
                 <ul>
-                    @for (row of top3Users; track $index) {
+                    @for (row of top3Users$ | async; track $index) {
                         <li>
                             <strong>{{row.user}}</strong>
                             <span>
-                                <i>{{row.amt}}</i>
+                                <i>{{row.amount}}</i>
                                 reservations
                             </span>
                         </li>
@@ -95,11 +95,11 @@
             <details>
                 <summary>Top 3 Staff</summary>
                 <ul>
-                    @for (row of top3Users; track $index) {
+                    @for (row of top3Users$ | async; track $index) {
                         <li>
                             <strong>{{row.user}}</strong>
                             <span>
-                                <i>{{row.amt}}</i>
+                                <i>{{row.amount}}</i>
                                 reservations
                             </span>
                         </li>
