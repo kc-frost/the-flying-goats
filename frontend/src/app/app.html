@@ -23,7 +23,7 @@
       }
 
       <!-- Only normal users can book flights now -->
-      @if ((authService.authenticated$ | async) && (userService.currentRole$ | async) === '') {
+      @if ((authService.authenticated$ | async) && (userService.currentRole$ | async) !== 'Pilot' && !(authService.adminStatus$ | async)) {
         <section class="nav-link"> 
           <a routerLink="/book-flight"> Book a Flight</a>
           <img src="/header/navlink/navlink-arrow.svg" />
