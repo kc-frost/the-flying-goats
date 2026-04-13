@@ -14,8 +14,8 @@ def get_cancelleable_reservations():
                         u.username,
                         sd.liftOff,
                         sd.landing,
-                        ao.IATA,
-                        ad.IATA
+                        ao.IATA as origin,
+                        ad.IATA as destination
                     FROM
                         bookinghistory bh
                             INNER JOIN
@@ -33,8 +33,8 @@ def get_cancelleable_reservations():
                         u.username,
                         sd.liftOff,
                         sd.landing,
-                        ao.IATA,
-                        ad.IATA
+                        ao.IATA as origin,
+                        ad.IATA as destination
                     FROM
                         bookinghistory bh
                             INNER JOIN
