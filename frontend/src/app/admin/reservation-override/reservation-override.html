@@ -9,165 +9,27 @@
             <header><h2>Select Reservation to Cancel</h2></header>
             <div class="content reserve">
                 <!-- Plan, use the classic for loop where its a div flexbox with text and a RADIO button. Easier to debug if we just allow cancellations one at a time rather than in bulk -->
-                <div class="row">
-                    <label for="select">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
+                @for (reservation of userReservations; track $index; let idx = $index) {
+                    <div class="row">
+                        <label [for]="idx">
+                            <p style="font-weight: bold; width: 70px;">{{reservation.username}}</p>
+                            <div class="r">
+                                <div class="route">
+                                    <span style="font-weight: bold;">{{reservation.origin}}</span>
+                                    <p>→</p>
+                                    <span style="font-weight: bold;">{{reservation.destination}}</span>
+                                </div>
+                                <div class="route">
+                                    <span style="font-style: italic;">{{reservation.liftOffDate}}</span>
+                                    <span style="font-style: italic;">{{reservation.landingDate}}</span>
+                                </div>
                             </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
+                        </label>
 
-                    <input id="select" name="select" type="radio" />
-
-                </div>
-
-                <div class="row">
-                    <label for="selects">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="selects" name="select" type="radio" />
-
-                </div>
-                <div class="row">
-                    <label for="select">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="select" name="select" type="radio" />
-
-                </div>
-
-                <div class="row">
-                    <label for="selects">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="selects" name="select" type="radio" />
-
-                </div>
-                <div class="row">
-                    <label for="select">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="select" name="select" type="radio" />
-
-                </div>
-
-                <div class="row">
-                    <label for="selects">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="selects" name="select" type="radio" />
-
-                </div>
-                <div class="row">
-                    <label for="select">
-                        <p style="font-weight: bold;">AA123</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="select" name="select" type="radio" />
-
-                </div>
-
-                <div class="row">
-                    <label for="selects">
-                        <p style="font-weight: bold;">HELO</p>
-                        <div class="r">
-                            <div class="route">
-                                <span style="font-weight: bold;">Austin (AUS)</span>
-                                <p>→</p>
-                                <span style="font-weight: bold;">New York (JFK)</span>
-                            </div>
-                            <div class="route">
-                                <span style="font-style: italic;">2026-04-12 14:30</span>
-                                <span style="font-style: italic;">2026-04-12 18:45</span>
-                            </div>
-                        </div>
-                    </label>
-
-                    <input id="selects" name="select" type="radio" />
-
-                </div>
-                
-
-
+                        <input [id]="idx" name="select" type="radio" />
+                    </div>
+                    <hr>
+                }
             </div>
         </section>
 
