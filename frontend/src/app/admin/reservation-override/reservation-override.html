@@ -31,6 +31,8 @@
                         <input [id]="idx" [value]="reservation.bookingNumber" [formControl]="cancellationForm.controls.bookingNumber" name="select" type="radio" />
                     </div>
                     <hr>
+                } @empty {
+                    <p style="font-weight: bold;">No reservations at this time.</p>
                 }
             </div>
         </section>
