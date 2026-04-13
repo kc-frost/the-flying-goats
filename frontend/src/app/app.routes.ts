@@ -84,6 +84,12 @@ export const routes: Routes = [
                 path: 'reservation-override',
                 component: ReservationOverride,
                 canActivate: [userAuthGuard]
+            },
+            // pilot only
+            {
+                path: 'pilot-view',
+                component: PilotView,
+                canActivate: [userAuthGuard, pilotAuthGuard],
             }
         ]
     },
@@ -103,12 +109,6 @@ export const routes: Routes = [
         outlet: 'dropdown',
         component: DropdownProfile
     },
-    // pilot only
-    {
-        path: 'pilot-view',
-        component: PilotView,
-        canActivate: [userAuthGuard, pilotAuthGuard],
-    }
 ];
 
 export default routes;

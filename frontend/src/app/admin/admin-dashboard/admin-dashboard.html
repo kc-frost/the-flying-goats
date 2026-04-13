@@ -33,11 +33,20 @@
           <span class="nav-title">Analytics</span>
         </div>
       }
-
+      
+      @if ((userService.currentRole$ | async) === 'Pilot') {
+        <div class="nav-box" [routerLink]="['pilot-view']">
+          <img src="/book-flight/calendar.svg" />
+          <span class="nav-title">View your Schedule</span>
+        </div>
+      }
+      
       <div class="nav-box" [routerLink]="['reservation-override']">
         <img src="/book-flight/calendar.svg" />
         <span class="nav-title">Override a Reservation</span>
       </div>
+
+
     </section>
   </main>
 }
