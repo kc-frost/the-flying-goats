@@ -28,7 +28,7 @@
                             </div>
                         </label>
 
-                        <input [id]="idx" name="select" type="radio" />
+                        <input [id]="idx" [value]="reservation.bookingNumber" [formControl]="cancellationForm.controls.bookingNumber" name="select" type="radio" />
                     </div>
                     <hr>
                 }
@@ -39,8 +39,8 @@
             <header><h2>Reason for Cancellation</h2></header>
 
             <div class="content reason">
-                <textarea id="reason" required placeholder="Schedule conflict, maintenance due, taking leave, etc."></textarea>
-                <button (click)="getCancelleableReservations()">Submit</button>
+                <textarea [formControl]="cancellationForm.controls.reason" id="reason" required placeholder="Schedule conflict, maintenance due, taking leave, etc."></textarea>
+                <button (click)="deleteReservation()">Submit</button>
             </div>
             
         </section>

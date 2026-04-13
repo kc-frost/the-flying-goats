@@ -2,15 +2,17 @@ import { Component, inject } from '@angular/core';
 import { OverrideService } from './utils/override-service';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-reservation-override',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ReactiveFormsModule],
   templateUrl: './reservation-override.html',
   styleUrl: './reservation-override.css',
 })
 export class ReservationOverride {
   private override = inject(OverrideService);
+  private formBuilder = inject(FormBuilder);
 
   // template of what fields we need
   // these are the same for both staff and admin, the only difference is that staff only needs their "appointments" ofc
@@ -21,6 +23,10 @@ export class ReservationOverride {
   private userReservations = new BehaviorSubject<{ username: string, origin: string, destination: string, liftOffDate: string, landingDate: string, bookingNumber: number }[]>([]);
   userReservations$ = this.userReservations.asObservable();
 
+  cancellationForm = this.formBuilder.group({
+    bookingNumber: ['', Validators.required],
+    reason: ['', Validators.required]
+  })
 
   ngOnInit() {
     this.getCancelleableReservations();
@@ -41,5 +47,9 @@ export class ReservationOverride {
         })));
       }
     });
+  }
+
+  deleteReservation() {
+    console.log(this.cancellationForm.value);
   }
 }
