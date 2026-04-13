@@ -163,7 +163,8 @@ create table bookinghistory(
     -- TODO: create a trigger for this so we can track dates
     cancellationDate datetime default null,
     -- This is the userID/staffID of WHOM cancelled the ID. Mostly likely, this is going to be an update on the python side. Gunna think about logistics later, but can't exactly be trigger. Mostly likely going to default to "Null", and updated on python side
-    cancelledBy int default null
+    cancelledBy int default null,
+    reason text
 );
 
 create table item (
