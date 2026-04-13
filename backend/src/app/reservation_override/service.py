@@ -9,13 +9,44 @@ def get_cancelleable_reservations():
         if current_user.is_admin == True:
             try:
                 query = """
-                    SELECT fd.IATA, u.username, sd.liftOff, sd.landing, ao.IATA as origin, ad.IATA as destination
-                    FROM bookinghistory bh
-                    INNER JOIN schedule sd ON bh.departScheduleID = sd.scheduleID
-                    INNER JOIN flight fd ON sd.flightID = fd.IATA
-                    INNER JOIN airports ao ON fd.origin = ao.airportID
-                    INNER JOIN airports ad ON fd.destination = ad.airportID
-                    INNER JOIN users u ON bh.userID = u.userID;
+                    SELECT 
+                        fd.IATA,
+                        u.username,
+                        sd.liftOff,
+                        sd.landing,
+                        ao.IATA,
+                        ad.IATA
+                    FROM
+                        bookinghistory bh
+                            INNER JOIN
+                        schedule sd ON bh.departScheduleID = sd.scheduleID
+                            INNER JOIN
+                        flight fd ON sd.flightID = fd.IATA
+                            INNER JOIN
+                        airports ao ON fd.origin = ao.airportID
+                            INNER JOIN
+                        airports ad ON fd.destination = ad.airportID
+                            INNER JOIN
+                        users u ON bh.userID = u.userID 
+                    UNION ALL SELECT 
+                        fd.IATA,
+                        u.username,
+                        sd.liftOff,
+                        sd.landing,
+                        ao.IATA,
+                        ad.IATA
+                    FROM
+                        bookinghistory bh
+                            INNER JOIN
+                        schedule sd ON bh.returnScheduleID = sd.scheduleID
+                            INNER JOIN
+                        flight fd ON sd.flightID = fd.IATA
+                            INNER JOIN
+                        airports ao ON fd.origin = ao.airportID
+                            INNER JOIN
+                        airports ad ON fd.destination = ad.airportID
+                            INNER JOIN
+                        users u ON bh.userID = u.userID;
                 """
 
                 cursor.execute(query,)
