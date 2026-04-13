@@ -2,10 +2,16 @@ from app.db import get_connection
 from flask_login import current_user
 
 def get_cancelleable_reservations():
+    """Get all bookings whose status isn't Cancelled
+
+    Returns:
+        dict: All non-cancelled reservations if you're an admin, and
+        flights that are assigned to you if you're a pilot
+    """    
     conn = get_connection()
 
     with conn.cursor() as cursor:
-        # if ure an admin, get ALL booking histories
+        # if ure an admin, get ALL booking histories that isn't cancelled
         if current_user.is_admin == True:
             try:
                 query = """
@@ -39,6 +45,9 @@ def get_cancelleable_reservations():
             return rows
         
         # if ure a staff, ONLY get flights assigned to you
+        # if you see this and ask: "kai, why isnt this a view"
+        # at least it works bro at least it works 
+        # we can make it a view if you really want to once its submitted 🙏
         elif current_user.role == 'Pilot':
             try:
                 query = """
@@ -88,6 +97,15 @@ def get_cancelleable_reservations():
             return {'err': 'you are neither an admin or a pilot. get out of here'}
         
 def do_override_reservation(bookingNumber: int, reason: str):
+    """Override the damn booking
+
+    Args:
+        bookingNumber (int): Identifies the booking to be removed
+        reason (str): Why the booking is being cancelled
+
+    Returns:
+        dict: Contains an error message if deleting failed
+    """    
     conn = get_connection()
 
     with conn.cursor() as cursor:
