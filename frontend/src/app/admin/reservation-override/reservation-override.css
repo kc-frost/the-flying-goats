@@ -16,13 +16,15 @@ main {
     justify-content: space-evenly;
 
     .form {
-        box-sizing: border-box;
         width: 500px;
         height: 460px;
         background-color: whitesmoke;
         margin-top: 25px;
         border-radius: 5px;
         overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
         
         & header {
             padding-left: 20px;
@@ -32,19 +34,45 @@ main {
     }
     
     .content {
-        /* padding: 20px; */
+        box-sizing: border-box;
+        padding: 20px;
         overflow-x: hidden;
         overflow-y: auto;
         width: inherit;
-        height: inherit;
+        flex: 1;
+        min-height: 0;
         scrollbar-width: thin;
 
         display: flex;
         flex-direction: column;
 
         &.reserve {
-            opacity: 1;
-            gap: 10px;
+            gap: 30px;
+            & .row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+                & label {
+                    display: inline-flex;
+                    flex-direction: row;
+
+                    gap: 20px;
+
+                    & .r {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                }
+
+                & .route {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    gap: 50px;
+                }
+            }
+            
         }
 
         &.reason {
@@ -75,7 +103,7 @@ main {
                 font-size: 0.9rem;
                 width: 80px;
                 height: 30px;
-                border: 2px solid black;
+                border: 2px solid var(--primary-color);
                 border-radius: 5px;
                 cursor: pointer;
 
