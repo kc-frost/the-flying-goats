@@ -12,16 +12,18 @@
                 @for (reservation of userReservations$ | async; track $index; let idx = $index) {
                     <div class="row">
                         <label [for]="idx">
-                            <p style="font-weight: bold; width: 70px;">{{reservation.username}}</p>
+                            <p class="name">{{reservation.username}}</p>
+                            <hr>
                             <div class="r">
                                 <div class="route">
-                                    <span style="font-weight: bold;">{{reservation.origin}}</span>
+                                    <span class="airport">{{reservation.origin}}</span>
                                     <p>→</p>
-                                    <span style="font-weight: bold;">{{reservation.destination}}</span>
+                                    <span class="airport">{{reservation.destination}}</span>
                                 </div>
                                 <div class="route">
-                                    <span style="font-style: italic;">{{reservation.liftOffDate}}</span>
-                                    <span style="font-style: italic;">{{reservation.landingDate}}</span>
+                                    <span class="date">{{reservation.liftOffDate}}</span>
+                                    <p style="opacity: 0">→</p>
+                                    <span class="date">{{reservation.landingDate}}</span>
                                 </div>
                             </div>
                         </label>

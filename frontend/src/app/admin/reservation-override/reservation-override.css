@@ -51,7 +51,7 @@ main {
             & .row {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-between;
+                gap: 30px;
 
                 & label {
                     display: inline-flex;
@@ -65,11 +65,29 @@ main {
                     }
                 }
 
+                & .name {
+                    font-weight: bold;
+                    min-width: 65px;
+                }
+
                 & .route {
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    gap: 50px;
+
+                    & .airport, & .date {
+                        &:last-child {
+                            text-align: right;
+                        }
+                    }
+
+                    & .airport {
+                        font-weight: bold;
+                    }
+
+                    & .date {
+                        font-style: italic;
+                    }
                 }
             }
             
