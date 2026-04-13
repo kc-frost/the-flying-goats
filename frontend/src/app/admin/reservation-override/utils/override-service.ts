@@ -21,6 +21,15 @@ export class OverrideService {
   // email of pilot
   // ...the rest of the admin fields
   getCancelleableReservations() {
-    return this.http.get(`${environment.api_url}/admin/cancelleable-reservations`);
+    return this.http.get<{
+      IATA: string,
+      username: string,
+      liftOff: string,
+      landing: string,
+      origin: string,
+      destination: string,
+      staffID?: number,     // optional
+      pilotEmail?: string   // optional
+    }[]>(`${environment.api_url}/admin/cancelleable-reservations`);
   }
 }
