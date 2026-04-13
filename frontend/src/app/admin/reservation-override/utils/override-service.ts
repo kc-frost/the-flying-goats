@@ -29,8 +29,12 @@ export class OverrideService {
       origin: string,
       destination: string,
       bookingNumber: number,
-      staffID?: number,     // optional
-      pilotEmail?: string   // optional
+      assignedPilot?: number,     // optional
+      email?: string    // optional
     }[]>(`${environment.api_url}/admin/cancelleable-reservations`);
+  }
+
+  deleteReservation(cancellationForm: any) {
+    return this.http.post(`${environment.api_url}/admin/override-reservation`, cancellationForm.value)
   }
 }
