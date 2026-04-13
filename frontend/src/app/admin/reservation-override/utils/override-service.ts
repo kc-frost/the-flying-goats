@@ -29,8 +29,6 @@ export class OverrideService {
       origin: string,
       destination: string,
       bookingNumber: number,
-      assignedPilot?: number,     // optional
-      email?: string    // optional
     }[]>(`${environment.api_url}/admin/cancelleable-reservations`);
   }
 
