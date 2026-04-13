@@ -55,8 +55,8 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: AdminDashboard,
-        canActivate: [userAuthGuard, adminAuthGuard],
-        canActivateChild: [userAuthGuard, adminAuthGuard],
+        canActivate: [userAuthGuard],
+        canActivateChild: [userAuthGuard],
         children: [
             // modal outlet
             {
@@ -83,7 +83,7 @@ export const routes: Routes = [
             {
                 path: 'reservation-override',
                 component: ReservationOverride,
-                canActivate: [userAuthGuard, adminAuthGuard]
+                canActivate: [userAuthGuard]
             }
         ]
     },
