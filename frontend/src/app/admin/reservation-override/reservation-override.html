@@ -28,7 +28,7 @@
                             </div>
                         </label>
 
-                        <input [id]="idx" (change)="onSelect(reservation)" name="select" type="radio" />
+                        <input [id]="idx" [value]="reservation.bookingNumber" [formControl]="cancellationForm.controls.bookingNumber" name="select" type="radio" />
                     </div>
                     <hr>
                 }

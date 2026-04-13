@@ -43,13 +43,14 @@ def get_cancelleable_reservations():
             try:
                 query = """
                     SELECT 
-                        pf.assignedPilot, pf.email, af.*
+                        pf.userID, pf.email as pilotEmail, af.*
                     FROM
                         (SELECT 
-                            f.IATA, f.assignedPilot, s.email
+                            u.userID, f.IATA, f.assignedPilot, s.email
                         FROM
                             flight f
                         INNER JOIN staff s ON f.assignedPilot = s.staffID
+                        INNER JOIN users u ON s.email = u.email
                         WHERE
                             s.positionID = 2) pf
                             INNER JOIN
@@ -70,10 +71,9 @@ def get_cancelleable_reservations():
                         INNER JOIN users u ON bh.userID = u.userID
                         WHERE bh.bookingStatus != 'Cancelled') af ON pf.IATA = af.IATA
                     WHERE
-                        pf.email = %s;
+                        pf.userID = %s;
                 """
-                print(current_user.email)
-                cursor.execute(query, (current_user.email,))
+                cursor.execute(query, (current_user.id,))
                 rows = cursor.fetchall()
 
                 if rows is None:
@@ -87,7 +87,7 @@ def get_cancelleable_reservations():
         else:
             return {'err': 'you are neither an admin or a pilot. get out of here'}
         
-def do_override_reservation(bookingNumber: int, reason: str, staffID: int | None):
+def do_override_reservation(bookingNumber: int, reason: str):
     conn = get_connection()
 
     with conn.cursor() as cursor:
@@ -105,11 +105,7 @@ def do_override_reservation(bookingNumber: int, reason: str, staffID: int | None
                 WHERE `bookingNumber` = %s
             """
 
-            # TODO: Admin is a role now, adjust for that later
-            if (current_user.is_admin):
-                staffID = current_user.id
-            
-            cursor.execute(query, (staffID, reason, bookingNumber, ))
+            cursor.execute(query, (current_user.id, reason, bookingNumber, ))
 
             conn.commit()
 

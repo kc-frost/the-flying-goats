@@ -25,8 +25,7 @@ export class ReservationOverride {
 
   cancellationForm = this.formBuilder.group({
     bookingNumber: ['', Validators.required],
-    reason: ['', Validators.required],
-    staffID: ['']   // has value if override was done by a pilot
+    reason: ['', Validators.required]
   })
 
   ngOnInit() {
@@ -51,19 +50,11 @@ export class ReservationOverride {
     });
   }
 
-  onSelect(reservation: any) {
-    this.cancellationForm.patchValue({
-      bookingNumber: reservation.bookingNumber,
-
-      // kai note: returns RHS iff not null, otherwise, returns LHS
-      staffID: reservation.staffID ?? null
-    });
-  }
-
   deleteReservation() {
     this.override.deleteReservation(this.cancellationForm).subscribe({
       next: (res) => {
         this.getCancelleableReservations();
+        this.cancellationForm.reset();
       }
     });
   }

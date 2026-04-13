@@ -22,9 +22,8 @@ def override_reservation():
 
     bookingNumber = data['bookingNumber']
     reason = data['reason']
-    staffID = data['staffID']
 
-    result = do_override_reservation(bookingNumber, reason, staffID)
+    result = do_override_reservation(bookingNumber, reason)
 
     if isinstance(result, dict) and 'err' in result:
         return jsonify(result), 500
