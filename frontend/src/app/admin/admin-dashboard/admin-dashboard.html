@@ -32,6 +32,10 @@
           <img src="/book-flight/calendar.svg" />
           <span class="nav-title">Analytics</span>
         </div>
+        <div class="nav-box" [routerLink]="['view-cancellations']">
+          <img src="/book-flight/calendar.svg" />
+          <span class="nav-title">All Cancellations</span>
+        </div>
       }
       
       @if ((userService.currentRole$ | async) === 'Pilot') {
