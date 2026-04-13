@@ -1,0 +1,95 @@
+main {
+    padding: 35px;
+
+    position: absolute;
+    top: 90px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color:blue;
+}
+
+.form-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+
+    .form {
+        box-sizing: border-box;
+        width: 500px;
+        height: 460px;
+        background-color: whitesmoke;
+        margin-top: 25px;
+        border-radius: 5px;
+        overflow: hidden;
+        
+        & header {
+            padding-left: 20px;
+            position: sticky;
+            top: 0;
+        }
+    }
+    
+    .content {
+        /* padding: 20px; */
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: inherit;
+        height: inherit;
+        scrollbar-width: thin;
+
+        display: flex;
+        flex-direction: column;
+
+        &.reserve {
+            opacity: 1;
+            gap: 10px;
+        }
+
+        &.reason {
+            flex: 1;
+            align-items: center;
+            gap: 30px;
+
+            & textarea {
+                margin-top: 50px;
+                width: 300px;
+                height: 100px;
+                resize: none;
+
+                border-radius: 3px;
+
+                &:invalid {
+                    border: 3px solid red;
+                }
+
+                &:valid {
+                    border: 3px solid var(--primary-color);
+                }
+            }
+
+            & button {
+                font-family: var(--body-font);
+                font-weight: bold;
+                font-size: 0.9rem;
+                width: 80px;
+                height: 30px;
+                border: 2px solid black;
+                border-radius: 5px;
+                cursor: pointer;
+
+                transition: background-color 400ms, transform 400ms;
+
+                &:hover {
+                    background-color: rgb(216, 216, 216);
+                }
+
+                &:active {
+                    transform: scale(0.90);
+                }
+            }
+        }
+
+    }
+}
