@@ -61,6 +61,10 @@ export class ReservationOverride {
   }
 
   deleteReservation() {
-    this.override.deleteReservation(this.cancellationForm).subscribe();
+    this.override.deleteReservation(this.cancellationForm).subscribe({
+      next: (res) => {
+        this.getCancelleableReservations();
+      }
+    });
   }
 }
