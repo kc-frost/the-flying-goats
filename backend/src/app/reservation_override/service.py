@@ -9,7 +9,8 @@ def get_cancelleable_reservations():
         if current_user.is_admin == True:
             try:
                 query = """
-                    SELECT 
+                    SELECT
+                        bh.bookingNumber,
                         fd.IATA,
                         u.username,
                         sd.liftOff,
@@ -28,25 +29,6 @@ def get_cancelleable_reservations():
                         airports ad ON fd.destination = ad.airportID
                             INNER JOIN
                         users u ON bh.userID = u.userID 
-                    UNION ALL SELECT 
-                        fd.IATA,
-                        u.username,
-                        sd.liftOff,
-                        sd.landing,
-                        ao.IATA as origin,
-                        ad.IATA as destination
-                    FROM
-                        bookinghistory bh
-                            INNER JOIN
-                        schedule sd ON bh.returnScheduleID = sd.scheduleID
-                            INNER JOIN
-                        flight fd ON sd.flightID = fd.IATA
-                            INNER JOIN
-                        airports ao ON fd.origin = ao.airportID
-                            INNER JOIN
-                        airports ad ON fd.destination = ad.airportID
-                            INNER JOIN
-                        users u ON bh.userID = u.userID;
                 """
 
                 cursor.execute(query,)
@@ -81,7 +63,8 @@ def get_cancelleable_reservations():
                                 sd.liftOff,
                                 sd.landing,
                                 ao.IATA AS origin,
-                                ad.IATA AS destination
+                                ad.IATA AS destination,
+                                bh.bookingNumber
                         FROM
                             bookinghistory bh
                         INNER JOIN schedule sd ON bh.departScheduleID = sd.scheduleID

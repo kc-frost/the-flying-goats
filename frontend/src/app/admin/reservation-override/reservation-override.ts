@@ -18,7 +18,7 @@ export class ReservationOverride {
   // i think it's easier if we just do a "get all reservations" if the user is an admin (backend), and do another query for getting all that staff's specific appointments, so we can reuse this entire component with little change to this code
 
   // my favorite behaviorsubject
-  private userReservations = new BehaviorSubject<{ username: string, origin: string, destination: string, liftOffDate: string, landingDate: string }[]>([]);
+  private userReservations = new BehaviorSubject<{ username: string, origin: string, destination: string, liftOffDate: string, landingDate: string, bookingNumber: number }[]>([]);
   userReservations$ = this.userReservations.asObservable();
 
 
@@ -29,13 +29,15 @@ export class ReservationOverride {
   getCancelleableReservations() {
     this.override.getCancelleableReservations().subscribe({
       next: (res) => {
+        console.log(res);
         this.userReservations.next(
           res.map(r => ({
           username: r.username,
           origin: r.origin,
           destination: r.destination,
           liftOffDate: r.liftOff,
-          landingDate: r.landing
+          landingDate: r.landing,
+          bookingNumber: r.bookingNumber
         })));
       }
     });
