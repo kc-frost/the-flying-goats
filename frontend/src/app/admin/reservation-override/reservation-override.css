@@ -51,13 +51,21 @@ main {
             & .row {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-between;
-
+                gap: 30px;
+                padding: 7px;
+                
                 & label {
+                    transition: background-color 300ms, padding 300ms ease-in-out;
                     display: inline-flex;
                     flex-direction: row;
 
                     gap: 20px;
+
+                    &:has(+ input[type=radio]:checked) {
+                    background-color: rgb(212, 212, 212);
+                    border-radius: 5px;
+                    padding: 2px;
+                }
 
                     & .r {
                         display: flex;
@@ -65,11 +73,29 @@ main {
                     }
                 }
 
+                & .name {
+                    font-weight: bold;
+                    min-width: 65px;
+                }
+
                 & .route {
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    gap: 50px;
+
+                    & .airport, & .date {
+                        &:last-child {
+                            text-align: right;
+                        }
+                    }
+
+                    & .airport {
+                        font-weight: bold;
+                    }
+
+                    & .date {
+                        font-style: italic;
+                    }
                 }
             }
             

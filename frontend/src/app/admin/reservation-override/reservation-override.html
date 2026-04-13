@@ -9,26 +9,30 @@
             <header><h2>Select Reservation to Cancel</h2></header>
             <div class="content reserve">
                 <!-- Plan, use the classic for loop where its a div flexbox with text and a RADIO button. Easier to debug if we just allow cancellations one at a time rather than in bulk -->
-                @for (reservation of userReservations; track $index; let idx = $index) {
+                @for (reservation of userReservations$ | async; track $index; let idx = $index) {
                     <div class="row">
                         <label [for]="idx">
-                            <p style="font-weight: bold; width: 70px;">{{reservation.username}}</p>
+                            <p class="name">{{reservation.username}}</p>
+                            <hr>
                             <div class="r">
                                 <div class="route">
-                                    <span style="font-weight: bold;">{{reservation.origin}}</span>
+                                    <span class="airport">{{reservation.origin}}</span>
                                     <p>→</p>
-                                    <span style="font-weight: bold;">{{reservation.destination}}</span>
+                                    <span class="airport">{{reservation.destination}}</span>
                                 </div>
                                 <div class="route">
-                                    <span style="font-style: italic;">{{reservation.liftOffDate}}</span>
-                                    <span style="font-style: italic;">{{reservation.landingDate}}</span>
+                                    <span class="date">{{reservation.liftOffDate}}</span>
+                                    <p style="opacity: 0">→</p>
+                                    <span class="date">{{reservation.landingDate}}</span>
                                 </div>
                             </div>
                         </label>
 
-                        <input [id]="idx" name="select" type="radio" />
+                        <input [id]="idx" [value]="reservation.bookingNumber" [formControl]="cancellationForm.controls.bookingNumber" name="select" type="radio" />
                     </div>
                     <hr>
+                } @empty {
+                    <p style="font-weight: bold;">No reservations at this time.</p>
                 }
             </div>
         </section>
@@ -37,8 +41,8 @@
             <header><h2>Reason for Cancellation</h2></header>
 
             <div class="content reason">
-                <textarea id="reason" required placeholder="Schedule conflict, maintenance due, taking leave, etc."></textarea>
-                <button>Submit</button>
+                <textarea [formControl]="cancellationForm.controls.reason" id="reason" required placeholder="Schedule conflict, maintenance due, taking leave, etc."></textarea>
+                <button (click)="deleteReservation()">Submit</button>
             </div>
             
         </section>
