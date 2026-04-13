@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { OverrideService } from './utils/override-service';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-reservation-override',
@@ -20,12 +20,13 @@ export class ReservationOverride {
   // i think it's easier if we just do a "get all reservations" if the user is an admin (backend), and do another query for getting all that staff's specific appointments, so we can reuse this entire component with little change to this code
 
   // my favorite behaviorsubject
-  private userReservations = new BehaviorSubject<{ username: string, origin: string, destination: string, liftOffDate: string, landingDate: string, bookingNumber: number }[]>([]);
+  private userReservations = new BehaviorSubject<{ username: string, origin: string, destination: string, liftOffDate: string, landingDate: string, bookingNumber: number, staffID?: number }[]>([]);
   userReservations$ = this.userReservations.asObservable();
 
   cancellationForm = this.formBuilder.group({
     bookingNumber: ['', Validators.required],
-    reason: ['', Validators.required]
+    reason: ['', Validators.required],
+    staffID: ['']   // has value if override was done by a pilot
   })
 
   ngOnInit() {
@@ -43,13 +44,23 @@ export class ReservationOverride {
           destination: r.destination,
           liftOffDate: r.liftOff,
           landingDate: r.landing,
-          bookingNumber: r.bookingNumber
+          bookingNumber: r.bookingNumber,
+          staffID: r.assignedPilot
         })));
       }
     });
   }
 
+  onSelect(reservation: any) {
+    this.cancellationForm.patchValue({
+      bookingNumber: reservation.bookingNumber,
+
+      // kai note: returns RHS iff not null, otherwise, returns LHS
+      staffID: reservation.staffID ?? null
+    });
+  }
+
   deleteReservation() {
-    console.log(this.cancellationForm.value);
+    this.override.deleteReservation(this.cancellationForm).subscribe();
   }
 }
