@@ -6,6 +6,7 @@ import { environment } from '../../../../_environments/environment';
 @Injectable({
   providedIn: 'root',
 })
+
 export class FlightService {
   private http = inject(HttpClient);
 
@@ -33,11 +34,18 @@ export class FlightService {
     )
   }
 
-  getFlights(origin: string, destination: string) {
+  getFlights(origin: string, destination: string, departureDate: string, arrivalDate: string) {
+    // FUCK MYSQL AND IT'S NEEDY BULLSHIT
+    const formatDate = (date: any) => {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  };
     return this.http.get<any[]>(`${environment.api_url}/api/available-flights`,
       { params: {
         user_origin: origin,
-        user_destination: destination
+        user_destination: destination,
+        departure_date: formatDate(departureDate),
+        arrival_date: formatDate(arrivalDate)
       }}
     );
   }

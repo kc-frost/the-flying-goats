@@ -81,7 +81,7 @@ def create_plane():
             "success": False,
             "message": result.get("error")
         }), 500
-    
+
 @bp.get('/planes')
 @admin_required
 def planes():
@@ -94,7 +94,7 @@ def planes():
             "success": False,
             "message": result.get("error")
         }), 500
-    
+
 # Again, these are seperate. Probably going to display this for something else later,
 # but for now atleast, in inventory, planes will be called, not available planes.
 @bp.get('/planes/available')
@@ -109,7 +109,7 @@ def available_planes():
             "success": False,
             "message": result.get("error")
         }), 500
-    
+
 @bp.post('/planes/update-ICAO')
 @admin_required
 def updatePlaneStatus():
@@ -126,7 +126,7 @@ def updatePlaneStatus():
             "success": False,
             "message": result.get("error")
         }), 500
-    
+
 @bp.post('/planes/delete')
 @admin_required
 def deletePlane():
@@ -143,7 +143,7 @@ def deletePlane():
             "success": False,
             "message": result.get("error")
         }), 500
-    
+
 # Read how this works in service.py
 @bp.post('/planes/clear-finished')
 @admin_required

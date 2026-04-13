@@ -59,8 +59,6 @@ def register_blueprints(app):
     app.register_blueprint(inventory.routes.bp, url_prefix="/admin")
     app.register_blueprint(view_reservations.routes.bp, url_prefix="/admin")
     app.register_blueprint(view_users.routes.bp, url_prefix="/admin")
-
-
 # utils
 @login_manager.user_loader
 def load_user(user_id: str):

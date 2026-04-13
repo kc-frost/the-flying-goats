@@ -46,6 +46,7 @@ def filter_airports():
     
     return jsonify(airports), 200
 
+# Changed, now accepts departure and return dates
 @bp.route('/available-flights', methods=['GET'])
 def available_flights():
     """Gets the available flights between two dates
@@ -55,8 +56,12 @@ def available_flights():
     """
     origin = request.args.get('user_origin')
     destination = request.args.get('user_destination')
+    departureDate = request.args.get('departure_date')
+    # wtf you can do this?
+    returnDate = request.args.get('return_date') or request.args.get('arrival_date')
 
-    flights = get_available_flights(origin, destination)
+
+    flights = get_available_flights(origin, destination, departureDate, returnDate)
 
     if "error" in flights:
         return jsonify(flights), 500

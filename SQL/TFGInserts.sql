@@ -1,4 +1,8 @@
 use TFG;
+select * from staff;
+select f.*, s.liftOff from flight f join schedule s on f.IATA = s.flightID where f.assignedPilot = 3;
+
+
 
 -- plane inserts
 insert into plane (ICAO) values
