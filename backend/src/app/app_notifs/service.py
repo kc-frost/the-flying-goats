@@ -33,44 +33,103 @@ def get_upcoming_flights(user_id: str):
     
     return rows
 
-# This had a small bug where it was using old column names, idk how it connects to book a flight but that's how I found it, I fixed it
-def get_new_assignments_amount(since: str, then:str, staff_email: str):
-    """Get all new reservations assigned to a pilot since `last_checked` time
 
-    Args:
-        last_checked (str): Time of when new reservations were last checked
-        staff_email (str): Staff's email used for identification
+def get_new_assignments_amount(user_id: str):
+    # Count notifications from the pending pilot-assignment table instead of re-searching bookinghistory table again.
+    result = get_pilot_assignment_notifications(user_id)
 
-    Returns:
-        (int | dict): Amount of new reservations, or an error message
-    """    
+    if isinstance(result, dict) and 'err' in result:
+        return result
+
+    return len(result)
+
+def get_cancellation_notifications(user_id):
+    # Grab every cancellation notification waiting to be received by the logged in user.
     conn = get_connection()
 
     with conn.cursor() as cursor:
-
         try:
             query = """
-            SELECT b.bookingDate, s.scheduleID, f.assignedPilot, st.email
-            FROM booking b
-            JOIN schedule s on b.departScheduleID = s.scheduleID
-            JOIN flight f on s.flightID = f.IATA
-            JOIN staff st on f.assignedPilot = st.staffID
-            WHERE b.bookingDate >= %s AND b.bookingDate <=%s AND st.email = %s
-            
-            UNION
-            
-            SELECT b.bookingDate, s.scheduleID, f.assignedPilot, st.email
-            FROM booking b
-            JOIN schedule s on b.returnScheduleID = s.scheduleID
-            JOIN flight f on s.flightID = f.IATA
-            JOIN staff st on f.assignedPilot = st.staffID
-            WHERE b.bookingDate >= %s AND b.bookingDate <=%s AND st.email = %s
+                SELECT bookingID
+                FROM cancellationNotifs
+                WHERE userID = %s
+                ORDER BY bookingID
             """
-
-            cursor.execute(query, (since, then, staff_email, since, then, staff_email))
+            cursor.execute(query, (user_id,))
             rows = cursor.fetchall()
 
         except Exception as e:
             return {"err": str(e)}
-    
-    return len(rows)
+
+    return rows
+
+def acknowledge_cancellation_notification(user_id, booking_id):
+    # Remove the exact cancellation notification row once the app confirms it was received.
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                DELETE FROM cancellationNotifs
+                WHERE userID = %s AND bookingID = %s
+            """
+            cursor.execute(query, (user_id, booking_id))
+            conn.commit()
+
+            # No affected rows means there was no notification matching this user/booking pair.
+            if cursor.rowcount == 0:
+                return {"err": "notification not found"}
+
+        except Exception as e:
+            return {"err": str(e)}
+
+    return {"ok": True}
+
+def get_pilot_assignment_notifications(user_id):
+    """Get pilot assignment notifications waiting for acknowledgement.
+
+    Args:
+        user_id (str): Logged-in user's ID. Staff IDs mirror user IDs in this schema.
+
+    Returns:
+        (list | dict): Pending pilot assignment notifications, or an error message.
+    """
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT flightID
+                FROM pilotAssignmentNotifs
+                WHERE userID = %s
+                ORDER BY flightID
+            """
+            cursor.execute(query, (user_id,))
+            rows = cursor.fetchall()
+
+        except Exception as e:
+            return {"err": str(e)}
+
+    return rows
+
+def acknowledge_pilot_assignment_notification(user_id, flight_id):
+    # Remove the exact pilot assignment notification row once the app confirms it was received.
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                DELETE FROM pilotAssignmentNotifs
+                WHERE userID = %s AND flightID = %s
+            """
+            cursor.execute(query, (user_id, flight_id))
+            conn.commit()
+
+            # No affected rows means there was no notification matching the user and flightID
+            if cursor.rowcount == 0:
+                return {"err": "notification not found"}
+
+        except Exception as e:
+            return {"err": str(e)}
+
+    return {"ok": True}
