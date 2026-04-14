@@ -63,6 +63,11 @@ export class Analytics {
     this.getPerMonthReservations();
     this.getLongestRegisteredUsers();
     this.getActiveUsersThisMonth();
+    this.getTopStaffThisMonth();
+    this.getTotalCancellations();
+    this.getTotalCancellationsThisMonth();
+    this.getCancellationsThisMonthByCategory();
+    this.getTotalReservationsThisYear();
   }
 
   refresh() {
@@ -71,6 +76,11 @@ export class Analytics {
     this.getPerMonthReservations();
     this.getLongestRegisteredUsers();
     this.getActiveUsersThisMonth();
+    this.getTopStaffThisMonth();
+    this.getTotalCancellations();
+    this.getTotalCancellationsThisMonth();
+    this.getCancellationsThisMonthByCategory();
+    this.getTotalReservationsThisYear();
   }
 
   // USER STATS
@@ -141,6 +151,73 @@ export class Analytics {
         }
 
         this.perMonthReservations.next(monthlyReservations);
+      }
+    })
+  }
+
+  // STAFF STATS
+  private topStaffThisMonth = new BehaviorSubject<{ staff: string, amount: number }[]>([]);
+  topStaffThisMonth$ = this.topStaffThisMonth.asObservable();
+
+  // CANCELLATION STATS
+  private totalCancellations = new BehaviorSubject<number>(0);
+  totalCancellations$ = this.totalCancellations.asObservable();
+
+  private totalCancellationsThisMonth = new BehaviorSubject<number>(0);
+  totalCancellationsThisMonth$ = this.totalCancellationsThisMonth.asObservable();
+
+  private cancellationsThisMonthByCategory = new BehaviorSubject<{ category: string, amount: number }[]>([]);
+  cancellationsThisMonthByCategory$ = this.cancellationsThisMonthByCategory.asObservable();
+
+  private totalReservationsThisYear = new BehaviorSubject<number>(0);
+  totalReservationsThisYear$ = this.totalReservationsThisYear.asObservable();
+
+  getTopStaffThisMonth() {
+    this.analytics.getTopStaffThisMonth().subscribe({
+      next: (res) => {
+        this.topStaffThisMonth.next(
+          res.map(staff => ({
+            staff: `${staff.fname} ${staff.lname}`,
+            amount: staff.bookingCount
+          }))
+        );
+      }
+    })
+  }
+
+  getTotalCancellations() {
+    this.analytics.getTotalCancellations().subscribe({
+      next: (res) => {
+        this.totalCancellations.next(res.total_cancellations);
+      }
+    })
+  }
+
+  getTotalCancellationsThisMonth() {
+    this.analytics.getTotalCancellationsThisMonth().subscribe({
+      next: (res) => {
+        this.totalCancellationsThisMonth.next(res.total_cancellations);
+      }
+    })
+  }
+
+  getCancellationsThisMonthByCategory() {
+    this.analytics.getCancellationsThisMonthByCategory().subscribe({
+      next: (res) => {
+        this.cancellationsThisMonthByCategory.next(
+          res.map(category => ({
+            category: category.cancellationCategory,
+            amount: category.total_cancellations
+          }))
+        );
+      }
+    })
+  }
+
+  getTotalReservationsThisYear() {
+    this.analytics.getTotalReservationsThisYear().subscribe({
+      next: (res) => {
+        this.totalReservationsThisYear.next(res.yearly_reservations);
       }
     })
   }

@@ -31,4 +31,24 @@ export class AnalyticsService {
   getPerMonthReservations() {
     return this.http.get<{month: number, monthly_reservations: number}[]>(`${environment.api_url}/admin/per-month-reservations`)
   }
+
+  getTopStaffThisMonth() {
+    return this.http.get<{fname: string, lname: string, staffID: number, bookingCount: number, staffRank: number}[]>(`${environment.api_url}/admin/top-staff-this-month`)
+  }
+
+  getTotalCancellations() {
+    return this.http.get<{total_cancellations: number}>(`${environment.api_url}/admin/total-cancellations`)
+  }
+
+  getTotalCancellationsThisMonth() {
+    return this.http.get<{total_cancellations: number}>(`${environment.api_url}/admin/total-cancellations-this-month`)
+  }
+
+  getCancellationsThisMonthByCategory() {
+    return this.http.get<{cancellationCategory: string, total_cancellations: number}[]>(`${environment.api_url}/admin/cancellations-this-month-by-category`)
+  }
+
+  getTotalReservationsThisYear() {
+    return this.http.get<{yearly_reservations: number}>(`${environment.api_url}/admin/total-reservations-this-year`)
+  }
 }

@@ -73,8 +73,8 @@
             </details>
 
             <details>
-                <summary>Total Reservations This Year (not done)</summary>
-                <p style="font-size: 2rem; font-weight: bold; text-align: center;">{{reservationsThisMonth$ | async}}</p>
+                <summary>Total Reservations This Year</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">{{totalReservationsThisYear$ | async}}</p>
                 <p style="text-align: center; font-size: small;">as of this year</p>
             </details>
         </div>
@@ -83,16 +83,31 @@
         <div class="stat-group">
             <!-- total cancellations -->
             <details>
-                <summary>Total Cancellations (not done)</summary>
-                <p style="font-size: 2rem; font-weight: bold; text-align: center;">69</p>
-                <p style="text-align: center; font-size: small;">bye bye...</p>
+                <summary>Total Cancellations</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">{{totalCancellations$ | async}}</p>
+                <p style="text-align: center; font-size: small;">all cancelled bookings on record</p>
             </details>
 
             <!-- total cancellations this month -->
             <details>
-                <summary>Total Cancellations This Month (not done)</summary>
-                <p style="font-size: 2rem; font-weight: bold; text-align: center;">69</p>
-                <p style="text-align: center; font-size: small;">come back...</p>
+                <summary>Total Cancellations This Month</summary>
+                <p style="font-size: 2rem; font-weight: bold; text-align: center;">{{totalCancellationsThisMonth$ | async}}</p>
+                <p style="text-align: center; font-size: small;">cancelled bookings this month</p>
+            </details>
+
+            <details>
+                <summary>Cancellations This Month By Category</summary>
+                <ul>
+                    @for (row of cancellationsThisMonthByCategory$ | async; track $index) {
+                        <li>
+                            <strong>{{row.category}}</strong>
+                            <span>
+                                <i>{{row.amount}}</i>
+                                cancellations
+                            </span>
+                        </li>
+                    }
+                </ul>
             </details>
         </div>
 
@@ -100,14 +115,14 @@
         <div class="stat-group">
             <!-- top 3 STAFF who book the most often -->
             <details>
-                <summary>Top 3 Staff (not done)</summary>
+                <summary>Top 3 Staff</summary>
                 <ul>
-                    @for (row of top3Users$ | async; track $index) {
+                    @for (row of topStaffThisMonth$ | async; track $index) {
                         <li>
-                            <strong>{{row.user}}</strong>
+                            <strong>{{row.staff}}</strong>
                             <span>
                                 <i>{{row.amount}}</i>
-                                reservations
+                                bookings
                             </span>
                         </li>
                     }

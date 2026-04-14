@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 
 from .service import get_upcoming_flights, get_new_assignments_amount, acknowledge_cancellation_notification, acknowledge_pilot_assignment_notification, get_cancellation_notifications, get_pilot_assignment_notifications
 
-
 bp = Blueprint("app_notifs", __name__)
 
 @bp.route('/upcoming-flights', methods=['GET'])
