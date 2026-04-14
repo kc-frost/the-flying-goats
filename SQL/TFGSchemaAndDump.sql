@@ -139,10 +139,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `RememberBookings` AFTER INSERT ON `booking` FOR EACH ROW insert into bookinghistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
+CREATE DEFINER=`root`@`localhost` TRIGGER `RememberBookings` AFTER INSERT ON `booking` FOR EACH ROW insert into bookinghistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
     select new.bookingNumber, new.bookingDate, new.userID, new.departSeat, new.returnSeat, new.departScheduleID, new.returnScheduleID, ds.liftOff, ds.landing, rs.liftOff, rs.landing
     from schedule ds
-    join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID; */;;
+    join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -157,7 +157,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updateBookingHistoryAfterBookingCancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookinghistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber; */;;
+CREATE DEFINER=`root`@`localhost` TRIGGER `updateBookingHistoryAfterBookingCancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookinghistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -172,10 +172,10 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createCancellationNotif` AFTER DELETE ON `booking` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `createCancellationNotif` AFTER DELETE ON `booking` FOR EACH ROW begin
     insert into cancellationnotifs(userID, bookingID)
     values(old.userID, old.bookingNumber);
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -316,7 +316,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `enforceAvailablePilot` BEFORE INSERT ON `flight` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `enforceAvailablePilot` BEFORE INSERT ON `flight` FOR EACH ROW begin
 	if new.assignedPilot is null
 		then
 			signal sqlstate '45000'
@@ -334,7 +334,7 @@ DELIMITER ;;
 			signal sqlstate '45000'
             set message_text = "The staff attempting to take control of the plane is NOT a pilot";
 	end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -349,7 +349,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updatePlaneAvailability` AFTER INSERT ON `flight` FOR EACH ROW update hanger h set planeStatus = "In use" where new.ICAO = h.ICAO */;;
+CREATE DEFINER=`root`@`localhost` TRIGGER `updatePlaneAvailability` AFTER INSERT ON `flight` FOR EACH ROW update hanger h set planeStatus = "In use" where new.ICAO = h.ICAO;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -364,12 +364,12 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createPilotAssignmentNotifAfterInsert` AFTER INSERT ON `flight` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `createPilotAssignmentNotifAfterInsert` AFTER INSERT ON `flight` FOR EACH ROW begin
     if new.assignedPilot is not null then
         insert into pilotassignmentnotifs(userID, flightID)
         values(new.assignedPilot, new.IATA);
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -502,7 +502,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `transportandequipmentinsert` AFTER INSERT ON `item` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `transportandequipmentinsert` AFTER INSERT ON `item` FOR EACH ROW begin
 	if (new.type = "equipment")
 		then
 			insert into equipment(itemID, equipmentName, equipmentDescription) values 
@@ -516,7 +516,7 @@ DELIMITER ;;
 			insert into miscellaneousitem(itemID, itemName, itemDescription) values
             (new.itemID, new.itemName, new.itemDescription);
 	end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -653,7 +653,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `storePlaneInHanger` AFTER INSERT ON `plane` FOR EACH ROW insert into hanger(ICAO, planestatus) values (new.ICAO, "Available") */;;
+CREATE DEFINER=`root`@`localhost` TRIGGER `storePlaneInHanger` AFTER INSERT ON `plane` FOR EACH ROW insert into hanger(ICAO, planestatus) values (new.ICAO, "Available");;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -668,7 +668,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `editingPlaneInUse` BEFORE UPDATE ON `plane` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `editingPlaneInUse` BEFORE UPDATE ON `plane` FOR EACH ROW begin
 	if old.ICAO <> new.ICAO then
 		if exists (
 			select 1
@@ -688,7 +688,7 @@ DELIMITER ;;
 			set message_text = 'That ICAO already exists in the system.';
 		end if;
 	end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -921,7 +921,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validFlightInsertPrevention` BEFORE INSERT ON `schedule` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `validFlightInsertPrevention` BEFORE INSERT ON `schedule` FOR EACH ROW begin
     if ifnull(@seed_mode, 0) = 0 then
         if exists (
             select 1
@@ -940,7 +940,7 @@ DELIMITER ;;
             set message_text = 'Pilot is already assigned to another active flight during that time.';
         end if;
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -955,7 +955,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setScheduleStatusBeforeInsert` BEFORE INSERT ON `schedule` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `setScheduleStatusBeforeInsert` BEFORE INSERT ON `schedule` FOR EACH ROW begin
     if ifnull(@seed_mode, 0) = 0 then
         if now() < date_sub(new.liftOff, interval 1 hour) then
             set new.status = 'Grounded';
@@ -978,7 +978,7 @@ DELIMITER ;;
             set new.status = 'Grounded';
         end if;
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -993,7 +993,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validFlightUpdatePrevention` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `validFlightUpdatePrevention` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
     if ifnull(@seed_mode, 0) = 0 then
         if exists (
             select 1
@@ -1012,7 +1012,7 @@ DELIMITER ;;
             set message_text = 'Pilot is already assigned to another active flight during that time.';
         end if;
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1027,7 +1027,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setScheduleStatusBeforeUpdate` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `setScheduleStatusBeforeUpdate` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
     if ifnull(@seed_mode, 0) = 0 then
         if now() < date_sub(new.liftOff, interval 1 hour) then
             set new.status = 'Grounded';
@@ -1050,7 +1050,7 @@ DELIMITER ;;
             set new.status = 'Grounded';
         end if;
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1090,7 +1090,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberStaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffhistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered"); */;;
+CREATE DEFINER=`root`@`localhost` TRIGGER `rememberStaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffhistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered");;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1105,7 +1105,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedStaff` AFTER DELETE ON `staff` FOR EACH ROW update staffhistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID; */;;
+CREATE DEFINER=`root`@`localhost` TRIGGER `deletedStaff` AFTER DELETE ON `staff` FOR EACH ROW update staffhistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1272,13 +1272,13 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaff` AFTER INSERT ON `users` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `createstaff` AFTER INSERT ON `users` FOR EACH ROW begin
     if new.isStaff = true
 		then
 			insert into staff(staffID, email) values
             (new.userID, new.email);
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1293,9 +1293,9 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberUser` AFTER INSERT ON `users` FOR EACH ROW -- FIX THIS
+CREATE DEFINER=`root`@`localhost` TRIGGER `rememberUser` AFTER INSERT ON `users` FOR EACH ROW -- FIX THIS
 insert into userhistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
-values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate); */;;
+values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate);;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1310,13 +1310,13 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaffAfterUpdate` AFTER UPDATE ON `users` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `createstaffAfterUpdate` AFTER UPDATE ON `users` FOR EACH ROW begin
     if new.isStaff = true 
 		then
 			insert into staff(staffID, email) values
             (new.userID, new.email);
     end if;
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1331,14 +1331,14 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedUserAndStaff` AFTER DELETE ON `users` FOR EACH ROW begin
+CREATE DEFINER=`root`@`localhost` TRIGGER `deletedUserAndStaff` AFTER DELETE ON `users` FOR EACH ROW begin
 	if old.isStaff = true
 		then
 			delete from staff where old.userID = staffID;
 	end if;
     update userhistory set accountStatus = "Deleted", deletionDate = curdate() where userID = old.userID;
     
-end */;;
+end;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;

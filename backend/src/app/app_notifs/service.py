@@ -41,7 +41,7 @@ def get_new_assignments_amount(user_id: str):
     if isinstance(result, dict) and 'err' in result:
         return result
 
-    return len(result)
+    return len(result)\
 
 def get_cancellation_notifications(user_id):
     # Grab every cancellation notification waiting to be received by the logged in user.
