@@ -634,7 +634,7 @@ for each row
 create trigger updateBookingHistoryAfterBookingCancellation
 after delete on booking
 for each row
-	update bookingHistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber;
+	update bookingHistory set bookingStatus = "Cancelled", cancellationDate = now() where bookingNumber = old.bookingNumber;
     
 create trigger createCancellationNotif
 after delete on booking
