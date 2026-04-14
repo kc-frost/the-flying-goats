@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { About } from './about/about';
+import { Analytics } from './admin/analytics/analytics';
 import { Home } from './home/home';
 import { Login } from './auth-dropdown/login/login';
 import { Register } from './auth-dropdown/register/register';
@@ -15,6 +16,7 @@ import { ViewAppointments } from './admin/view-appointments/view-appointments';
 import { ViewUsers } from './admin/view-users/view-users';
 import { PilotView } from './pilot-view/pilot-view';
 import { pilotAuthGuard } from './_shared/guards/pilot-auth-guard';
+import { ReservationOverride } from './admin/reservation-override/reservation-override';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -53,8 +55,8 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: AdminDashboard,
-        canActivate: [userAuthGuard, adminAuthGuard],
-        canActivateChild: [userAuthGuard, adminAuthGuard],
+        canActivate: [userAuthGuard],
+        canActivateChild: [userAuthGuard],
         children: [
             // modal outlet
             {
@@ -73,6 +75,22 @@ export const routes: Routes = [
                 component: ViewUsers,
                 canActivate: [userAuthGuard, adminAuthGuard],
             },
+            {
+                path: 'analytics',
+                component: Analytics,
+                canActivate: [userAuthGuard, adminAuthGuard]
+            },
+            {
+                path: 'reservation-override',
+                component: ReservationOverride,
+                canActivate: [userAuthGuard]
+            },
+            // pilot only
+            {
+                path: 'pilot-view',
+                component: PilotView,
+                canActivate: [userAuthGuard, pilotAuthGuard],
+            }
         ]
     },
     // dropdown outlet
@@ -91,12 +109,6 @@ export const routes: Routes = [
         outlet: 'dropdown',
         component: DropdownProfile
     },
-    // pilot only
-    {
-        path: 'pilot-view',
-        component: PilotView,
-        canActivate: [userAuthGuard, pilotAuthGuard],
-    }
 ];
 
 export default routes;

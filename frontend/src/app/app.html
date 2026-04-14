@@ -15,24 +15,21 @@
     <!-- Navigation Links -->
     <nav class="nav-links-group">
       <!-- Hide AdminDashboard component from non admins -->
-      @if (authService.adminStatus$ | async) {
+      @if ((authService.adminStatus$ | async) || (userService.currentRole$ | async ) === "Pilot") {
         <section class="nav-link"> 
           <a routerLink="/dashboard">Dashboard</a>
           <img src="/header/navlink/navlink-arrow.svg" />
         </section>
       }
-      
-      @if ((userService.currentRole$ | async ) === "Pilot") {
+
+      <!-- Only normal users can book flights now -->
+      @if ((authService.authenticated$ | async) && (userService.currentRole$ | async) !== 'Pilot' && !(authService.adminStatus$ | async)) {
         <section class="nav-link"> 
-          <a routerLink="/pilot-view"> Pilot Schedule</a>
-          <img src="/header/navlink/navlink-arrow.svg"/>
+          <a routerLink="/book-flight"> Book a Flight</a>
+          <img src="/header/navlink/navlink-arrow.svg" />
         </section>
       }
 
-      <section class="nav-link"> 
-        <a routerLink="/book-flight"> Book a Flight</a>
-        <img src="/header/navlink/navlink-arrow.svg" />
-      </section>
       <section class="nav-link"> 
         <a routerLink="/about"> About </a>
         <img src="/header/navlink/navlink-arrow.svg" />
