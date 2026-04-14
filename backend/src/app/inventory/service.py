@@ -2,7 +2,7 @@ from app.db import get_connection
 from unittest import result
 
 """
-This specifically searches from the view inventoryNames NOT inventory, because inventory is the container
+This specifically searches from the view inventorynames NOT inventory, because inventory is the container
 for the inventory items and is what is going to receive inventory. This finds the names and such for display.
 """
 
@@ -118,7 +118,7 @@ def create_planes(data):
                     "error": str(e)}
     return {"success": True, "data": result}
 
-# This gets the planes from the planeStatus view, not hanger.
+# This gets the planes from the planestatus view, not hanger.
 def get_planes():
     conn = get_connection()
     query = """

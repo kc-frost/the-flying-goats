@@ -16,7 +16,7 @@ create table users(
 );
 
 -- create trigger for this
-create table userHistory(
+create table userhistory(
 userID int primary key,
 phoneNumber char(10) not null,
 fname varchar(255) not null,
@@ -44,7 +44,7 @@ email varchar(255) references users(email) ,
 positionID int default 5 references positionenums(positionID)
 );
 
-create table staffHistory(
+create table staffhistory(
 staffID int primary key,
 email varchar(255) not null,
 positionID int not null,
@@ -207,7 +207,7 @@ constraint fk_inventory_item foreign key (itemID) references item(itemID) on del
 );
 
 -- After deletion/cancellation of an appointment
-create table cancellationNotifs(
+create table cancellationnotifs(
 userID int primary key,
 bookingID int, -- This is the ID of what was cancelled. A trigger, after deletion, will insert ALL userIDs related the bookingID EXCLUDING the ID of the one who cancelled it.
 primary key(userID, bookingID),
@@ -215,14 +215,14 @@ constraint ensure_user_exists foreign key (userID) references users(userID)
 );
 
 -- no idea how I'ma do this
-create table planeArrivalNotifs(
+create table planearrivalnotifs(
 userID int,
 scheduleID int,
 primary key(userID, scheduleID),
 constraint ensure_flight_exists foreign key (scheduleID) references schedule(scheduleID)
 );
 
-create table pilotAssignmentNotifs(
+create table pilotassignmentnotifs(
 userID int,
 flightID varchar(7),
 primary key(userID, flightID),
@@ -314,12 +314,12 @@ group by u.userID, u.email, u.username, u.registeredDate;
 
 -- Grabs the ICAO and plane status from hanger as long as it exists in the plane table
 -- This way, we can get planes that are available for use without grabbing from the memory table directly
-create or replace view planeStatus as
+create or replace view planestatus as
 select h.ICAO, h.planeStatus
 from hanger h
 where h.ICAO in (select ICAO from plane);
 
-create or replace view pilotScheduleInfo as
+create or replace view pilotscheduleinfo as
 select	
 -- User joins
     u.fname, u.lname,
@@ -379,7 +379,7 @@ begin
 end//
 delimiter ;
 
-select * from pilotScheduleInfo;
+select * from pilotscheduleinfo;
 
 -- triggers
 delimiter //
@@ -428,12 +428,12 @@ end//
 create trigger rememberStaff
 after insert on staff
 for each row 
-insert into staffHistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered");
+insert into staffhistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered");
 
 create trigger deletedStaff
 after delete on staff
 for each row
-update staffHistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID;
+update staffhistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID;
 
 create trigger enforceAvailablePilot
 before insert on flight
@@ -634,7 +634,7 @@ for each row
 create trigger updateBookingHistoryAfterBookingCancellation
 after delete on booking
 for each row
-	update bookingHistory set bookingStatus = "Cancelled", cancellationDate = now() where bookingNumber = old.bookingNumber;
+	update bookinghistory set bookingStatus = "Cancelled", cancellationDate = now() where bookingNumber = old.bookingNumber;
     
 create trigger createCancellationNotif
 after delete on booking
@@ -649,7 +649,7 @@ after insert on flight
 for each row
 begin
     if new.assignedPilot is not null then
-        insert into pilotAssignmentNotifs(userID, flightID)
+        insert into pilotassignmentnotifs(userID, flightID)
         values(new.assignedPilot, new.IATA);
     end if;
 end//

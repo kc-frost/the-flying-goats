@@ -51,7 +51,7 @@ def get_cancellation_notifications(user_id):
         try:
             query = """
                 SELECT bookingID
-                FROM cancellationNotifs
+                FROM cancellationnotifs
                 WHERE userID = %s
                 ORDER BY bookingID
             """
@@ -70,7 +70,7 @@ def acknowledge_cancellation_notification(user_id, booking_id):
     with conn.cursor() as cursor:
         try:
             query = """
-                DELETE FROM cancellationNotifs
+                DELETE FROM cancellationnotifs
                 WHERE userID = %s AND bookingID = %s
             """
             cursor.execute(query, (user_id, booking_id))
@@ -100,7 +100,7 @@ def get_pilot_assignment_notifications(user_id):
         try:
             query = """
                 SELECT flightID
-                FROM pilotAssignmentNotifs
+                FROM pilotassignmentnotifs
                 WHERE userID = %s
                 ORDER BY flightID
             """
@@ -119,7 +119,7 @@ def acknowledge_pilot_assignment_notification(user_id, flight_id):
     with conn.cursor() as cursor:
         try:
             query = """
-                DELETE FROM pilotAssignmentNotifs
+                DELETE FROM pilotassignmentnotifs
                 WHERE userID = %s AND flightID = %s
             """
             cursor.execute(query, (user_id, flight_id))

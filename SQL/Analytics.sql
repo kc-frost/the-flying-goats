@@ -47,7 +47,7 @@ from reservationticket
 where month(reservationDate) = month(curdate()) and year(departDate) = year(curdate());
 
 -- All time registerd Users. This will NOT work properly until AFTER a rerun of the database. We need to implement the new DB changes into the dump, namely new triggers, before recreating the dump, then this will work.
-select count(*) as userCount from userHistory;
+select count(*) as userCount from userhistory;
 
 -- Top three staff
 -- Good luck future me integrating this into general staff stat view :pray:
@@ -62,12 +62,12 @@ from (select fname, lname, staffId, bookingCount
 
 -- cancellations
 -- These (hopefully hypothetically) work, but we won't know until we edit the dump
--- Some won't run cause bookingHistory isn't update yet, will do later
+-- Some won't run cause bookinghistory isn't update yet, will do later
 -- Total cancellations
-select count(*) from bookingHistory where bookingStatus = "Cancelled";
+select count(*) from bookinghistory where bookingStatus = "Cancelled";
 
 -- Total cancellations this month
-select count(*) from bookingHistory where bookingStatus = "Cancelled" and month(deletionDate) = month(curdate()) and year(deletionDate) = year(curdate());
+select count(*) from bookinghistory where bookingStatus = "Cancelled" and month(deletionDate) = month(curdate()) and year(deletionDate) = year(curdate());
 
 -- Cancellations this month by category(user, staff, admin)
 -- Gunna be a big boy that I can't really do right now because "admin" isn't a roll, it's one user. Will do later, but I'm planning on using a window function where isStaff from user table is a factor

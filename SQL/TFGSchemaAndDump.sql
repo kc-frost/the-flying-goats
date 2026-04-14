@@ -157,7 +157,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updateBookingHistoryAfterBookingCancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookingHistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber; */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updateBookingHistoryAfterBookingCancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookinghistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber; */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -366,7 +366,7 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createPilotAssignmentNotifAfterInsert` AFTER INSERT ON `flight` FOR EACH ROW begin
     if new.assignedPilot is not null then
-        insert into pilotAssignmentNotifs(userID, flightID)
+        insert into pilotassignmentnotifs(userID, flightID)
         values(new.assignedPilot, new.IATA);
     end if;
 end */;;
@@ -1090,7 +1090,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberStaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffHistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered"); */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberStaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffhistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered"); */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1105,7 +1105,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedStaff` AFTER DELETE ON `staff` FOR EACH ROW update staffHistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID; */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedStaff` AFTER DELETE ON `staff` FOR EACH ROW update staffhistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID; */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;

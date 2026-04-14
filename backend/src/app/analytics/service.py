@@ -164,7 +164,7 @@ def get_total_cancellations():
         try:
             query = """
                 select count(*) as total_cancellations
-                from bookingHistory
+                from bookinghistory
                 where bookingStatus = "Cancelled"
             """
 

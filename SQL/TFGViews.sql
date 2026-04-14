@@ -1,17 +1,17 @@
 use TFG;
 
 -- view for staff count per position
-create view staffCountPerPosition as select
+create view staffcountperposition as select
 pe.position, 
 count(s.staffID) as positionCount
-from positionEnums pe
+from positionenums pe
 left join staff s using(positionID)
 group by pe.positionID;
 
 -- Creating a view so that I can display item names and stuff like that instead of just ids,
 -- avoiding overflooding of the python file for no reason
 
-create view inventoryNames as
+create view inventorynames as
 select
 -- inventory
 i.itemID, i.quantity,
@@ -21,10 +21,10 @@ it.type, it.itemName
 from inventory i
 join item it on it.itemID = i.itemID;
 
-select * from inventoryNames;
+select * from inventorynames;
 
 -- Reservation ticket view with all attributes needed for view reservations
-create view reservationTicket as
+create view reservationticket as
 select
 -- booking
 b.bookingNumber as bookingNumber, b.userID as userID, b.flightID as flightID, b.seat as seatNumber, b.bookingDate as reservationDate,
@@ -45,7 +45,7 @@ left join users u using(userID)
 left join schedule s on (s.flight = b.flightID)
 left join flight f on (f.IATA = s.flight);
 
-select * from reservationTicket;
+select * from reservationticket;
 
 -- Shows available flights (typically queried through origin and destination
 -- Time is shown in 24H (don't sue me, i dont wanna deal with the extra spacing 12hr will make)

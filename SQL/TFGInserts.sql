@@ -98,7 +98,7 @@ insert into airports (regionID, place, name, IATA) values
 (5, "Nairobi, Kenya", "Jomo Kenyatta Intl", "NBO");
 
 select  * from staff;
-select * from positionEnums;
+select * from positionenums;
 
 -- flight inserts
 insert into flight (IATA, ICAO, planeName, gate, origin, destination, capacity, assignedPilot) values

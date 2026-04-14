@@ -15,7 +15,7 @@ begin
             (new.itemID, new.itemName, new.itemDescription);
 	elseif (new.type="misc")
 		then
-			insert into miscellaneousItem(itemID, itemName, itemDescription) values
+			insert into miscellaneousitem(itemID, itemName, itemDescription) values
             (new.itemID, new.itemName, new.itemDescription);
 	end if;
 end//

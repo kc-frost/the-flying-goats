@@ -104,7 +104,7 @@ def update_booking_seat(data):
             return {"success": False, 
                     "error": str(e)}
 
-# Booking doesn't have status anymore, that's in bookingHistory
+# Booking doesn't have status anymore, that's in bookinghistory
 def update_booking_status(data):
     conn = get_connection()
     query = """
