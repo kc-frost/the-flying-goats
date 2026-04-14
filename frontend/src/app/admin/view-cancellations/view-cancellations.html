@@ -20,10 +20,10 @@
                     <tr>
                         <td>{{e.bookingNumber}}</td>
                         <td>{{e.username}}</td>
-                        <td>{{e.bookingDate}}</td>
+                        <td>{{formatDate(e.bookingDate)}}</td>
                         <td>{{e.origin}}</td>
                         <td>{{e.destination}}</td>
-                        <td>{{e.cancellationDate}}</td>
+                        <td>{{formatDate(e.cancellationDate)}}</td>
                         <td>{{e.cancelledBy}}</td>
                         <td>{{e.reason}}</td>
                     </tr>
