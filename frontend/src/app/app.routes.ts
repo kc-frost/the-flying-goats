@@ -17,6 +17,7 @@ import { ViewUsers } from './admin/view-users/view-users';
 import { PilotView } from './pilot-view/pilot-view';
 import { pilotAuthGuard } from './_shared/guards/pilot-auth-guard';
 import { ReservationOverride } from './admin/reservation-override/reservation-override';
+import { ViewCancellations } from './admin/view-cancellations/view-cancellations';
 
 // SOME ROUTER BASICS:
 // Will send you to a component based on the 
@@ -78,6 +79,11 @@ export const routes: Routes = [
             {
                 path: 'analytics',
                 component: Analytics,
+                canActivate: [userAuthGuard, adminAuthGuard]
+            },
+            {
+                path: 'view-cancellations',
+                component: ViewCancellations,
                 canActivate: [userAuthGuard, adminAuthGuard]
             },
             {

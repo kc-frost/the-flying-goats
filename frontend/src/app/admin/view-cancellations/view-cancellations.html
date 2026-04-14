@@ -1,0 +1,34 @@
+<main>
+    <header><h1>View Cancellations</h1></header>
+
+    <section class="box">
+       <table>
+            <thead>
+                <tr>
+                    <th>Booking Number</th>
+                    <th>Username</th>
+                    <th>Reservation Date</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Cancellation Date</th>
+                    <th>Cancelled By</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (e of allCancellations$ | async; track $index) {
+                    <tr>
+                        <td>{{e.bookingNumber}}</td>
+                        <td>{{e.username}}</td>
+                        <td>{{formatDate(e.bookingDate)}}</td>
+                        <td>{{e.origin}}</td>
+                        <td>{{e.destination}}</td>
+                        <td>{{formatDate(e.cancellationDate)}}</td>
+                        <td>{{e.cancelledBy}}</td>
+                        <td>{{e.reason}}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>       
+    </section>
+</main>

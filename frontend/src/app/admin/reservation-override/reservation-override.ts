@@ -57,4 +57,9 @@ export class ReservationOverride {
       }
     });
   }
+  
+  // to erase the 'GMT'
+  formatDate(date: string): string {
+    return date.replace(' GMT', '');
+  }
 }
