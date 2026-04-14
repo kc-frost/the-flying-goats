@@ -205,7 +205,7 @@ CREATE TABLE `bookinghistory` (
   `archiveDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `cancellationDate` datetime DEFAULT NULL,
   `cancelledBy` int DEFAULT NULL,
-  `cancellationReason` text,
+  `reason` text,
   PRIMARY KEY (`bookingNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

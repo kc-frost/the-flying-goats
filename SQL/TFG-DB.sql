@@ -30,7 +30,8 @@ registeredDate datetime,
 -- TODO: Edit trigger for this, shouldn't be automatic
 deletionDate datetime default null,
 -- update existing view below, whatever tf I named it, to change enum status to one of these
-accountStatus enum("Deleted", "Registered") default "Registered"
+accountStatus enum("Deleted", "Registered") default "Registered",
+reason text
 );
 
 create table positionenums (
