@@ -64,6 +64,35 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Temporary view structure for view `bhcancellationmonthlycounts`
+--
+
+DROP TABLE IF EXISTS `bhcancellationmonthlycounts`;
+/*!50001 DROP VIEW IF EXISTS `bhcancellationmonthlycounts`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `bhcancellationmonthlycounts` AS SELECT 
+ 1 AS `deletionyear`,
+ 1 AS `deletionmonth`,
+ 1 AS `total_cancellations`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `bhcancellationsbywhodoneit`
+--
+
+DROP TABLE IF EXISTS `bhcancellationsbywhodoneit`;
+/*!50001 DROP VIEW IF EXISTS `bhcancellationsbywhodoneit`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `bhcancellationsbywhodoneit` AS SELECT 
+ 1 AS `deletionyear`,
+ 1 AS `deletionmonth`,
+ 1 AS `cancellationcategory`,
+ 1 AS `total_cancellations`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `booking`
 --
 
@@ -110,16 +139,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberbookings` AFTER INSERT ON `booking` FOR EACH ROW insert into bookinghistory(
-    bookingNumber, bookingDate, userID, departSeat, returnSeat,
-    departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding
-)
-select
-    new.bookingNumber, new.bookingDate, new.userID, new.departSeat, new.returnSeat,
-    new.departScheduleID, new.returnScheduleID, ds.liftOff, ds.landing, rs.liftOff, rs.landing
-from schedule ds
-join schedule rs on rs.scheduleID = new.returnScheduleID
-where ds.scheduleID = new.departScheduleID */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `RememberBookings` AFTER INSERT ON `booking` FOR EACH ROW insert into bookinghistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
+    select new.bookingNumber, new.bookingDate, new.userID, new.departSeat, new.returnSeat, new.departScheduleID, new.returnScheduleID, ds.liftOff, ds.landing, rs.liftOff, rs.landing
+    from schedule ds
+    join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID; */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -134,9 +157,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updatebookinghistoryafterbookingcancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookinghistory
-set bookingStatus = 'Cancelled', cancellationDate = curdate()
-where bookingNumber = old.bookingNumber */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updateBookingHistoryAfterBookingCancellation` AFTER DELETE ON `booking` FOR EACH ROW update bookingHistory set bookingStatus = "Cancelled", cancellationDate = curdate() where bookingNumber = old.bookingNumber; */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -151,8 +172,8 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createcancellationnotif` AFTER DELETE ON `booking` FOR EACH ROW begin
-    insert into cancellationNotifs(userID, bookingID)
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createCancellationNotif` AFTER DELETE ON `booking` FOR EACH ROW begin
+    insert into cancellationnotifs(userID, bookingID)
     values(old.userID, old.bookingNumber);
 end */;;
 DELIMITER ;
@@ -184,6 +205,7 @@ CREATE TABLE `bookinghistory` (
   `archiveDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `cancellationDate` datetime DEFAULT NULL,
   `cancelledBy` int DEFAULT NULL,
+  `cancellationReason` text,
   PRIMARY KEY (`bookingNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -194,7 +216,7 @@ CREATE TABLE `bookinghistory` (
 
 LOCK TABLES `bookinghistory` WRITE;
 /*!40000 ALTER TABLE `bookinghistory` DISABLE KEYS */;
-INSERT INTO `bookinghistory` VALUES (2,'2026-04-02 01:13:29',3,'1B','2A',1,11,'2026-04-01 10:06:07','2026-04-01 12:00:00','2026-04-02 17:30:00','2026-04-02 19:10:00','In Progress','2026-04-02 01:13:29',NULL,NULL);
+INSERT INTO `bookinghistory` VALUES (2,'2026-04-02 01:13:29',3,'1B','2A',1,11,'2026-04-01 10:06:07','2026-04-01 12:00:00','2026-04-02 17:30:00','2026-04-02 19:10:00','In Progress','2026-04-02 01:13:29',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `bookinghistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +231,7 @@ CREATE TABLE `cancellationnotifs` (
   `userID` int NOT NULL,
   `bookingID` int NOT NULL,
   PRIMARY KEY (`userID`,`bookingID`),
-  CONSTRAINT `ensure_cancellation_user_exists` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`)
+  CONSTRAINT `ensure_user_exists` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -294,22 +316,24 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `enforceavailablepilot` BEFORE INSERT ON `flight` FOR EACH ROW begin
-    if new.assignedPilot is null then
-        signal sqlstate '45000'
-        set message_text = 'A flight must have an assigned pilot';
-    end if;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `enforceAvailablePilot` BEFORE INSERT ON `flight` FOR EACH ROW begin
+	if new.assignedPilot is null
+		then
+			signal sqlstate '45000'
+            set message_text = "A flight must have an assigned pilot";
+	end if;
 
     if not exists (
         select 1
         from staff s
         join positionenums p on p.positionID = s.positionID
         where s.staffID = new.assignedPilot
-          and p.position = 'Pilot'
-    ) then
-        signal sqlstate '45000'
-        set message_text = 'The staff attempting to take control of the plane is NOT a pilot';
-    end if;
+          and p.position = "Pilot"
+    )
+		then 
+			signal sqlstate '45000'
+            set message_text = "The staff attempting to take control of the plane is NOT a pilot";
+	end if;
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -325,9 +349,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updateplaneavailability` AFTER INSERT ON `flight` FOR EACH ROW update hanger
-set planeStatus = 'In use'
-where ICAO = new.ICAO */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `updatePlaneAvailability` AFTER INSERT ON `flight` FOR EACH ROW update hanger h set planeStatus = "In use" where new.ICAO = h.ICAO */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -342,7 +364,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createpilotassignmentnotifafterinsert` AFTER INSERT ON `flight` FOR EACH ROW begin
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createPilotAssignmentNotifAfterInsert` AFTER INSERT ON `flight` FOR EACH ROW begin
     if new.assignedPilot is not null then
         insert into pilotAssignmentNotifs(userID, flightID)
         values(new.assignedPilot, new.IATA);
@@ -389,10 +411,8 @@ DROP TABLE IF EXISTS `hanger`;
 CREATE TABLE `hanger` (
   `hangerID` int NOT NULL AUTO_INCREMENT,
   `ICAO` varchar(4) DEFAULT NULL,
-  `planeStatus` enum('In use','Available') NOT NULL DEFAULT 'Available',
-  PRIMARY KEY (`hangerID`),
-  KEY `fk_hanger_plane` (`ICAO`),
-  CONSTRAINT `fk_hanger_plane` FOREIGN KEY (`ICAO`) REFERENCES `plane` (`ICAO`) ON DELETE CASCADE ON UPDATE CASCADE
+  `planeStatus` enum('In use','Available') NOT NULL DEFAULT (_utf8mb4'Available'),
+  PRIMARY KEY (`hangerID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -402,7 +422,7 @@ CREATE TABLE `hanger` (
 
 LOCK TABLES `hanger` WRITE;
 /*!40000 ALTER TABLE `hanger` DISABLE KEYS */;
-INSERT INTO `hanger` VALUES (1,'A676','In use'),(2,'B212','In use'),(3,'C909','In use'),(4,'D404','In use'),(5,'E777','In use'),(6,'F101','In use'),(7,'H404','In use'),(8,'I505','In use'),(9,'J606','In use'),(10,'K707','In use'),(11,'L808','In use'),(12,'M909','In use'),(13,'O111','In use'),(14,'P212','In use'),(15,'N010','In use'),(16,'Q313','In use'),(17,'R414','In use'),(18,'S515','In use'),(19,'U717','In use'),(20,'V818','In use'),(21,'W919','In use'),(22,'X020','In use'),(23,'Y121','In use'),(24,'T616','In use'),(25,'AA23','In use'),(26,'AB24','In use'),(27,'AC25','In use'),(28,'AD26','In use'),(29,'AE27','In use'),(30,'G303','In use'),(31,'AF28','In use'),(32,'AG29','In use'),(33,'AH30','In use'),(34,'AI31','In use'),(35,'AJ32','In use'),(36,'AK33','In use'),(37,'AP38','In use'),(38,'AQ39','In use'),(39,'AR40','In use'),(40,'AS41','In use'),(41,'AT42','In use'),(42,'AL34','In use'),(43,'AU43','In use'),(44,'AV44','In use'),(45,'AW45','In use'),(46,'AX46','In use'),(47,'AY47','In use'),(48,'AM35','In use'),(49,'AN36','In use'),(50,'AO37','In use'),(51,'Z222','In use'),(52,'Y676','Available');
+INSERT INTO `hanger` VALUES (1,'A676','In use'),(2,'AA23','In use'),(3,'AB24','In use'),(4,'AC25','In use'),(5,'AD26','In use'),(6,'AE27','In use'),(7,'AF28','In use'),(8,'AG29','In use'),(9,'AH30','In use'),(10,'AI31','In use'),(11,'AJ32','In use'),(12,'AK33','In use'),(13,'AL34','In use'),(14,'AM35','In use'),(15,'AN36','In use'),(16,'AO37','In use'),(17,'AP38','In use'),(18,'AQ39','In use'),(19,'AR40','In use'),(20,'AS41','In use'),(21,'AT42','In use'),(22,'AU43','In use'),(23,'AV44','In use'),(24,'AW45','In use'),(25,'AX46','In use'),(26,'AY47','In use'),(27,'B212','In use'),(28,'C909','In use'),(29,'D404','In use'),(30,'E777','In use'),(31,'F101','In use'),(32,'G303','In use'),(33,'H404','In use'),(34,'I505','In use'),(35,'J606','In use'),(36,'K707','In use'),(37,'L808','In use'),(38,'M909','In use'),(39,'N010','In use'),(40,'O111','In use'),(41,'P212','In use'),(42,'Q313','In use'),(43,'R414','In use'),(44,'S515','In use'),(45,'T616','In use'),(46,'U717','In use'),(47,'V818','In use'),(48,'W919','In use'),(49,'X020','In use'),(50,'Y121','In use'),(51,'Y676','Available'),(52,'Z222','In use');
 /*!40000 ALTER TABLE `hanger` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -483,16 +503,19 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `transportandequipmentinsert` AFTER INSERT ON `item` FOR EACH ROW begin
-    if (new.type = 'equipment') then
-        insert into equipment(itemID, equipmentName, equipmentDescription)
-        values(new.itemID, new.itemName, new.itemDescription);
-    elseif (new.type = 'transportation') then
-        insert into transportation(itemID, transportName, transportDescription)
-        values(new.itemID, new.itemName, new.itemDescription);
-    elseif (new.type = 'misc') then
-        insert into miscellaneousitem(itemID, itemName, itemDescription)
-        values(new.itemID, new.itemName, new.itemDescription);
-    end if;
+	if (new.type = "equipment")
+		then
+			insert into equipment(itemID, equipmentName, equipmentDescription) values 
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type = "transportation")
+		then 
+			insert into transportation(itemID, transportName, transportDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	elseif (new.type="misc")
+		then
+			insert into miscellaneousitem(itemID, itemName, itemDescription) values
+            (new.itemID, new.itemName, new.itemDescription);
+	end if;
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -561,9 +584,9 @@ CREATE TABLE `pilotassignmentnotifs` (
   `userID` int NOT NULL,
   `flightID` varchar(7) NOT NULL,
   PRIMARY KEY (`userID`,`flightID`),
-  KEY `ensure_pilot_assignment_flight_exists` (`flightID`),
-  CONSTRAINT `ensure_pilot_assignment_flight_exists` FOREIGN KEY (`flightID`) REFERENCES `flight` (`IATA`),
-  CONSTRAINT `ensure_pilot_assignment_user_exists` FOREIGN KEY (`userID`) REFERENCES `staff` (`staffID`)
+  KEY `ensure_flight_exists_three` (`flightID`),
+  CONSTRAINT `ensure_flight_exists_three` FOREIGN KEY (`flightID`) REFERENCES `flight` (`IATA`),
+  CONSTRAINT `ensure_pilot_exists_two` FOREIGN KEY (`userID`) REFERENCES `staff` (`staffID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -573,6 +596,7 @@ CREATE TABLE `pilotassignmentnotifs` (
 
 LOCK TABLES `pilotassignmentnotifs` WRITE;
 /*!40000 ALTER TABLE `pilotassignmentnotifs` DISABLE KEYS */;
+INSERT INTO `pilotassignmentnotifs` VALUES (3,'TP1001'),(3,'TP1002'),(4,'TP1003'),(5,'TP1004'),(10,'TP1005'),(12,'TP1006'),(3,'TP1007'),(4,'TP1009'),(5,'TP1011'),(10,'TP1013'),(12,'TP1015'),(17,'TP1017'),(3,'TP1019'),(4,'TP1021'),(5,'TP1023'),(10,'TP1025'),(12,'TP1027'),(17,'TP1029'),(3,'TP1031'),(4,'TP1033'),(5,'TP1035'),(10,'TP1037'),(12,'TP1039'),(17,'TP1041'),(3,'TP1043'),(4,'TP1045'),(5,'TP1047'),(10,'TP1049'),(12,'TP1051'),(17,'TP1053'),(3,'TP1055'),(4,'TP1057'),(5,'TP1059'),(10,'TP1061'),(12,'TP1063'),(17,'TP1065'),(3,'TP1067'),(4,'TP1069'),(5,'TP1071'),(10,'TP1073'),(12,'TP1075'),(17,'TP1077'),(3,'TP1079'),(4,'TP1081'),(5,'TP1083'),(10,'TP1085'),(12,'TP1087'),(17,'TP1089'),(3,'TP1091'),(4,'TP1093'),(5,'TP1095');
 /*!40000 ALTER TABLE `pilotassignmentnotifs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -629,8 +653,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `storeplaneinhanger` AFTER INSERT ON `plane` FOR EACH ROW insert into hanger(ICAO, planeStatus)
-values(new.ICAO, 'Available') */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `storePlaneInHanger` AFTER INSERT ON `plane` FOR EACH ROW insert into hanger(ICAO, planestatus) values (new.ICAO, "Available") */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -645,26 +668,26 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `editingplaneinuse` BEFORE UPDATE ON `plane` FOR EACH ROW begin
-    if old.ICAO <> new.ICAO then
-        if exists (
-            select 1
-            from flight f
-            where f.ICAO = old.ICAO
-        ) then
-            signal sqlstate '45000'
-            set message_text = 'This plane is in use, editing the name is probably not the right call right now.';
-        end if;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `editingPlaneInUse` BEFORE UPDATE ON `plane` FOR EACH ROW begin
+	if old.ICAO <> new.ICAO then
+		if exists (
+			select 1
+			from flight f
+			where f.ICAO = old.ICAO
+		) then
+			signal sqlstate '45000'
+			set message_text = 'This plane is in use, editing the name is probably not the right call right now.';
+		end if;
 
-        if exists (
-            select 1
-            from plane p
-            where p.ICAO = new.ICAO
-        ) then
-            signal sqlstate '45000'
-            set message_text = 'That ICAO already exists in the system.';
-        end if;
-    end if;
+		if exists (
+			select 1
+			from plane p
+			where p.ICAO = new.ICAO
+		) then
+			signal sqlstate '45000'
+			set message_text = 'That ICAO already exists in the system.';
+		end if;
+	end if;
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -683,8 +706,8 @@ CREATE TABLE `planearrivalnotifs` (
   `userID` int NOT NULL,
   `scheduleID` int NOT NULL,
   PRIMARY KEY (`userID`,`scheduleID`),
-  KEY `ensure_plane_arrival_schedule_exists` (`scheduleID`),
-  CONSTRAINT `ensure_plane_arrival_schedule_exists` FOREIGN KEY (`scheduleID`) REFERENCES `schedule` (`scheduleID`)
+  KEY `ensure_flight_exists_two` (`scheduleID`),
+  CONSTRAINT `ensure_flight_exists_two` FOREIGN KEY (`scheduleID`) REFERENCES `schedule` (`scheduleID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -748,9 +771,9 @@ DROP TABLE IF EXISTS `positionenums`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `positionenums` (
   `positionID` int NOT NULL AUTO_INCREMENT,
-  `position` enum('Flight Attendent','Pilot','Co-Pilot','Security','Unassigned') DEFAULT 'Unassigned',
+  `position` enum('Flight Attendent','Pilot','Co-Pilot','Security','Unassigned','Admin') DEFAULT 'Unassigned',
   PRIMARY KEY (`positionID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -759,9 +782,26 @@ CREATE TABLE `positionenums` (
 
 LOCK TABLES `positionenums` WRITE;
 /*!40000 ALTER TABLE `positionenums` DISABLE KEYS */;
-INSERT INTO `positionenums` VALUES (1,'Flight Attendent'),(2,'Pilot'),(3,'Co-Pilot'),(4,'Security'),(5,'Unassigned');
+INSERT INTO `positionenums` VALUES (1,'Flight Attendent'),(2,'Pilot'),(3,'Co-Pilot'),(4,'Security'),(5,'Unassigned'),(6,'Admin');
 /*!40000 ALTER TABLE `positionenums` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `psinfomonthlycounts`
+--
+
+DROP TABLE IF EXISTS `psinfomonthlycounts`;
+/*!50001 DROP VIEW IF EXISTS `psinfomonthlycounts`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `psinfomonthlycounts` AS SELECT 
+ 1 AS `fname`,
+ 1 AS `lname`,
+ 1 AS `staffid`,
+ 1 AS `departyear`,
+ 1 AS `departmonth`,
+ 1 AS `bookingcount`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `regions`
@@ -815,6 +855,35 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Temporary view structure for view `rtmonthlycounts`
+--
+
+DROP TABLE IF EXISTS `rtmonthlycounts`;
+/*!50001 DROP VIEW IF EXISTS `rtmonthlycounts`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `rtmonthlycounts` AS SELECT 
+ 1 AS `reservationyear`,
+ 1 AS `reservationmonth`,
+ 1 AS `monthly_reservations`,
+ 1 AS `distinct_reservations_this_month`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `rtusercounts`
+--
+
+DROP TABLE IF EXISTS `rtusercounts`;
+/*!50001 DROP VIEW IF EXISTS `rtusercounts`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `rtusercounts` AS SELECT 
+ 1 AS `bookingamount`,
+ 1 AS `userid`,
+ 1 AS `username`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `schedule`
 --
 
@@ -830,7 +899,7 @@ CREATE TABLE `schedule` (
   PRIMARY KEY (`scheduleID`),
   KEY `ensure_flight_exists` (`flightID`),
   CONSTRAINT `ensure_flight_exists` FOREIGN KEY (`flightID`) REFERENCES `flight` (`IATA`),
-  CONSTRAINT `ensure_schedule_times` CHECK ((`landing` > `liftOff`))
+  CONSTRAINT `ensure_schedule_times` CHECK ((`landing` > `liftoff`))
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -852,22 +921,24 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validflightinsertprevention` BEFORE INSERT ON `schedule` FOR EACH ROW begin
-    if exists (
-        select 1
-        from flight f
-        join schedule s on f.IATA = s.flightID
-        where f.assignedPilot = (
-            select assignedPilot
-            from flight
-            where IATA = new.flightID
-        )
-        and f.IATA <> new.flightID
-        and new.liftOff < s.landing
-        and new.landing > s.liftOff
-    ) then
-        signal sqlstate '45000'
-        set message_text = 'Pilot is already assigned to another active flight during that time.';
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validFlightInsertPrevention` BEFORE INSERT ON `schedule` FOR EACH ROW begin
+    if ifnull(@seed_mode, 0) = 0 then
+        if exists (
+            select 1
+            from flight f
+            join schedule s on f.IATA = s.flightID
+            where f.assignedPilot = (
+                select assignedPilot
+                from flight f
+                where IATA = new.flightID
+            )
+            and f.IATA <> new.flightID
+            and new.liftOff < s.landing
+            and new.landing > s.liftOff
+        ) then
+            signal sqlstate '45000'
+            set message_text = 'Pilot is already assigned to another active flight during that time.';
+        end if;
     end if;
 end */;;
 DELIMITER ;
@@ -884,26 +955,28 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setschedulestatusbeforeinsert` BEFORE INSERT ON `schedule` FOR EACH ROW begin
-    if now() < date_sub(new.liftOff, interval 1 hour) then
-        set new.status = 'Grounded';
-    elseif now() >= date_sub(new.liftOff, interval 1 hour)
-       and now() < date_sub(new.liftOff, interval 30 minute) then
-        set new.status = 'On Time';
-    elseif now() >= date_sub(new.liftOff, interval 30 minute)
-       and now() < new.liftOff then
-        set new.status = 'Boarding';
-    elseif now() >= new.liftOff
-       and now() < new.landing then
-        set new.status = 'Airborne';
-    elseif now() >= new.landing
-       and now() < date_add(new.landing, interval 10 minute) then
-        set new.status = 'Landing';
-    elseif now() >= date_add(new.landing, interval 10 minute)
-       and now() < date_add(new.landing, interval 30 minute) then
-        set new.status = 'Grounded';
-    else
-        set new.status = 'Grounded';
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setScheduleStatusBeforeInsert` BEFORE INSERT ON `schedule` FOR EACH ROW begin
+    if ifnull(@seed_mode, 0) = 0 then
+        if now() < date_sub(new.liftOff, interval 1 hour) then
+            set new.status = 'Grounded';
+        elseif now() >= date_sub(new.liftOff, interval 1 hour)
+           and now() < date_sub(new.liftOff, interval 30 minute) then
+            set new.status = 'On Time';
+        elseif now() >= date_sub(new.liftOff, interval 30 minute)
+           and now() < new.liftOff then
+            set new.status = 'Boarding';
+        elseif now() >= new.liftOff
+           and now() < new.landing then
+            set new.status = 'Airborne';
+        elseif now() >= new.landing
+           and now() < date_add(new.landing, interval 10 minute) then
+            set new.status = 'Landing';
+        elseif now() >= date_add(new.landing, interval 10 minute)
+           and now() < date_add(new.landing, interval 30 minute) then
+            set new.status = 'Grounded';
+        else
+            set new.status = 'Grounded';
+        end if;
     end if;
 end */;;
 DELIMITER ;
@@ -920,22 +993,24 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validflightupdateprevention` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
-    if exists (
-        select 1
-        from flight f
-        join schedule s on f.IATA = s.flightID
-        where f.assignedPilot = (
-            select assignedPilot
-            from flight
-            where IATA = new.flightID
-        )
-        and f.IATA <> old.flightID
-        and new.liftOff < s.landing
-        and new.landing > s.liftOff
-    ) then
-        signal sqlstate '45000'
-        set message_text = 'Pilot is already assigned to another active flight during that time.';
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `validFlightUpdatePrevention` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
+    if ifnull(@seed_mode, 0) = 0 then
+        if exists (
+            select 1
+            from flight f
+            join schedule s on f.IATA = s.flightID
+            where f.assignedPilot = (
+                select assignedPilot
+                from flight f
+                where IATA = new.flightID
+            )
+            and f.IATA <> old.flightID
+            and new.liftOff < s.landing
+            and new.landing > s.liftOff
+        ) then
+            signal sqlstate '45000'
+            set message_text = 'Pilot is already assigned to another active flight during that time.';
+        end if;
     end if;
 end */;;
 DELIMITER ;
@@ -952,26 +1027,28 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setschedulestatusbeforeupdate` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
-    if now() < date_sub(new.liftOff, interval 1 hour) then
-        set new.status = 'Grounded';
-    elseif now() >= date_sub(new.liftOff, interval 1 hour)
-       and now() < date_sub(new.liftOff, interval 30 minute) then
-        set new.status = 'On Time';
-    elseif now() >= date_sub(new.liftOff, interval 30 minute)
-       and now() < new.liftOff then
-        set new.status = 'Boarding';
-    elseif now() >= new.liftOff
-       and now() < new.landing then
-        set new.status = 'Airborne';
-    elseif now() >= new.landing
-       and now() < date_add(new.landing, interval 10 minute) then
-        set new.status = 'Landing';
-    elseif now() >= date_add(new.landing, interval 10 minute)
-       and now() < date_add(new.landing, interval 30 minute) then
-        set new.status = 'Grounded';
-    else
-        set new.status = 'Grounded';
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `setScheduleStatusBeforeUpdate` BEFORE UPDATE ON `schedule` FOR EACH ROW begin
+    if ifnull(@seed_mode, 0) = 0 then
+        if now() < date_sub(new.liftOff, interval 1 hour) then
+            set new.status = 'Grounded';
+        elseif now() >= date_sub(new.liftOff, interval 1 hour)
+           and now() < date_sub(new.liftOff, interval 30 minute) then
+            set new.status = 'On Time';
+        elseif now() >= date_sub(new.liftOff, interval 30 minute)
+           and now() < new.liftOff then
+            set new.status = 'Boarding';
+        elseif now() >= new.liftOff
+           and now() < new.landing then
+            set new.status = 'Airborne';
+        elseif now() >= new.landing
+           and now() < date_add(new.landing, interval 10 minute) then
+            set new.status = 'Landing';
+        elseif now() >= date_add(new.landing, interval 10 minute)
+           and now() < date_add(new.landing, interval 30 minute) then
+            set new.status = 'Grounded';
+        else
+            set new.status = 'Grounded';
+        end if;
     end if;
 end */;;
 DELIMITER ;
@@ -991,11 +1068,7 @@ CREATE TABLE `staff` (
   `staffID` int NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `positionID` int DEFAULT '5',
-  PRIMARY KEY (`staffID`),
-  KEY `fk_staff_email` (`email`),
-  KEY `fk_staff_position` (`positionID`),
-  CONSTRAINT `fk_staff_email` FOREIGN KEY (`email`) REFERENCES `users` (`email`),
-  CONSTRAINT `fk_staff_position` FOREIGN KEY (`positionID`) REFERENCES `positionenums` (`positionID`)
+  PRIMARY KEY (`staffID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1017,8 +1090,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberstaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffHistory(staffID, email, positionID, accountStatus)
-values(new.staffID, new.email, new.positionID, 'Registered') */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberStaff` AFTER INSERT ON `staff` FOR EACH ROW insert into staffHistory(staffID, email, positionID, accountStatus) values (new.staffID, new.email, new.positionID, "Registered"); */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1033,9 +1105,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedstaff` AFTER DELETE ON `staff` FOR EACH ROW update staffHistory
-set accountStatus = 'Deleted', deletionDate = curdate()
-where staffID = old.staffID */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedStaff` AFTER DELETE ON `staff` FOR EACH ROW update staffHistory set accountStatus = "Deleted", deletionDate = curdate() where old.staffID = staffID; */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1067,7 +1137,7 @@ CREATE TABLE `staffhistory` (
   `email` varchar(255) NOT NULL,
   `positionID` int NOT NULL,
   `deletionDate` datetime DEFAULT NULL,
-  `accountStatus` enum('Deleted','Registered') DEFAULT 'Registered',
+  `accountStatus` enum('Deleted','Registered') DEFAULT NULL,
   PRIMARY KEY (`staffID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1138,6 +1208,7 @@ CREATE TABLE `userhistory` (
 
 LOCK TABLES `userhistory` WRITE;
 /*!40000 ALTER TABLE `userhistory` DISABLE KEYS */;
+INSERT INTO `userhistory` VALUES (1,'5127997308','Alan','Gascon','McTails','alangascon@gmail.com','3d45597256050bb1e93bd9c10aee4c8716f8774f5a48c995bf0cf860',0,NULL,'2026-03-01 09:00:00',NULL,'Registered'),(2,'5123005252','Maria','Valentine','ValesMom','mariavalentine@gmail.com','8e012a7c9d83ad6d0a8c4623bccf2f208985d847cf8de8257111037e',1,NULL,'2026-03-01 09:15:00',NULL,'Registered'),(3,'5125550101','Kai','Cairo','kcfrost','kaicairo@gmail.com','e04c3fcc21706ccaf4dac43d0e2530de2b5075963b50d6fc71b75306',1,NULL,'2026-03-01 09:30:00',NULL,'Registered'),(4,'5125550102','Richard','Walker','rich93147','richardwalker@gmail.com','b9b3bbe5850b2e006260ce9e7575af2135381fc2387d141adbae4ed9',1,NULL,'2026-03-01 09:45:00',NULL,'Registered'),(5,'5125550103','Erin','Choi','ErinCo','erinchoi@gmail.com','6c09ee70bba90aa92e604850300911d13ec0f793f142f1d751436a28',1,NULL,'2026-03-01 10:00:00',NULL,'Registered'),(6,'5125550104','Omar','Singh','OmarSec','omarsingh@gmail.com','9da84c9b32f7ed60b153942887bee79fd607c02761697cf3da75c467',0,NULL,'2026-03-01 10:15:00',NULL,'Registered'),(7,'5125550105','Tess','Nguyen','TessFA','tessnguyen@gmail.com','abf520e115e79883efd11fc1c2ecb835f84aedebbcae9243a59a51de',0,NULL,'2026-03-01 10:30:00',NULL,'Registered'),(8,'5125550106','Luis','Martinez','LuisOps','luismartinez@gmail.com','37cd094b9932c2b6145a891f070fc3d0529643c7fd0945e80290c7db',0,NULL,'2026-03-01 10:45:00',NULL,'Registered'),(9,'5125550201','Bongo','Gigglefart','bongojet','bongogigglefart@gmail.com','e3264e3441f7771da59005bc31b21e28976df50536942aae6780c9e1',1,NULL,'2026-03-01 11:00:00',NULL,'Registered'),(10,'5125550202','Crunch','Giggler','crunchpilot','crunchgiggler@gmail.com','1113d702884878bbbc5f4102973be7e8fca7a73643a653f1c0094aa9',1,NULL,'2026-03-01 11:15:00',NULL,'Registered'),(11,'5125550203','Toaster','Giggleblast','toastgob','toastergiggleblast@gmail.com','89b1a7ff725054065f3f0b17c6bbe0d1021ef36ae9561add61241064',1,NULL,'2026-03-01 11:30:00',NULL,'Registered'),(12,'5125550204','Toe','Gigglesnort','toeLiker','toegigglesnort@gmail.com','5d85e39972dda93ad56a7c4697c25e52c481667d42ec3da1831a8323',1,NULL,'2026-03-01 11:45:00',NULL,'Registered'),(13,'5125550205','Soggy','Gigglenoodle','sogwaff','soggygigglenoodle@gmail.com','1ea30687f3f2b94bbb7ec553c4b9d6fd0c0c0accffda7e6ce70d0ae4',0,NULL,'2026-03-01 12:00:00',NULL,'Registered'),(14,'5125550206','Grease','Gigglechunk','greasemc','greasegigglechunk@gmail.com','eb4b19792f4aeb780bc5a0f98d31e510b3479d7c0e566a330d4fec49',0,NULL,'2026-03-01 12:15:00',NULL,'Registered'),(15,'5125550207','Wiggles','Gigglepants','wigglefunk','wigglesgigglepants@gmail.com','f6890f6e78029659e9f65d1c41faccba06b96c8818e2553e0fa7f425',0,NULL,'2026-03-01 12:30:00',NULL,'Registered'),(16,'5125550208','Cheddar','Gigglecheese','chedblast','cheddargigglecheese@gmail.com','6c95d9fba357468220b1305a5593e78da8eabecbf5039fb9214b06aa',0,NULL,'2026-03-01 12:45:00',NULL,'Registered'),(17,'5125551000','Rex','Gigglefart','rexhar','rexgigglefart@gmail.com','915ff5a2d51fe69d6c948bb6b2a77835b29c30dc00aad8e2c8a372e9',1,NULL,'2026-03-15 08:00:00',NULL,'Registered'),(18,'5125551001','Nadia','Giggler','nadiavos','nadiagiggler@gmail.com','2045d6530c48dadf94cf7ffc785cede6b680b602f376ac483e402253',1,NULL,'2026-03-15 08:00:00',NULL,'Registered'),(19,'5125551002','Colt','Giggleblast','coltbla','coltgiggleblast@gmail.com','adac97622b6281379ce628e0f4d4c31c482a1c4074c5ac1b2c413c7e',1,NULL,'2026-03-15 08:00:00',NULL,'Registered'),(20,'5125551003','Inez','Gigglesnort','inezfer','inezgigglesnort@gmail.com','93d83c88cd84efbebf28f15f185ab4c909e75bf52560740bf3f8423d',1,NULL,'2026-03-15 08:00:00',NULL,'Registered'),(22,'123','admin','admin','iamanadmin','admin@admin.com','641bde2781319a338d8b5970db8bd1950cc952a79420597b0c241c72',0,NULL,'2026-04-01 15:10:39',NULL,'Registered'),(23,'123213','staff','staff','SATFF!!','staff1@staff.com','7c68303949eb4127f8c36bf8247c3951c3a19dd04c5419c3d4aae500',1,NULL,'2026-04-01 15:12:38',NULL,'Registered'),(24,'3434','AAAAA','AAAAA','Meoww123?','Meoww123?@gmail.com','86cdbca762d6e4f8260aa7a078a4c9fabd68c26cb3e7bd1289ee7e28',0,NULL,'2026-04-01 15:14:27',NULL,'Registered');
 /*!40000 ALTER TABLE `userhistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1202,9 +1273,10 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaff` AFTER INSERT ON `users` FOR EACH ROW begin
-    if new.isStaff = true then
-        insert into staff(staffID, email)
-        values(new.userID, new.email);
+    if new.isStaff = true
+		then
+			insert into staff(staffID, email) values
+            (new.userID, new.email);
     end if;
 end */;;
 DELIMITER ;
@@ -1221,8 +1293,9 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberuser` AFTER INSERT ON `users` FOR EACH ROW insert into userHistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
-values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate) */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `rememberUser` AFTER INSERT ON `users` FOR EACH ROW -- FIX THIS
+insert into userhistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
+values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate); */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -1237,10 +1310,11 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaffafterupdate` AFTER UPDATE ON `users` FOR EACH ROW begin
-    if new.isStaff = true and old.isStaff <> true then
-        insert into staff(staffID, email)
-        values(new.userID, new.email);
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `createstaffAfterUpdate` AFTER UPDATE ON `users` FOR EACH ROW begin
+    if new.isStaff = true 
+		then
+			insert into staff(staffID, email) values
+            (new.userID, new.email);
     end if;
 end */;;
 DELIMITER ;
@@ -1257,13 +1331,13 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deleteduserandstaff` AFTER DELETE ON `users` FOR EACH ROW begin
-    if old.isStaff = true then
-        delete from staff where staffID = old.userID;
-    end if;
-    update userHistory
-    set accountStatus = 'Deleted', deletionDate = curdate()
-    where userID = old.userID;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `deletedUserAndStaff` AFTER DELETE ON `users` FOR EACH ROW begin
+	if old.isStaff = true
+		then
+			delete from staff where old.userID = staffID;
+	end if;
+    update userhistory set accountStatus = "Deleted", deletionDate = curdate() where userID = old.userID;
+    
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1295,6 +1369,7 @@ begin
     join schedule s on s.flightID = f.IATA
     set h.planeStatus = 'Available'
     where s.landing is not null
+    -- Found out why this wasn't working, s was instead schedule for some reason
       and now() >= s.landing;
 
     update flight f
@@ -1323,6 +1398,42 @@ DELIMITER ;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `available_flights` AS select `s`.`scheduleID` AS `scheduleID`,`ao`.`IATA` AS `origin_IATA`,`ad`.`IATA` AS `destination_IATA`,`f`.`IATA` AS `IATA`,`f`.`capacity` AS `capacity`,date_format(`s`.`liftOff`,'%Y-%m-%d %H:%i') AS `liftOff`,date_format(`s`.`landing`,'%Y-%m-%d %H:%i') AS `landing`,concat(timestampdiff(HOUR,`s`.`liftOff`,`s`.`landing`),'h ',(timestampdiff(MINUTE,`s`.`liftOff`,`s`.`landing`) % 60),'m') AS `duration` from (((`flight` `f` join `airports` `ao` on((`f`.`origin` = `ao`.`airportID`))) join `airports` `ad` on((`f`.`destination` = `ad`.`airportID`))) join `schedule` `s` on((`f`.`IATA` = `s`.`flightID`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `bhcancellationmonthlycounts`
+--
+
+/*!50001 DROP VIEW IF EXISTS `bhcancellationmonthlycounts`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `bhcancellationmonthlycounts` AS select year(`bookinghistory`.`cancellationDate`) AS `deletionyear`,month(`bookinghistory`.`cancellationDate`) AS `deletionmonth`,count(0) AS `total_cancellations` from `bookinghistory` where (`bookinghistory`.`bookingStatus` = 'Cancelled') group by year(`bookinghistory`.`cancellationDate`),month(`bookinghistory`.`cancellationDate`) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `bhcancellationsbywhodoneit`
+--
+
+/*!50001 DROP VIEW IF EXISTS `bhcancellationsbywhodoneit`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `bhcancellationsbywhodoneit` AS select year(`bh`.`cancellationDate`) AS `deletionyear`,month(`bh`.`cancellationDate`) AS `deletionmonth`,(case when (`u`.`username` = 'admin') then 'admin' when (`u`.`isStaff` = 1) then 'staff' else 'user' end) AS `cancellationcategory`,count(0) AS `total_cancellations` from (`bookinghistory` `bh` join `users` `u` on((`u`.`userID` = `bh`.`cancelledBy`))) where (`bh`.`bookingStatus` = 'Cancelled') group by year(`bh`.`cancellationDate`),month(`bh`.`cancellationDate`),(case when (`u`.`username` = 'admin') then 'admin' when (`u`.`isStaff` = 1) then 'staff' else 'user' end) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1382,6 +1493,24 @@ DELIMITER ;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
+-- Final view structure for view `psinfomonthlycounts`
+--
+
+/*!50001 DROP VIEW IF EXISTS `psinfomonthlycounts`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `psinfomonthlycounts` AS select `pilotscheduleinfo`.`fname` AS `fname`,`pilotscheduleinfo`.`lname` AS `lname`,`pilotscheduleinfo`.`staffID` AS `staffid`,year(`pilotscheduleinfo`.`liftOff`) AS `departyear`,month(`pilotscheduleinfo`.`liftOff`) AS `departmonth`,count(0) AS `bookingcount` from `pilotscheduleinfo` group by `pilotscheduleinfo`.`fname`,`pilotscheduleinfo`.`lname`,`pilotscheduleinfo`.`staffID`,year(`pilotscheduleinfo`.`liftOff`),month(`pilotscheduleinfo`.`liftOff`) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `reservationticket`
 --
 
@@ -1395,6 +1524,42 @@ DELIMITER ;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `reservationticket` AS select `b`.`bookingNumber` AS `bookingNumber`,`b`.`userID` AS `userID`,`b`.`bookingDate` AS `reservationDate`,`b`.`departSeat` AS `departSeatNumber`,`b`.`returnSeat` AS `returnSeatNumber`,`u`.`username` AS `username`,`ds`.`liftOff` AS `departLiftOffDate`,`ds`.`landing` AS `departArrivingDate`,`df`.`IATA` AS `departFlight`,`dfao`.`name` AS `departOrigin`,`dfad`.`name` AS `departDestination`,`rs`.`liftOff` AS `returnLiftOffDate`,`rs`.`landing` AS `returnArrivingDate`,`rf`.`IATA` AS `returnFlight`,`rfao`.`name` AS `returnOrigin`,`rfad`.`name` AS `returnDestination` from (((((((((`booking` `b` left join `users` `u` on((`b`.`userID` = `u`.`userID`))) left join `schedule` `ds` on((`ds`.`scheduleID` = `b`.`departScheduleID`))) left join `flight` `df` on((`df`.`IATA` = `ds`.`flightID`))) left join `airports` `dfao` on((`dfao`.`airportID` = `df`.`origin`))) left join `airports` `dfad` on((`dfad`.`airportID` = `df`.`destination`))) left join `schedule` `rs` on((`rs`.`scheduleID` = `b`.`returnScheduleID`))) left join `flight` `rf` on((`rf`.`IATA` = `rs`.`flightID`))) left join `airports` `rfao` on((`rfao`.`airportID` = `rf`.`origin`))) left join `airports` `rfad` on((`rfad`.`airportID` = `rf`.`destination`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `rtmonthlycounts`
+--
+
+/*!50001 DROP VIEW IF EXISTS `rtmonthlycounts`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `rtmonthlycounts` AS select year(`reservationticket`.`reservationDate`) AS `reservationyear`,month(`reservationticket`.`reservationDate`) AS `reservationmonth`,count(0) AS `monthly_reservations`,count(distinct `reservationticket`.`userID`) AS `distinct_reservations_this_month` from `reservationticket` group by year(`reservationticket`.`reservationDate`),month(`reservationticket`.`reservationDate`) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `rtusercounts`
+--
+
+/*!50001 DROP VIEW IF EXISTS `rtusercounts`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `rtusercounts` AS select count(`reservationticket`.`bookingNumber`) AS `bookingamount`,`reservationticket`.`userID` AS `userid`,`reservationticket`.`username` AS `username` from `reservationticket` group by `reservationticket`.`userID`,`reservationticket`.`username` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1444,4 +1609,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-10  5:17:54
+-- Dump completed on 2026-04-14  3:06:43
