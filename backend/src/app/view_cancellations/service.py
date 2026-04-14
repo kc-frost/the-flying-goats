@@ -6,7 +6,7 @@ def get_all_connections():
     with conn.cursor() as cursor:
         try:
             query = """
-                SELECT bh.bookingNumber, u.username, ao.IATA AS `origin`, ad.IATA AS `destination`, bh.cancellationDate, up.username as cancelledBy, bh.reason
+                SELECT bh.bookingNumber, bh.bookingDate, u.username, ao.IATA AS `origin`, ad.IATA AS `destination`, bh.cancellationDate, up.username as cancelledBy, bh.reason
                 FROM bookinghistory bh
                 JOIN users u on bh.userID = u.userID
                 JOIN schedule s on bh.departScheduleID = s.scheduleID

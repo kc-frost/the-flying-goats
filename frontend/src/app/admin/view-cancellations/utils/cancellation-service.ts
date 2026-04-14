@@ -9,6 +9,6 @@ export class CancellationService {
   private http = inject(HttpClient);
 
   getAllCancellations() {
-    return this.http.get<{ bookingNumber: number, cancellationDate: string, canceledBy: string, destination: string, origin: string, reason: string, username: string}[]>(`${environment.api_url}/admin/all-cancellations`)
+    return this.http.get<{ bookingNumber: number, bookingDate: string, cancellationDate: string, cancelledBy: string, destination: string, origin: string, reason: string, username: string}[]>(`${environment.api_url}/admin/all-cancellations`)
   }
 }
