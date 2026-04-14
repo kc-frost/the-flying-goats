@@ -16,46 +16,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Alfreds Futterkiste</td>
-                </tr>
-                <tr>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Alfreds Futterkiste</td>
-                </tr>
-                <tr>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Alfreds Futterkiste</td>
-                </tr>
-                <tr>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Maria Anders</td>
-                    <td>Germany</td>
-                    <td>Alfreds Futterkiste</td>
-                    <td>Alfreds Futterkiste</td>
-                </tr>
+                @for (e of allCancellations$ | async; track $index) {
+                    <tr>
+                        <td>{{e.bookingNumber}}</td>
+                        <td>{{e.username}}</td>
+                        <td>{{e.bookingDate}}</td>
+                        <td>{{e.origin}}</td>
+                        <td>{{e.destination}}</td>
+                        <td>{{e.cancellationDate}}</td>
+                        <td>{{e.cancelledBy}}</td>
+                        <td>{{e.reason}}</td>
+                    </tr>
+                }
             </tbody>
         </table>       
     </section>
