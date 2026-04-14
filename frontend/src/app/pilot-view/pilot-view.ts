@@ -83,7 +83,7 @@ export class PilotView implements OnInit {
     }
 
     this.http
-      .post(`${environment.api_url}/api/planes/clear-finished`, {})
+      .post(`${environment.api_url}/admin/planes/clear-finished`, {})
       .subscribe({
         next: () => {
           alert("Pilot and flight availability was cleared successfully.");

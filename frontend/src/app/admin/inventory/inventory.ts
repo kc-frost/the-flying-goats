@@ -87,7 +87,7 @@ export class Inventory implements OnInit {
 
 getPlanes(): void {
   this.http
-    .get<Omit<PlaneRow, "isReadOnly">[]>(`${environment.api_url}/api/planes`)
+    .get<Omit<PlaneRow, "isReadOnly">[]>(`${environment.api_url}/admin/planes`)
     .subscribe({
       next: (rows) => {
         this.planes = rows.map((row) => ({
@@ -161,7 +161,7 @@ closePlaneModal(): void {
     }
 
     this.http
-      .post(`${environment.api_url}/api/planes/add`, {
+      .post(`${environment.api_url}/admin/planes/add`, {
         ICAO: this.newPlane.ICAO
       })
       .subscribe({
@@ -192,7 +192,7 @@ closePlaneModal(): void {
 
   deletePlane(ICAO: string): void {
     this.http
-      .post(`${environment.api_url}/api/planes/delete`, {
+      .post(`${environment.api_url}/admin/planes/delete`, {
         ICAO: ICAO
       })
       .subscribe({
@@ -207,7 +207,7 @@ closePlaneModal(): void {
 
   updatePlaneICAO(ICAO: string, newICAO: string): void {
     this.http
-      .post(`${environment.api_url}/api/planes/update-ICAO`, {
+      .post(`${environment.api_url}/admin/planes/update-ICAO`, {
         ICAO: newICAO,
         old_ICAO: ICAO
       })
@@ -273,7 +273,7 @@ closePlaneModal(): void {
 
 savePlaneChanges(plane: PlaneRow): void {
   this.http
-    .post(`${environment.api_url}/api/planes/update-ICAO`, {
+    .post(`${environment.api_url}/admin/planes/update-ICAO`, {
       ICAO: plane.ICAO,
       old_ICAO: plane.oldICAO
     })

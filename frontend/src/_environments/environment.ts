@@ -1,4 +1,5 @@
 export const environment = {
     production: true,
-    api_url: "http://159.65.100.137:5000"
+    // Removed so that all our calls default to the same origin/ip and port (No more issues with API calls going forward hopefully)
+    api_url: ""
 }

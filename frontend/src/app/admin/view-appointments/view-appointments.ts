@@ -2,7 +2,6 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../../_environments/environment";
-import { DatePipe } from "@angular/common";
 
 // Changed cause, you guessed it, DB changes. New datatypes, general attributes, and new names
 type ReservationRow = {
@@ -15,7 +14,9 @@ type ReservationRow = {
   departFlight: string;
   returnFlight: string;
   departLiftOffDate: string;
+  departArrivingDate: string;
   returnLiftOffDate: string;
+  returnArrivingDate: string;
   departOrigin: string;
   departDestination: string;
   returnOrigin: string;
@@ -37,18 +38,23 @@ export class ViewAppointments implements OnInit {
   ngOnInit(): void {
     this.getReservations();
   }
-  getReservations(): void {
-    this.http
-      .get<ReservationRow[]>(`${environment.api_url}/admin/reservations`)
-      .subscribe({
-        next: (data) => {
-          console.log("reservations received:", data);
-          this.reservations = data;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error("error loading reservations:", err);
-        },
-      });
-  }
+getReservations(): void {
+  const url = `${environment.api_url}/admin/reservations`;
+  console.log("calling reservations url:", url);
+
+  this.http.get(url).subscribe({
+    next: (data: any) => {
+      console.log("raw reservations response:", data);
+      console.log("is array?", Array.isArray(data));
+      console.log("reservations length:", Array.isArray(data) ? data.length : "not array");
+      console.log("first reservation:", Array.isArray(data) && data.length > 0 ? data[0] : null);
+
+      this.reservations = Array.isArray(data) ? data : [];
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error("error loading reservations:", err);
+    },
+  });
+}
 }

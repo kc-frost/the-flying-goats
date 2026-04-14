@@ -18,7 +18,9 @@ import { AsyncPipe } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
+
 // This file is gonna be separated into commented categories because even after reorganizing everything it's still so fucking long
+// Language!!!
 export class BookFlight {
   private formBuilder = inject(FormBuilder);
   private userService = inject(UserService);
@@ -129,9 +131,11 @@ export class BookFlight {
     
     return this.formBuilder.group({
       // match mysql datetime format
+      // I added ScheduleID here
       reservationDate: [local.toISOString().slice(0, 19).replace("T", " "), [Validators.required]],
       username: [this.userService.getUsername(), [Validators.required]],
       email: [this.userService.getEmail(), [Validators.required]],
+      scheduleID: ['', [Validators.required]],
       flightID: ['', [Validators.required]], // this field is to make queries easier when POSTed
       origin: ['', [Validators.required]],
       destination: ['', [Validators.required]],
@@ -167,8 +171,12 @@ export class BookFlight {
 
     const origin = this.searchTerms.get('origin')?.value!;
     const destination = this.searchTerms.get('destination')?.value!;
+    // Added these two
+    const departureDate = this.searchTerms.get('departureDate')?.value!;
+    const returnDate = this.searchTerms.get('arrivalDate')?.value!;
 
-    this.flightService.getFlights(origin, destination).subscribe({
+
+    this.flightService.getFlights(origin, destination, departureDate, returnDate).subscribe({
       next: (res: any) => {
         this.departingFlights.next(res.depart);
         this.returningFlights.next(res.return);
@@ -215,7 +223,8 @@ export class BookFlight {
   onDestFocused() {
     if (this.activeInboundFilter !== 'none') {
       var filter = this.filters.find(({ id }) => id === this.activeInboundFilter);
-      this.setFilter('outbound', filter!);
+      // Changed from outbound to inbound
+      this.setFilter('inbound', filter!);
     } else if (!this.searchTerms.get("destination")?.value) {
       this.searchAirports(" ", "destination");
     }
@@ -261,29 +270,28 @@ export class BookFlight {
       this.activeInboundSeat = null;
     }
 
-    const dateKey = isOutbound ? "departureDate" : "arrivalDate";
+    // got rid of dateKey, wasn't needed anymore
     const origin = isOutbound ? "origin" : "destination";
     const destination = isOutbound ? "destination" : "origin";
     const flightForm = isOutbound ? this.outboundFlight : this.inboundFlight;
 
-    // extract date out of the calendar
-    var tripDate = new Date(`${this.searchTerms.get(`${dateKey}`)!.value}`).toLocaleDateString();
-
+    //I'ma leave this commented. PROLLY not needed to translate back to datetime format, but I'm scared
     // set timezone offset
-    const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-    .toISOString().slice(0, 19).replace("T", " ");
-    
+    // const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    // .toISOString().slice(0, 19).replace("T", " ");    
     // match mysql datetime format
-    var newDeptDate = toLocal(new Date(`${tripDate} ${flight.liftOff}`));
-    var newArrDate = toLocal(new Date(`${tripDate} ${flight.landing}`));
+    // var newDeptDate = toLocal(new Date(`${tripDate} ${flight.liftOff}`));
+    // var newArrDate = toLocal(new Date(`${tripDate} ${flight.landing}`));
 
     // update form values
     flightForm.patchValue({
+      scheduleID: flight.scheduleID,
       origin: this.searchTerms.get(`${origin}`)!.value.toUpperCase(),
       destination: this.searchTerms.get(`${destination}`)!.value.toUpperCase(),
       flightID: flight.IATA,
-      departureDate: newDeptDate,
-      arrivalDate: newArrDate
+      departureDate: flight.liftOff,
+      arrivalDate: flight.landing,
+      seatNumber: '',
     })
 
   }

@@ -509,7 +509,7 @@ create trigger rememberUser
 after insert on users
 for each row
 -- FIX THIS
-insert into userHistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
+insert into userhistory(userID, phoneNumber, fname, lname, username, email, password, isStaff, bio, registeredDate)
 values(new.userID, new.phoneNumber, new.fname, new.lname, new.username, new.email, new.password, new.isStaff, new.bio, new.registeredDate);
 
 create trigger deletedUserAndStaff
@@ -520,7 +520,7 @@ begin
 		then
 			delete from staff where old.userID = staffID;
 	end if;
-    update userHistory set accountStatus = "Deleted", deletionDate = curdate() where userID = old.userID;
+    update userhistory set accountStatus = "Deleted", deletionDate = curdate() where userID = old.userID;
     
 end//
 
@@ -625,7 +625,7 @@ end//
 create trigger RememberBookings
 after insert on booking
 for each row
-	insert into bookingHistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
+	insert into bookinghistory(bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID, departLiftOff, departLanding, returnLiftOff, returnLanding)
     select new.bookingNumber, new.bookingDate, new.userID, new.departSeat, new.returnSeat, new.departScheduleID, new.returnScheduleID, ds.liftOff, ds.landing, rs.liftOff, rs.landing
     from schedule ds
     join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID;
@@ -640,7 +640,7 @@ create trigger createCancellationNotif
 after delete on booking
 for each row
 begin
-    insert into cancellationNotifs(userID, bookingID)
+    insert into cancellationnotifs(userID, bookingID)
     values(old.userID, old.bookingNumber);
 end//
 

@@ -89,7 +89,7 @@ that it could be applied universally and changed in real time without need for u
 """
 def isAvailable(data):
     conn = get_connection()
-    query = "select isAvailable from inventoryNames where itemID=%s"
+    query = "select isAvailable from inventorynames where itemID=%s"
     with conn.cursor() as cursor:
         cursor.execute(query, (data['itemID'],))
         result = cursor.fetchone()
