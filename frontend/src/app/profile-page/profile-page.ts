@@ -23,6 +23,7 @@ export class ProfilePage {
   // added these for editing -Richard
   reservationModalOpen = false;
   selectedReservation: any = null;
+  reviewModalOpen = false;
   departSeatControl = new FormControl('');
   returnSeatControl = new FormControl('');
   departTakenSeats: string[] = [];

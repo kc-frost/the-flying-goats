@@ -474,3 +474,63 @@
         }
     }
 }
+
+.review-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.3);
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    
+    /* animation: slide-down 150ms ease; */
+    overflow: hidden;
+    
+    & .review-modal {
+        & header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+
+            & button {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                font-weight: bold;
+                cursor: pointer;
+                color: red;
+                line-height: 1;
+                
+                transition: transform 130ms ease;
+
+                &:hover {
+                    color: rgb(183, 1, 1);
+                }
+
+                &:active {
+                    transform: scale(0.93);
+                }
+            }
+        }
+
+        border-radius: 10px;
+        width: 700px;
+        height: 450px;
+        background-color: whitesmoke;
+        z-index: 1005;
+    }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
+    }
+}

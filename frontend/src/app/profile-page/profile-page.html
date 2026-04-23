@@ -47,7 +47,7 @@
                             </button>
                         }
                         @if (selectedTab === 'past') {
-                            <button class="add-review-btn" (click)="test()">
+                            <button class="add-review-btn" (click)="reviewModalOpen = true;">
                                 <img src="/profile/add-review.svg" alt="Add review" />
                                 Add Review
                             </button>
@@ -121,6 +121,18 @@
             }
                 
         </section>
+
+        @if (reviewModalOpen) {
+            <div class="review-modal-backdrop" (click)="reviewModalOpen = false">
+                <div class="review-modal" (click)="$event.stopPropagation()">
+                    <header>
+                        <h2>Add Review</h2>
+                        <button (click)="reviewModalOpen = false;">✕</button>
+                    </header>
+    
+                </div>
+            </div>
+        }
 
         <!-- Editing reservations-->
         @if (reservationModalOpen && selectedReservation) {
