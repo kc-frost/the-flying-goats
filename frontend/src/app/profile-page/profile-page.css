@@ -203,7 +203,6 @@
     
     /* separated this from being nested under .content because i wanted more control */
     & details {
-        cursor: pointer;
         border: 3px solid #aaaaaa;
         border-radius: 5px;
         padding: 20px;
@@ -213,10 +212,47 @@
 
         &:hover {
             background-color: #aeaeae;
+            
+            & .add-review-btn {
+                background-color: transparent;
+                cursor: pointer;
+            }
+        }
+
+        & .add-review-btn {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+
+            border: 2px solid #808080;
+            border-radius: 8px;
+            padding: 4px 10px;
+
+            font-family: var(--body-font);
+            font-size: 0.8rem;
+
+            transition: 0.3s;
+
+            & img {
+                width: 20px;
+                height: 20px;
+                object-fit: contain;
+            }
+
+            &:hover {
+                border: 2px solid #808080;
+                background-color: rgb(225, 225, 225);
+            }
+
+            &:active {
+                transform: scale(0.93);
+            }
         }
     }
 
     & summary {
+        cursor: pointer;
         font-size:large;
         font-weight: 700;
     }

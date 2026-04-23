@@ -261,4 +261,7 @@ export class ProfilePage {
     this.returnTakenSeats = [];
     this.cdr.detectChanges();
   }
+
+  // TEST FUNCTION FOR BUTTONS
+  test() { console.log("hello")};
 }

@@ -46,6 +46,12 @@
                                 <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
                             </button>
                         }
+                        @if (selectedTab === 'past') {
+                            <button class="add-review-btn" (click)="test()">
+                                <img src="/profile/add-review.svg" alt="Add review" />
+                                Add Review
+                            </button>
+                        }
                     <table>
                     <tr>
                         <th>Date</th>
