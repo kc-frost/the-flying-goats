@@ -490,6 +490,12 @@
     overflow: hidden;
     
     & .review-modal {
+        border-radius: 10px;
+        width: 700px;
+        height: 350px;
+        background-color: whitesmoke;
+        z-index: 1005;
+
         & header {
             display: flex;
             align-items: center;
@@ -503,7 +509,7 @@
                 font-size: 1.5rem;
                 font-weight: bold;
                 cursor: pointer;
-                color: red;
+                color: #e3e3e3;
                 line-height: 1;
                 
                 transition: transform 130ms ease;
@@ -518,11 +524,41 @@
             }
         }
 
-        border-radius: 10px;
-        width: 700px;
-        height: 450px;
-        background-color: whitesmoke;
-        z-index: 1005;
+        & .ratings {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 70px;
+
+            & .stars {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                
+                & img {
+                    width: 30px;
+                    height: 30px;
+
+                    &:hover {
+                        cursor: pointer;
+                        content: url("/profile/star-filled.svg");
+
+                    }
+                }
+            }
+
+            & .review {
+                textarea {
+                    width: 300px;
+                    height: 150px;
+                }
+            }
+
+        }
     }
 }
 

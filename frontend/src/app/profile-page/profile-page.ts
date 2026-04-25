@@ -23,7 +23,14 @@ export class ProfilePage {
   // added these for editing -Richard
   reservationModalOpen = false;
   selectedReservation: any = null;
+
+  // How many stars were clicked (by default, 0)
+  rating = 0;
   reviewModalOpen = false;
+  // Images for the review stars
+  star_empty = "/profile/star-empty.svg";
+  star_filled = "/profile/star-filled.svg";
+  
   departSeatControl = new FormControl('');
   returnSeatControl = new FormControl('');
   departTakenSeats: string[] = [];
@@ -261,6 +268,16 @@ export class ProfilePage {
     this.departTakenSeats = [];
     this.returnTakenSeats = [];
     this.cdr.detectChanges();
+  }
+
+  openReviewModal(reservation: any) {
+    this.reviewModalOpen = true;
+    console.log(reservation);
+  }
+
+  closeReviewModal() {
+    this.reviewModalOpen = false;
+    this.rating = 0;
   }
 
   // TEST FUNCTION FOR BUTTONS
