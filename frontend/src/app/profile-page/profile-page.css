@@ -486,15 +486,18 @@
     align-items: center;
     justify-content: center;
     
-    /* animation: slide-down 150ms ease; */
+    /* animation: slide-down 130ms ease; */
     overflow: hidden;
     
     & .review-modal {
         border-radius: 10px;
         width: 700px;
-        height: 350px;
+        height: 370px;
         background-color: whitesmoke;
         z-index: 1005;
+        display: flex;
+        flex-direction: column;
+        gap: 55px;
 
         & header {
             display: flex;
@@ -524,20 +527,26 @@
             }
         }
 
-        & .ratings {
-            margin-top: 50px;
+        & .body {
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: center;
-            gap: 70px;
+            justify-content: space-evenly;
+        }
+
+        & .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 80px;
 
             & .stars {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: center;
-                gap: 8px;
+                gap: 10px;
                 
                 & img {
                     width: 30px;
@@ -551,18 +560,121 @@
                 }
             }
 
-            & .review {
-                textarea {
-                    border: 2px solid gray;
-                    border-radius: 3px;
-                    resize: none;
-                    padding: 2px;
-                    width: 300px;
-                    height: 150px;
+            & .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            & button {
+                width: 110px;
+                height: 35px;
+                font-size: 0.9rem;
+                font-weight: bold;
+                border-radius: 5px;
+                border: none;
+                color: white;
+
+                transition: transform 130ms ease;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &:active {
+                    transform: scale(0.98);
                 }
             }
 
+            & .submit {
+                background-color: var(--primary-color);
+
+                &:hover {
+                    background-color: #2b4e8f;
+                }
+            }
+
+            & .delete {
+                background-color: #e53e3e;
+
+                &:hover {
+                    background-color: #C53030;
+                }
+            }
         }
+
+            /* & .review {
+                textarea {
+                    border: 3px solid var(--primary-color);
+                    border-radius: 3px;
+                    resize: none;
+                    padding: 5px;
+                    width: 300px;
+                    height: 150px;
+                    font-family: var(--body-font);
+                }
+            } */
+
+        }
+
+        & .right {
+            & .review {
+                textarea {
+                    border: 3px solid var(--primary-color);
+                    border-radius: 3px;
+                    resize: none;
+                    padding: 5px;
+                    width: 300px;
+                    height: 150px;
+                    font-family: var(--body-font);
+                }
+            }
+        }
+
+        /* & .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            margin-bottom: 20px;
+
+            & button {
+                width: 120px;
+                height: 40px;
+                font-size: 1rem;
+                font-weight: bold;
+                border-radius: 5px;
+                border: none;
+                color: white;
+
+                transition: transform 130ms ease;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &:active {
+                    transform: scale(0.98);
+                }
+            }
+
+            & .submit {
+                background-color: var(--primary-color);
+
+                &:hover {
+                    background-color: #2b4e8f;
+                }
+            }
+
+            & .delete {
+                background-color: #e53e3e;
+
+                &:hover {
+                    background-color: #C53030;
+                }
+            }
+        } */
     }
 }
 

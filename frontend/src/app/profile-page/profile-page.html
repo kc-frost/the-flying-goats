@@ -130,22 +130,30 @@
                         <button (click)="closeReviewModal()">✕</button>
                     </header>
 
-                    <div class="ratings">
-                        <div class="stars">
-                            @for (star of [1,2,3,4,5]; track star) {
-                                <img [src]="star <= rating ? star_filled : star_empty"
-                                (click)="rating = star" />
-                            }
+                    <section class="body">
+                        <div class="left">
+                            <div class="stars">
+                                @for (star of [1,2,3,4,5]; track star) {
+                                    <img [src]="star <= rating ? star_filled : star_empty"
+                                    (click)="rating = star" />
+                                }
+                            </div>
+
+                            <div class="buttons">
+                                <button class="submit">Save
+                                </button>
+                                <button class="delete">Delete
+                                </button>
+                            </div>
+                            
                         </div>
 
-                        <div class="review">
-                            <textarea maxlength="370" placeholder="This is the best flight ever..."></textarea>
+                        <div class="right">
+                            <div class="review">
+                                <textarea maxlength="370" placeholder="This is the best flight ever..."></textarea>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="buttons">
-
-                    </div>
+                    </section>
                 </div>
             </div>
         }
