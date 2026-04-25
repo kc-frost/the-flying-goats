@@ -168,6 +168,16 @@ create table bookinghistory(
     reason text
 );
 
+create table reviews(
+ratingID int primary key auto_increment,
+bookingID int,
+userID int,
+rating int,
+review text, 
+creationDate datetime default current_timestamp,
+deletionDate datetime default null
+);
+
 create table item (
 itemID int primary key auto_increment,
 itemName varchar(255) not null,
