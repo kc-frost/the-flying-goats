@@ -121,3 +121,20 @@ def update_booking_status(data):
                     "error": str(e)}
         
 # Look into adding leftover service files over the weekend
+def create_review(bookingID: str, userID: str, rating: str, review: str):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                INSERT INTO `reviews`(`bookingID`, `userID`, `rating`, `review`, `creationDate`) VALUES
+                (%s, %s, %s, %s, now())
+            """
+
+            cursor.execute(query, [bookingID, userID, rating, review,])
+            
+            conn.commit()
+            return {'success': 'ok'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}

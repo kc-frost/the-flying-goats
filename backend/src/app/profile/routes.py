@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, create_review
 
 bp = Blueprint("profile", __name__)
 
@@ -115,3 +115,24 @@ def update_reservation_status():
             "success": False,
             "message": result.get("error")
          }), 500
+
+@bp.route('/add-review', methods=['POST'])
+@login_required
+def add_review():
+    data = request.json
+
+    bookingID = data['bookingID']
+    rating = data['rating']
+    review = data['review']
+
+    result = create_review(bookingID, current_user.get_id(), rating, review)
+
+    if 'err' in result:
+        return jsonify(result), 500
+    
+    return jsonify(result), 200
+
+# @bp.route('/delete-review', methods=['POST'])
+# @login_required
+# def delete_review():
+#     return 'hi'

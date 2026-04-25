@@ -302,7 +302,14 @@ export class ProfilePage {
     })
     // this.review.next(this.reviewForm.controls.review.value!);
 
-    console.log(this.reviewForm.value);
+    this.http.post(`${environment.api_url}/api/add-review`,
+      this.reviewForm.value).subscribe({
+        next: (res) => {
+          console.log(res);
+        }
+      })
+
+    // console.log(this.reviewForm.value);
   }
 
   // TEST FUNCTION FOR BUTTONS
