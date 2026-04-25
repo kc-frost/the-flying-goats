@@ -130,30 +130,38 @@
                         <button (click)="closeReviewModal()">✕</button>
                     </header>
 
-                    <section class="body">
-                        <div class="left">
-                            <div class="stars">
-                                @for (star of [1,2,3,4,5]; track star) {
-                                    <img [src]="star <= rating ? star_filled : star_empty"
-                                    (click)="rating = star" />
+                    <form [formGroup]="reviewForm">
+                        <section class="body">
+                            <div class="left">
+                                <div class="stars">
+                                    @for (star of [1,2,3,4,5]; track star) {
+                                        <img [src]="star <= rating ? star_filled : star_empty"
+                                    (click)="rating = star;" />
                                 }
                             </div>
-
+                            
                             <div class="buttons">
-                                <button class="submit">Save
+                                <button class="submit" (click)="submitReview()">Save
                                 </button>
                                 <button class="delete">Delete
                                 </button>
                             </div>
                             
-                        </div>
-
-                        <div class="right">
-                            <div class="review">
-                                <textarea maxlength="370" placeholder="This is the best flight ever..."></textarea>
                             </div>
-                        </div>
-                    </section>
+                            <div class="right">
+                                <div class="review">
+                                    <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
+                                </div>
+                                <!-- @if ((review$ | async) == '' ) {
+                                    <div class="review">
+                                        <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
+                                    </div>
+                                } @else {
+                                    <p>there is alreayd a review</p>
+                                } -->
+                            </div>
+                        </section>
+                    </form>
                 </div>
             </div>
         }

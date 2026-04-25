@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../_shared/services/user-service';
@@ -17,19 +17,13 @@ import { DatePipe } from '@angular/common';
 export class ProfilePage {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef)
+  private formBuilder = inject(FormBuilder);
   private userReservations = new BehaviorSubject<any[]>([]);
   private userBio = new BehaviorSubject<string>("");
   private isEditing = new BehaviorSubject<boolean>(false);
   // added these for editing -Richard
   reservationModalOpen = false;
   selectedReservation: any = null;
-
-  // How many stars were clicked (by default, 0)
-  rating = 0;
-  reviewModalOpen = false;
-  // Images for the review stars
-  star_empty = "/profile/star-empty.svg";
-  star_filled = "/profile/star-filled.svg";
   
   departSeatControl = new FormControl('');
   returnSeatControl = new FormControl('');
@@ -270,14 +264,45 @@ export class ProfilePage {
     this.cdr.detectChanges();
   }
 
+  // How many stars were clicked (by default, 0)
+  rating = 0;
+  reviewModalOpen = false;
+  // Images for the review stars
+  star_empty = "/profile/star-empty.svg";
+  star_filled = "/profile/star-filled.svg";
+
+  // private review = new BehaviorSubject<String>('');
+  // review$ = this.review.asObservable();
+
+  reviewForm = this.formBuilder.group({
+    bookingID: ['', Validators.required],
+    // userID omitted, derived from python
+    rating: ['', Validators.required],
+    review: ['', Validators.required]
+    // TENTATIVE: dates will also be handled in python
+  })
+
   openReviewModal(reservation: any) {
     this.reviewModalOpen = true;
-    console.log(reservation);
+    this.reviewForm.patchValue({
+      bookingID: reservation.bookingNumber
+    });
   }
 
   closeReviewModal() {
     this.reviewModalOpen = false;
     this.rating = 0;
+
+    this.reviewForm.reset();
+  }
+
+  submitReview() {
+    this.reviewForm.patchValue({
+      rating: String(this.rating),
+    })
+    // this.review.next(this.reviewForm.controls.review.value!);
+
+    console.log(this.reviewForm.value);
   }
 
   // TEST FUNCTION FOR BUTTONS
