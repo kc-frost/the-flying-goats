@@ -553,6 +553,10 @@
 
             & .review {
                 textarea {
+                    border: 2px solid gray;
+                    border-radius: 3px;
+                    resize: none;
+                    padding: 2px;
                     width: 300px;
                     height: 150px;
                 }
