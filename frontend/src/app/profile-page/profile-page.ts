@@ -43,6 +43,7 @@ export class ProfilePage {
     this.loadReservations();
     this.loadBio();
     this.loadProfilePicture();
+    this.loadReviews();
   }
 
   // Changed cause of DB Changes, I'm not using just date anymore, I'm using datetime
@@ -271,8 +272,9 @@ export class ProfilePage {
   star_empty = "/profile/star-empty.svg";
   star_filled = "/profile/star-filled.svg";
 
-  // private review = new BehaviorSubject<String>('');
-  // review$ = this.review.asObservable();
+  private userReviews = new BehaviorSubject<any[]>([]);
+  private currentReview = new BehaviorSubject<any>(null);
+  currentReview$ = this.currentReview.asObservable();
 
   reviewForm = this.formBuilder.group({
     bookingID: ['', Validators.required],
@@ -283,33 +285,49 @@ export class ProfilePage {
   })
 
   openReviewModal(reservation: any) {
-    this.reviewModalOpen = true;
+    // find if the current reservation has a review tied to it
     this.reviewForm.patchValue({
       bookingID: reservation.bookingNumber
     });
+    this.currentReview.next(
+      this.userReviews.getValue().find((r:any) => r.bookingID === reservation.bookingNumber) ?? null
+    )
+
+    this.rating = this.currentReview.getValue() ? this.currentReview.value.rating : 0;
+
+    this.reviewModalOpen = true;
   }
 
   closeReviewModal() {
-    this.reviewModalOpen = false;
     this.rating = 0;
-
     this.reviewForm.reset();
+    this.currentReview.next("");
+    this.reviewModalOpen = false;
   }
 
   submitReview() {
     this.reviewForm.patchValue({
       rating: String(this.rating),
+      // review is not here, since textarea is already tied to the formcontrol
     })
-    // this.review.next(this.reviewForm.controls.review.value!);
 
     this.http.post(`${environment.api_url}/api/add-review`,
       this.reviewForm.value).subscribe({
         next: (res) => {
-          console.log(res);
+          // console.log(res);
+          this.loadReviews();
+          this.closeReviewModal();
         }
       })
+  }
 
-    // console.log(this.reviewForm.value);
+  loadReviews() {
+    this.http.get<[]>(`${environment.api_url}/api/get-reviews`).subscribe({
+      next: (res) => {
+        this.userReviews.next(res);
+        console.log(res);
+      }
+    })
   }
 
   // TEST FUNCTION FOR BUTTONS

@@ -118,53 +118,51 @@
                     </tr>
                 </table>
                 </details>
+
+                @if (reviewModalOpen) {
+                <div class="review-modal-backdrop" (click)="closeReviewModal()">
+                    <div class="review-modal" (click)="$event.stopPropagation()">
+                        <header>
+                            <h2>Add Review</h2>
+                            <button (click)="closeReviewModal()">✕</button>
+                        </header>
+
+                        <form [formGroup]="reviewForm">
+                            <section class="body">
+                                <div class="left">
+                                    <div class="stars">
+                                        @for (star of [1,2,3,4,5]; track star) {
+                                            <img [src]="star <= rating ? star_filled : star_empty"
+                                        (click)="rating = star;" />
+                                    }
+                                </div>
+                                
+                                <div class="buttons">
+                                    <button class="submit" (click)="submitReview()">Save
+                                    </button>
+                                    <button class="delete">Delete
+                                    </button>
+                                </div>
+                                
+                                </div>
+                                <div class="right">
+                                    <div class="review">
+                                        @let currentReview = (currentReview$ | async);
+                                        @if (currentReview) {
+                                            <p> {{ currentReview.review }} </p>
+                                        } @else {
+                                            <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." >{{ selectedReservation }} </textarea>
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                </div>
             }
+        }
                 
         </section>
-
-        @if (reviewModalOpen) {
-            <div class="review-modal-backdrop" (click)="closeReviewModal()">
-                <div class="review-modal" (click)="$event.stopPropagation()">
-                    <header>
-                        <h2>Add Review</h2>
-                        <button (click)="closeReviewModal()">✕</button>
-                    </header>
-
-                    <form [formGroup]="reviewForm">
-                        <section class="body">
-                            <div class="left">
-                                <div class="stars">
-                                    @for (star of [1,2,3,4,5]; track star) {
-                                        <img [src]="star <= rating ? star_filled : star_empty"
-                                    (click)="rating = star;" />
-                                }
-                            </div>
-                            
-                            <div class="buttons">
-                                <button class="submit" (click)="submitReview()">Save
-                                </button>
-                                <button class="delete">Delete
-                                </button>
-                            </div>
-                            
-                            </div>
-                            <div class="right">
-                                <div class="review">
-                                    <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
-                                </div>
-                                <!-- @if ((review$ | async) == '' ) {
-                                    <div class="review">
-                                        <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
-                                    </div>
-                                } @else {
-                                    <p>there is alreayd a review</p>
-                                } -->
-                            </div>
-                        </section>
-                    </form>
-                </div>
-            </div>
-        }
 
         <!-- Editing reservations-->
         @if (reservationModalOpen && selectedReservation) {
