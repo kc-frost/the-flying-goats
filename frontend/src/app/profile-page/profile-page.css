@@ -6,7 +6,7 @@
     justify-content: space-evenly;
     gap: 50px;
 
-    height: 1000px;
+    /* height: 1000px; */
     & > * {
         margin-top: 70px;
     }
@@ -128,29 +128,45 @@
     
 }
 
-.reservation-view {
-    background-color: whitesmoke;
-    width: 1000px;
-    height: 600px;
-    max-height: 600px;
+/* kai, why arent the tourist-dest and reservation-view nested like you always like to do? */
+/* because its so fucking long */
 
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+.right-content {
     display: flex;
     flex-direction: column;
-    
-    
-    & .header {
-        flex-shrink: 0;
+    gap: 50px;
+
+    margin-bottom: 30px;
+
+    & .tourist-dest, .reservation-view {
+        background-color: whitesmoke;
+        width: 1000px;
+        height: 600px;
+        max-height: 600px;
+        border-radius: 10px;
 
         & header {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
-        }
 
-        & h1 {
-            margin-left: 20px;
+            h1 {
+                margin-left: 20px;
+            }
         }
+    }
+}
+
+.tourist-dest {
+    opacity: 1;
+}
+
+
+.reservation-view {
+    display: flex;
+    flex-direction: column;
+    
+    & .header {
+        flex-shrink: 0;
     }
     
     & .tab {
