@@ -560,6 +560,14 @@
                 }
             }
 
+            & p:first-of-type {
+                margin-top: -70px;
+                margin-bottom: -10px;
+                color: red;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
             & .buttons {
             display: flex;
             flex-direction: row;
@@ -613,15 +621,40 @@
 
         & .right {
             & .review {
-                textarea {
-                    border: 3px solid var(--primary-color);
+                & textarea, .review-block {
                     border-radius: 3px;
-                    resize: none;
-                    padding: 5px;
                     width: 300px;
                     height: 150px;
+                    padding: 5px;
                     font-family: var(--body-font);
+                }
 
+                & .review-block {
+                    border-left: 3px solid var(--primary-color);
+                    overflow: auto;
+                    scrollbar-width: thin;
+
+                    & * {
+                        margin-left: 3px;
+                    }
+
+                    & .review-label {
+                        font-size: 1.1rem;
+                        letter-spacing: 0.06rem;
+                        color: #6b7280;
+                        margin-bottom: 3px;
+                    }
+
+                    & .review-content {
+                        font-style: italic;
+                        font-size: 0.9rem;
+                        line-height: 1.5rem;
+                    }
+                }
+
+                textarea {
+                    border: 3px solid var(--primary-color);
+                    resize: none;
                     transition: box-shadow 130ms ease;
 
                     &:focus {

@@ -129,31 +129,37 @@
 
                         <form [formGroup]="reviewForm">
                             <section class="body">
+                                @let currentReview = (currentReview$ | async);
                                 <div class="left">
                                     <div class="stars">
-                                        <!-- DO SOMETHING WHERE THEY CANNOT BE CLICKED ON IF CURRENTREVIEW IS A FALSY -->
                                         @for (star of [1,2,3,4,5]; track star) {
                                             <img [src]="star <= rating ? star_filled : star_empty"
-                                        (click)="setRating(star);" />
+                                            (click)="setRating(star);" />
+                                        }
+                                    </div>
+
+                                    @if (currentReview) {
+                                        <p>Change this all you want.<br>Rating is stuck here <span style="font-weight: bold;">forever</span>!</p>
                                     }
-                                </div>
                                 
-                                <div class="buttons">
-                                    <!-- Disables submit if there already exists a review, or form is invalid -->
-                                    <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
-                                    </button>
-                                    <button class="delete">Delete
-                                    </button>
-                                </div>
+                                    <div class="buttons">
+                                        <!-- Disables submit if there already exists a review, or form is invalid -->
+                                        <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
+                                        </button>
+                                        <button class="delete">Delete
+                                        </button>
+                                    </div>
                                 
                                 </div>
                                 <div class="right">
                                     <div class="review">
-                                        @let currentReview = (currentReview$ | async);
                                         @if (currentReview) {
-                                            <p> {{ currentReview.review }} </p>
+                                            <div class="review-block">
+                                                <p class="review-label"> Your Review </p>
+                                                <p class="review-content"> {{ currentReview.review }} </p>
+                                            </div>
                                         } @else {
-                                            <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." >{{ selectedReservation }} </textarea>
+                                            <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
                                         }
                                     </div>
                                 </div>
