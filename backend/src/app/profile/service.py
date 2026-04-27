@@ -149,7 +149,8 @@ def retrieve_reviews(userID: str):
             query = """
                 SELECT *
                 FROM `reviews`
-                WHERE `userID` = %s
+                WHERE `userID` = %s AND
+                `deletionDate` IS NULL
             """
 
             cursor.execute(query, [userID,])
@@ -158,4 +159,23 @@ def retrieve_reviews(userID: str):
             return rows
         
         except Exception as e:
+            return {'err': str(e)}
+        
+def erase_review(ratingID: int):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                UPDATE `reviews`
+                SET `deletionDate` = now()
+                WHERE `ratingID` = %s
+            """
+
+            cursor.execute(query, (ratingID,))
+            conn.commit()
+
+            return {'success': 'erased review'}
+        except Exception as e:
+            conn.rollback()
             return {'err': str(e)}

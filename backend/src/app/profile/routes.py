@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, create_review, retrieve_reviews
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, create_review, retrieve_reviews, erase_review
 
 bp = Blueprint("profile", __name__)
 
@@ -144,7 +144,14 @@ def get_reviews():
     
     return jsonify(result), 200
 
-# @bp.route('/delete-review', methods=['POST'])
-# @login_required
-# def delete_review():
-#     return 'hi'
+@bp.route('/delete-review', methods=['POST'])
+@login_required
+def delete_review():
+    ratingID = request.json
+    
+    result = erase_review(ratingID)
+
+    if 'err' in result:
+        return jsonify(result), 500
+    
+    return jsonify(result), 200

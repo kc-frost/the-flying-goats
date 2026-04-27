@@ -329,11 +329,22 @@ export class ProfilePage {
       })
   }
 
+  deleteReview(ratingID: any) {
+    this.http.post(`${environment.api_url}/api/delete-review`,
+      ratingID).subscribe({
+        next: (res) => {
+          console.log(res);
+          this.loadReviews();
+          this.closeReviewModal();
+        }
+      })
+  }
+
   loadReviews() {
     this.http.get<[]>(`${environment.api_url}/api/get-reviews`).subscribe({
       next: (res) => {
         this.userReviews.next(res);
-        // console.log(res);
+        console.log(res);
       }
     })
   }
