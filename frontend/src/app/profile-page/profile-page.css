@@ -139,6 +139,9 @@
     margin-bottom: 30px;
 
     & .tourist-dest, .reservation-view {
+        display: flex;
+        flex-direction: column;
+
         background-color: whitesmoke;
         width: 1000px;
         height: 600px;
@@ -157,13 +160,46 @@
 }
 
 .tourist-dest {
+    gap: 20px;
     opacity: 1;
+
+    & .content {
+        display: flex;
+        flex-direction: row;
+    }
+
+    & .dests {
+        flex: 4;
+    }
+
+    & .selector {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 20px;
+        gap: 6px;
+
+        border-left: 3px solid var(--primary-color);
+        border-radius: 5px;
+        height: 100%;
+
+        & label {
+            color:#555;
+            letter-spacing: 0.2rem;
+        }
+
+        & select {
+            width: 150px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+        }
+    }
 }
 
 
 .reservation-view {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
     
     & .header {
         flex-shrink: 0;
