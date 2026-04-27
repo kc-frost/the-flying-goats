@@ -281,8 +281,21 @@ export class ProfilePage {
     // userID omitted, derived from python
     rating: ['', Validators.required],
     review: ['', Validators.required]
-    // TENTATIVE: dates will also be handled in python
+    // dates will also be handled in python
   })
+
+  // Cannot submit if reviewForm's required fields are not filled out AND
+  // a current review already exists for this booking
+  get isFormInvalid(): boolean {
+    return (this.reviewForm.invalid || this.rating === 0) && !!this.currentReview;
+  }
+
+  setRating(rating: number) {
+    this.rating = rating;
+    this.reviewForm.patchValue({
+      rating: String(rating)
+    });
+  }
 
   openReviewModal(reservation: any) {
     // find if the current reservation has a review tied to it
@@ -306,11 +319,6 @@ export class ProfilePage {
   }
 
   submitReview() {
-    this.reviewForm.patchValue({
-      rating: String(this.rating),
-      // review is not here, since textarea is already tied to the formcontrol
-    })
-
     this.http.post(`${environment.api_url}/api/add-review`,
       this.reviewForm.value).subscribe({
         next: (res) => {
@@ -325,7 +333,7 @@ export class ProfilePage {
     this.http.get<[]>(`${environment.api_url}/api/get-reviews`).subscribe({
       next: (res) => {
         this.userReviews.next(res);
-        console.log(res);
+        // console.log(res);
       }
     })
   }

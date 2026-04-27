@@ -593,6 +593,11 @@
                 &:hover {
                     background-color: #2b4e8f;
                 }
+
+                &.disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
             }
 
             & .delete {

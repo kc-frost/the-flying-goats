@@ -131,14 +131,16 @@
                             <section class="body">
                                 <div class="left">
                                     <div class="stars">
+                                        <!-- DO SOMETHING WHERE THEY CANNOT BE CLICKED ON IF CURRENTREVIEW IS A FALSY -->
                                         @for (star of [1,2,3,4,5]; track star) {
                                             <img [src]="star <= rating ? star_filled : star_empty"
-                                        (click)="rating = star;" />
+                                        (click)="setRating(star);" />
                                     }
                                 </div>
                                 
                                 <div class="buttons">
-                                    <button class="submit" (click)="submitReview()">Save
+                                    <!-- Disables submit if there already exists a review, or form is invalid -->
+                                    <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
                                     </button>
                                     <button class="delete">Delete
                                     </button>
