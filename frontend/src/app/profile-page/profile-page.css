@@ -593,6 +593,11 @@
                 &:active {
                     transform: scale(0.98);
                 }
+                
+                &.disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
             }
 
             & .submit {
@@ -602,10 +607,6 @@
                     background-color: #2b4e8f;
                 }
 
-                &.disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
             }
 
             & .delete {
@@ -631,6 +632,8 @@
 
                 & .review-block {
                     border-left: 3px solid var(--primary-color);
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                     overflow: auto;
                     scrollbar-width: thin;
 

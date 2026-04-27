@@ -333,7 +333,7 @@ export class ProfilePage {
     this.http.post(`${environment.api_url}/api/delete-review`,
       ratingID).subscribe({
         next: (res) => {
-          console.log(res);
+          // console.log(res);
           this.loadReviews();
           this.closeReviewModal();
         }

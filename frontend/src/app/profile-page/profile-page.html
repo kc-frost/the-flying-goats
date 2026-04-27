@@ -146,7 +146,7 @@
                                         <!-- Disables submit if there already exists a review, or form is invalid -->
                                         <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
                                         </button>
-                                        <button class="delete" (click)="deleteReview(currentReview.ratingID)">Delete
+                                        <button class="delete" (click)="deleteReview(currentReview.ratingID)" [disabled]="!currentReview" [class.disabled]="!currentReview">Delete
                                         </button>
                                     </div>
                                 
