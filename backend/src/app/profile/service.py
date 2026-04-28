@@ -1,7 +1,8 @@
-from flask import jsonify
+from flask import jsonify, current_app
 from unittest import result
 from app.db import get_connection
 from datetime import timedelta
+import serpapi
 
 def get_user_reservations(userID: str):
     conn = get_connection()
@@ -121,3 +122,20 @@ def update_booking_status(data):
                     "error": str(e)}
         
 # Look into adding leftover service files over the weekend
+
+def retrieve_tourist_destinations(location: str):
+    """Uses the Serpapi API to search for top tourist destinations in a city
+
+    Args:
+        location (str): Location of possible tourist destinations
+
+    Returns:
+        dict: Dictionary of different tourist sites
+    """    
+    client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
+    results = client.search({
+        "engine": "google",
+        "q": f"{location} destinations"
+    })
+
+    return results["top_sights"]

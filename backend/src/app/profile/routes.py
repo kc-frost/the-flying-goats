@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, retrieve_tourist_destinations
 
 bp = Blueprint("profile", __name__)
 
@@ -115,3 +115,13 @@ def update_reservation_status():
             "success": False,
             "message": result.get("error")
          }), 500
+
+@bp.route('/get-tourist-dests', methods=['GET'])
+def get_tourist_dests():
+    try:
+        results = retrieve_tourist_destinations("austin texas")
+        return jsonify(results), 200
+    except KeyError as e:
+        return jsonify({'err': 'No sights found.'}), 404
+    except Exception as e:
+        return jsonify({'err': str(e)}), 500
