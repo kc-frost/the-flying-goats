@@ -118,8 +118,10 @@ def update_reservation_status():
 
 @bp.route('/get-tourist-dests', methods=['GET'])
 def get_tourist_dests():
+    location = request.json
+
     try:
-        results = retrieve_tourist_destinations("austin texas")
+        results = retrieve_tourist_destinations(location)
         return jsonify(results), 200
     except KeyError as e:
         return jsonify({'err': 'No sights found.'}), 404
