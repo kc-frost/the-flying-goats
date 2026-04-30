@@ -228,11 +228,10 @@
             width: 100%;
             height:max-content;
             border-radius: 8px;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            justify-content: space-between;
-
+            display: grid;
+            grid-template-columns: 145px 1fr auto;
+            align-items: center;
+            gap: 50px;
             transition: background-color 130ms ease;
 
             &:hover {
@@ -254,8 +253,6 @@
                 flex-direction: column;
                 align-items: flex-start;
                 justify-content: space-around;
-
-                margin-left: -200px;
 
                 & .info-top {
                     display: inline-flex;
