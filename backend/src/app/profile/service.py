@@ -123,19 +123,48 @@ def update_booking_status(data):
         
 # Look into adding leftover service files over the weekend
 
-def retrieve_tourist_destinations(location: str):
-    """Uses the Serpapi API to search for top tourist destinations in a city
+def retrieve_tourist_destinations(userID: str):
+    """Retrieves all cities that the user corresponding to `userID` is going to, then calls Serpapi API to get all the top sights at those cities. Returns a dict of those destinations with its city in the format of "{City}, {State/Country}" as its key.
+
+    WARNING: DO NOT REPEATEDLY CALL THIS FUNCTION WITHOUT REASON. IT MIGHT WASTE REQUESTS
 
     Args:
-        location (str): Location of possible tourist destinations
+        userID (str): ID of user in the database
 
     Returns:
         dict: Dictionary of different tourist sites
     """    
-    client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
-    results = client.search({
-        "engine": "google",
-        "q": f"{location} destinations"
-    })
 
-    return results["top_sights"]
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT DISTINCT a.place as userDestinations
+                FROM booking  b
+                JOIN schedule sd ON b.departScheduleID = sd.scheduleID
+                JOIN flight f ON sd.flightID = f.IATA
+                JOIN airports a ON f.destination = a.airportID
+                WHERE userID = %s;
+            """
+            cursor.execute(query, (userID,))
+            dests = cursor.fetchall()
+
+            client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
+            sights = {}
+
+            for arr in dests:
+                dest = arr.get("userDestinations")
+                if dest:
+                    results = client.search({
+                        "engine": "google",
+                        "q": f"{dest} top sights"
+                    })
+
+                    sights[dest] = results['top_sights']
+
+            return sights
+        
+        except Exception as e:
+            return {'err': str(e)}
+        

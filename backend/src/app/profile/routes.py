@@ -117,13 +117,13 @@ def update_reservation_status():
          }), 500
 
 @bp.route('/get-tourist-dests', methods=['GET'])
+@login_required
 def get_tourist_dests():
-    location = request.json
-
-    try:
-        results = retrieve_tourist_destinations(location)
-        return jsonify(results), 200
-    except KeyError as e:
+    results = retrieve_tourist_destinations(current_user.get_id())
+    
+    if 'err' in results:
+        return jsonify(results), 500
+    if results is None:
         return jsonify({'err': 'No sights found.'}), 404
-    except Exception as e:
-        return jsonify({'err': str(e)}), 500
+    
+    return jsonify(results), 200
