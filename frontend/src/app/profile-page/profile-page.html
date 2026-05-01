@@ -175,70 +175,29 @@
                 </div>
 
                 <div class="dests">
-                    <div class="card">
-                        <div class="image">
-                            <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEgg4QkIGwjwB4r1XcOw_qzi8ktZMFmkV7sKEWcOQXQ5B7SD8smMpXERUbBogiTf9pjkAU1qJOMTrbWmwEgZ-B3AplXuigqVo1LhbFLr_HtitZSbj9U6vqTSajyI4rB-B8wPVs=s148-w148-h148-n-k-no" />
-                        </div>
-                        <div class="info">
-                            <div class="info-top">
-                                <span class="title">Akihabara Electric Town</span>
-                                <span class="loc"> Tokyo, JP</span>
+                    <!-- <button (click)="testLocalStorage()">LOCALSTORAGE TEST</button> -->
+                    @for (place of hardCodedAustin; track $index) {
+                        <div class="card">
+                            <div class="image">
+                                <img [src]="place.thumbnail" />
                             </div>
-                            <p class="desc">Colloquial area</p>
-                            <p class="rating high">Rating: 4.5 / 5</p>
-                        </div>
-                        <div class="learn">
-                            <a target="_blank" href="https://www.google.com/viewer/place?sca_esv=ef29f624651829e3&output=search&mid=/m/0119m"> View More</a>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="image">
-                            <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEgg4QkIGwjwB4r1XcOw_qzi8ktZMFmkV7sKEWcOQXQ5B7SD8smMpXERUbBogiTf9pjkAU1qJOMTrbWmwEgZ-B3AplXuigqVo1LhbFLr_HtitZSbj9U6vqTSajyI4rB-B8wPVs=s148-w148-h148-n-k-no" />
-                        </div>
-                        <div class="info">
-                            <div class="info-top">
-                                <span class="title">Akihabara Electric Town</span>
-                                <span class="loc"> Tokyo, JP</span>
+                            <div class="info">
+                                <div class="info-top">
+                                    <span class="title">{{place.title}}</span>
+                                    <span class="loc">{{place.location}}</span>
+                                </div>
+                                <p class="desc">{{place.desc}}</p>
+                                <p [class]="getRatingClass(place.rating)">Rating: {{place.rating}} / 5</p>
                             </div>
-                            <p class="desc">Colloquial area</p>
-                            <p class="rating low">Rating: 1.2 / 5</p>
-                        </div>
-                        <div class="learn">
-                            <a target="_blank" href="https://www.google.com/viewer/place?sca_esv=ef29f624651829e3&output=search&mid=/m/0119m"> View More</a>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="image">
-                            <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEgg4QkIGwjwB4r1XcOw_qzi8ktZMFmkV7sKEWcOQXQ5B7SD8smMpXERUbBogiTf9pjkAU1qJOMTrbWmwEgZ-B3AplXuigqVo1LhbFLr_HtitZSbj9U6vqTSajyI4rB-B8wPVs=s148-w148-h148-n-k-no" />
-                        </div>
-                        <div class="info">
-                            <div class="info-top">
-                                <span class="title">Akihabara Electric Town</span>
-                                <span class="loc"> Tokyo, JP</span>
+                            <div class="learn">
+                                <a target="_blank" [href]="place.link"> View More</a>
                             </div>
-                            <p class="desc">Colloquial area</p>
-                            <p class="rating no-rating">No rating available</p>
                         </div>
-                        <div class="learn">
-                            <a target="_blank" href="https://www.google.com/viewer/place?sca_esv=ef29f624651829e3&output=search&mid=/m/0119m"> View More</a>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="image">
-                            <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEgg4QkIGwjwB4r1XcOw_qzi8ktZMFmkV7sKEWcOQXQ5B7SD8smMpXERUbBogiTf9pjkAU1qJOMTrbWmwEgZ-B3AplXuigqVo1LhbFLr_HtitZSbj9U6vqTSajyI4rB-B8wPVs=s148-w148-h148-n-k-no" />
-                        </div>
-                        <div class="info">
-                            <div class="info-top">
-                                <span class="title">Akihabara Electric Town</span>
-                                <span class="loc"> Tokyo, JP</span>
-                            </div>
-                            <p class="desc">Colloquial area</p>
-                            <p class="rating medium">Rating: 3.2 / 5</p>
-                        </div>
-                        <div class="learn">
-                            <a target="_blank" href="https://www.google.com/viewer/place?sca_esv=ef29f624651829e3&output=search&mid=/m/0119m"> View More</a>
-                        </div>
-                    </div>
+                    } @empty {
+                        <!-- DESIGN THIS IN A LATER COMMIT -->
+                        <h3>No destinations available</h3>
+                        <p>Max API calls likely reached</p>
+                    }
                 </div>
             </section>
         </section>

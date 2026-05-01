@@ -261,4 +261,40 @@ export class ProfilePage {
     this.returnTakenSeats = [];
     this.cdr.detectChanges();
   }
+
+  getRatingClass(rating: number): string {
+    if (rating >= 4) {
+      return "rating high";
+    } else if (rating >= 2.5) {
+      return "rating medium";
+    } else if (rating >= 0) {
+      return "rating low";
+    } else {
+      return "rating no-rating";
+    }
+  }
+
+  hardCodedAustin: {title: string, location: string, desc: string, rating: number, thumbnail: string, link: string}[] = [
+    {
+      title: "Barton Springs Pool",
+      location: "Austin, TX",
+      desc: "Closed",
+      rating: 4.6,
+      thumbnail: "https://serpapi.com/searches/69f398e3c2034857595dd70c/images/FeTid-M-Q7fXZG19ysU17O5V5J-G34sIkrSAm6yr7G4.jpeg",
+      link: "https://www.google.com/viewer/place?sca_esv=2063d717304705eb&output=search&mid=/m/0164mk"
+    },
+    {
+      title: "Zilker Metropolitan Park",
+      location: "Austin, TX",
+      desc: "Open",
+      rating: 4.8,
+      thumbnail: "https://serpapi.com/searches/69f398e3c2034857595dd70c/images/FeTid-M-Q7fXZG19ysU17N4kxcv2LLPaq4z157m9VRc.jpeg",
+      link: "https://www.google.com/viewer/place?sca_esv=2063d717304705eb&output=search&mid=/m/0163z0",
+    }
+  ]
+
+  testLocalStorage() {
+    localStorage.setItem("AUS", JSON.stringify(this.hardCodedAustin));
+    console.log("LOGGED LOCAL STORAGE");
+  }
 }
