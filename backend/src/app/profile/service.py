@@ -146,23 +146,25 @@ def retrieve_user_dests(userID: str):
   
   with conn.cursor() as cursor:
     try:
-      query = """
-          SELECT DISTINCT a.place as userDestinations
-          FROM booking  b
-          JOIN schedule sd ON b.departScheduleID = sd.scheduleID
-          JOIN flight f ON sd.flightID = f.IATA
-          JOIN airports a ON f.destination = a.airportID
-          WHERE userID = %s;
-      """
-            cursor.execute(query, (userID,))
-            dests = cursor.fetchall()
+        query = """
+            SELECT DISTINCT a.place as userDestinations
+            FROM booking  b
+            JOIN schedule sd ON b.departScheduleID = sd.scheduleID
+            JOIN flight f ON sd.flightID = f.IATA
+            JOIN airports a ON f.destination = a.airportID
+            WHERE userID = %s;
+            """
+        
+        cursor.execute(query, (userID,))
+        dests = cursor.fetchall()
 
-            if dests is None:
-                return {'msg': 'user isnt going anywhere'}
+        if dests is None:
+            return {'msg': 'user isnt going anywhere'}
             
-            return dests
-        except Exception as e:
-            return {'err': str(e)}
+        return dests
+    
+    except Exception as e:
+        return {'err': str(e)}
 
 def retrieve_tourist_destinations(location: str):
     """Returns the top sights of a given city

@@ -47,6 +47,12 @@
                                     <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
                                 </button>
                             }
+                            @if (selectedTab === 'past') {
+                            <button class="add-review-btn" (click)="openReviewModal(reservation)">
+                                <img src="/profile/add-review.svg" alt="Add review" />
+                                Add Review
+                            </button>
+                        }
                         <table>
                         <tr>
                             <th>Date</th>
@@ -157,82 +163,8 @@
                     </div>
                 </div>
             }
-    
-                        }
-                        @if (selectedTab === 'past') {
-                            <button class="add-review-btn" (click)="openReviewModal(reservation)">
-                                <img src="/profile/add-review.svg" alt="Add review" />
-                                Add Review
-                            </button>
-                        }
-                    <table>
-                    <tr>
-                        <th>Date</th>
-                        <th>Flight Number</th>
-                        <th>Departing</th>
-                        <th>Arriving</th>
-                        <th>Seat Number</th>
-                    </tr>
-                    
-                    <!-- DEPART DETAILS -->
-                    <tr>
-                        <!-- Updated these since DB changed attribute names-->
-                        <td>
-                            <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
-                            <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.departFlight}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.departOrigin}}</p>
-                            <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.departDestination}}</p>
-                            <p>{{reservation.departArrivingDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.departArrivingDate | date:'hh:mma'}} / {{reservation.departArrivingDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.departSeatNumber}}</p>
-                        </td>
-                    </tr>
 
-                    <!-- RETURN DETAILS -->
-                    <tr>
-                        <th>Date</th>
-                        <th>Flight Number</th>
-                        <th>Departing</th>
-                        <th>Arriving</th>
-                        <th>Seat Number</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
-                            <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.returnFlight}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.returnOrigin}}</p>
-                            <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.returnDestination}}</p>
-                            <p>{{reservation.returnArrivingDate | date:'ccc dd MMM yyyy'}}</p>
-                            <p>{{reservation.returnArrivingDate | date:'hh:mma'}} / {{reservation.returnArrivingDate | date:'HH:mm'}}</p>
-                        </td>
-                        <td>
-                            <p>{{reservation.returnSeatNumber}}</p>
-                        </td>
-                    </tr>
-                </table>
-                </details>
-
-                @if (reviewModalOpen) {
+            @if (reviewModalOpen) {
                 <div class="review-modal-backdrop" (click)="closeReviewModal()">
                     <div class="review-modal" (click)="$event.stopPropagation()">
                         <header>
@@ -281,7 +213,6 @@
                     </div>
                 </div>
             }
-        }
                 
         </section>
 
