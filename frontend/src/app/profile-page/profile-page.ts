@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../_shared/services/user-service';
@@ -20,12 +20,14 @@ export class ProfilePage {
   private cdr = inject(ChangeDetectorRef)
   private destcache = inject(DestinationCache);
   private ls = localStorage;
+  private formBuilder = inject(FormBuilder);
   private userReservations = new BehaviorSubject<any[]>([]);
   private userBio = new BehaviorSubject<string>("");
   private isEditing = new BehaviorSubject<boolean>(false);
   // added these for editing -Richard
   reservationModalOpen = false;
   selectedReservation: any = null;
+  
   departSeatControl = new FormControl('');
   returnSeatControl = new FormControl('');
   departTakenSeats: string[] = [];
@@ -46,6 +48,7 @@ export class ProfilePage {
     this.loadProfilePicture();
 
     this.loadUserDests();
+    this.loadReviews();
   }
 
   // Changed cause of DB Changes, I'm not using just date anymore, I'm using datetime
@@ -322,4 +325,90 @@ export class ProfilePage {
       return "rating low";
     }
   }
+  // How many stars were clicked (by default, 0)
+  rating = 0;
+  reviewModalOpen = false;
+  // Images for the review stars
+  star_empty = "/profile/star-empty.svg";
+  star_filled = "/profile/star-filled.svg";
+
+  private userReviews = new BehaviorSubject<any[]>([]);
+  private currentReview = new BehaviorSubject<any>(null);
+  currentReview$ = this.currentReview.asObservable();
+
+  reviewForm = this.formBuilder.group({
+    bookingID: ['', Validators.required],
+    // userID omitted, derived from python
+    rating: ['', Validators.required],
+    review: ['', Validators.required]
+    // dates will also be handled in python
+  })
+
+  // Cannot submit if reviewForm's required fields are not filled out AND
+  // a current review already exists for this booking
+  get isFormInvalid(): boolean {
+    return (this.reviewForm.invalid || this.rating === 0) && !!this.currentReview;
+  }
+
+  setRating(rating: number) {
+    this.rating = rating;
+    this.reviewForm.patchValue({
+      rating: String(rating)
+    });
+  }
+
+  openReviewModal(reservation: any) {
+    // find if the current reservation has a review tied to it
+    this.reviewForm.patchValue({
+      bookingID: reservation.bookingNumber
+    });
+    this.currentReview.next(
+      this.userReviews.getValue().find((r:any) => r.bookingID === reservation.bookingNumber) ?? null
+    )
+
+    this.rating = this.currentReview.getValue() ? this.currentReview.value.rating : 0;
+
+    this.reviewModalOpen = true;
+  }
+
+  closeReviewModal() {
+    this.rating = 0;
+    this.reviewForm.reset();
+    this.currentReview.next("");
+    this.reviewModalOpen = false;
+  }
+
+  submitReview() {
+    this.http.post(`${environment.api_url}/api/add-review`,
+      this.reviewForm.value).subscribe({
+        next: (res) => {
+          // console.log(res);
+          this.loadReviews();
+          this.closeReviewModal();
+        }
+      })
+  }
+
+  deleteReview(ratingID: any) {
+    this.http.post(`${environment.api_url}/api/delete-review`,
+      ratingID).subscribe({
+        next: (res) => {
+          // console.log(res);
+          this.loadReviews();
+          this.closeReviewModal();
+        }
+      })
+  }
+
+  loadReviews() {
+    this.http.get<[]>(`${environment.api_url}/api/get-reviews`).subscribe({
+      next: (res) => {
+        this.userReviews.next(res);
+        console.log(res);
+      }
+    })
+  }
+
+  // TEST FUNCTION FOR BUTTONS
+  test() { console.log("hello")};
 }

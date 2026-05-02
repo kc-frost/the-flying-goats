@@ -158,6 +158,131 @@
                 </div>
             }
     
+                        }
+                        @if (selectedTab === 'past') {
+                            <button class="add-review-btn" (click)="openReviewModal(reservation)">
+                                <img src="/profile/add-review.svg" alt="Add review" />
+                                Add Review
+                            </button>
+                        }
+                    <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                        <th>Seat Number</th>
+                    </tr>
+                    
+                    <!-- DEPART DETAILS -->
+                    <tr>
+                        <!-- Updated these since DB changed attribute names-->
+                        <td>
+                            <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departFlight}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departOrigin}}</p>
+                            <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departDestination}}</p>
+                            <p>{{reservation.departArrivingDate | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.departArrivingDate | date:'hh:mma'}} / {{reservation.departArrivingDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.departSeatNumber}}</p>
+                        </td>
+                    </tr>
+
+                    <!-- RETURN DETAILS -->
+                    <tr>
+                        <th>Date</th>
+                        <th>Flight Number</th>
+                        <th>Departing</th>
+                        <th>Arriving</th>
+                        <th>Seat Number</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
+                            <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnFlight}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnOrigin}}</p>
+                            <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnDestination}}</p>
+                            <p>{{reservation.returnArrivingDate | date:'ccc dd MMM yyyy'}}</p>
+                            <p>{{reservation.returnArrivingDate | date:'hh:mma'}} / {{reservation.returnArrivingDate | date:'HH:mm'}}</p>
+                        </td>
+                        <td>
+                            <p>{{reservation.returnSeatNumber}}</p>
+                        </td>
+                    </tr>
+                </table>
+                </details>
+
+                @if (reviewModalOpen) {
+                <div class="review-modal-backdrop" (click)="closeReviewModal()">
+                    <div class="review-modal" (click)="$event.stopPropagation()">
+                        <header>
+                            <h2>Add Review</h2>
+                            <button (click)="closeReviewModal()">✕</button>
+                        </header>
+
+                        <form [formGroup]="reviewForm">
+                            <section class="body">
+                                @let currentReview = (currentReview$ | async);
+                                <div class="left">
+                                    <div class="stars">
+                                        @for (star of [1,2,3,4,5]; track star) {
+                                            <img [src]="star <= rating ? star_filled : star_empty"
+                                            (click)="setRating(star);" />
+                                        }
+                                    </div>
+
+                                    @if (currentReview) {
+                                        <p>Change this all you want.<br>Rating is stuck here <span style="font-weight: bold;">forever</span>!</p>
+                                    }
+                                
+                                    <div class="buttons">
+                                        <!-- Disables submit if there already exists a review, or form is invalid -->
+                                        <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
+                                        </button>
+                                        <button class="delete" (click)="deleteReview(currentReview.ratingID)" [disabled]="!currentReview" [class.disabled]="!currentReview">Delete
+                                        </button>
+                                    </div>
+                                
+                                </div>
+                                <div class="right">
+                                    <div class="review">
+                                        @if (currentReview) {
+                                            <div class="review-block">
+                                                <p class="review-label"> Your Review </p>
+                                                <p class="review-content"> {{ currentReview.review }} </p>
+                                            </div>
+                                        } @else {
+                                            <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+                
         </section>
 
         <section class="tourist-dest">

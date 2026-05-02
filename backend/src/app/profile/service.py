@@ -123,19 +123,37 @@ def update_booking_status(data):
         
 # Look into adding leftover service files over the weekend
 
-def retrieve_user_dests(userID: str):
+def create_review(bookingID: str, userID: str, rating: str, review: str):
     conn = get_connection()
 
     with conn.cursor() as cursor:
         try:
             query = """
-                SELECT DISTINCT a.place as userDestinations
-                FROM booking  b
-                JOIN schedule sd ON b.departScheduleID = sd.scheduleID
-                JOIN flight f ON sd.flightID = f.IATA
-                JOIN airports a ON f.destination = a.airportID
-                WHERE userID = %s;
+             INSERT INTO `reviews`(`bookingID`, `userID`, `rating`, `review`, `creationDate`) VALUES
+                (%s, %s, %s, %s, now())
             """
+
+            cursor.execute(query, [bookingID, userID, rating, review,])
+            
+            conn.commit()
+            return {'success': 'ok'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}
+         
+def retrieve_user_dests(userID: str):
+  conn = get_connection()
+  
+  with conn.cursor() as cursor:
+    try:
+      query = """
+          SELECT DISTINCT a.place as userDestinations
+          FROM booking  b
+          JOIN schedule sd ON b.departScheduleID = sd.scheduleID
+          JOIN flight f ON sd.flightID = f.IATA
+          JOIN airports a ON f.destination = a.airportID
+          WHERE userID = %s;
+      """
             cursor.execute(query, (userID,))
             dests = cursor.fetchall()
 
@@ -171,3 +189,42 @@ def retrieve_tourist_destinations(location: str):
     
     return results["top_sights"].get("sights")
         
+        
+def retrieve_reviews(userID: str):
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT *
+                FROM `reviews`
+                WHERE `userID` = %s AND
+                `deletionDate` IS NULL
+            """
+
+            cursor.execute(query, [userID,])
+            rows = cursor.fetchall()
+
+            return rows
+        
+        except Exception as e:
+            return {'err': str(e)}
+        
+def erase_review(ratingID: int):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                UPDATE `reviews`
+                SET `deletionDate` = now()
+                WHERE `ratingID` = %s
+            """
+
+            cursor.execute(query, (ratingID,))
+            conn.commit()
+
+            return {'success': 'erased review'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}
