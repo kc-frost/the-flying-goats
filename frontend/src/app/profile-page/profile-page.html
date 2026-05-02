@@ -167,36 +167,44 @@
             <section class="content">
                 <div class="selector">
                     <label for="dests">Pick a destination</label>
-                    <select name="dests">
-                        <option>Austin, TX</option>
-                        <option>New York, NY</option>
-                        <option>San Francisco, CA</option>
+                    <select #destSelect name="dests" (change)="loadSight(destSelect.value)">
+                        <option value="--Select a city--" selected>--Select a city--</option>
+                        @for (place of allDests$ | async; track $index) {
+                            <option [value]="place">{{place}}</option>
+                        }
                     </select>
                 </div>
 
                 <div class="dests">
-                    <!-- <button (click)="testLocalStorage()">LOCALSTORAGE TEST</button> -->
-                    @for (place of hardCodedAustin; track $index) {
-                        <div class="card">
-                            <div class="image">
-                                <img [src]="place.thumbnail" />
-                            </div>
-                            <div class="info">
-                                <div class="info-top">
-                                    <span class="title">{{place.title}}</span>
-                                    <span class="loc">{{place.location}}</span>
+                    @if (currentDest === "--Select a city--") {
+                        <h3>Please select a city</h3>
+                    } @else {
+                        @for (place of currentDestSights$ | async; track $index) {
+                            <div class="card">
+                                <div class="image">
+                                    <img [src]="place.thumbnail || '/profile/gru.svg'" (error)="$any($event.target).src = '/profile/gru.svg'"/>
                                 </div>
-                                <p class="desc">{{place.desc}}</p>
-                                <p [class]="getRatingClass(place.rating)">Rating: {{place.rating}} / 5</p>
+                                <div class="info">
+                                    <div class="info-top">
+                                        <span class="title">{{place.title}}</span>
+                                        <span class="loc">{{place.location}}</span>
+                                    </div>
+                                    <p class="desc">{{place.desc}}</p>
+                                    @if (place.rating) {
+                                        <p [class]="getRatingClass(place.rating)">Rating: {{place.rating}} / 5</p>
+                                    } @else {
+                                        <p class="rating no-rating">No rating available.</p>
+                                    }
+                                </div>
+                                <div class="learn">
+                                    <a target="_blank" [href]="place.link"> View More</a>
+                                </div>
                             </div>
-                            <div class="learn">
-                                <a target="_blank" [href]="place.link"> View More</a>
-                            </div>
-                        </div>
-                    } @empty {
-                        <!-- DESIGN THIS IN A LATER COMMIT -->
-                        <h3>No destinations available</h3>
-                        <p>Max API calls likely reached</p>
+                        } @empty {
+                            <!-- DESIGN THIS IN A LATER COMMIT -->
+                            <h3>No destinations available</h3>
+                            <p>Max API calls likely reached</p>
+                        } 
                     }
                 </div>
             </section>

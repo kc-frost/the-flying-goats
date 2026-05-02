@@ -123,18 +123,7 @@ def update_booking_status(data):
         
 # Look into adding leftover service files over the weekend
 
-def retrieve_tourist_destinations(userID: str):
-    """Retrieves all cities that the user corresponding to `userID` is going to, then calls Serpapi API to get all the top sights at those cities. Returns a dict of those destinations with its city in the format of "{City}, {State/Country}" as its key.
-
-    WARNING: DO NOT REPEATEDLY CALL THIS FUNCTION WITHOUT REASON. IT MIGHT WASTE REQUESTS
-
-    Args:
-        userID (str): ID of user in the database
-
-    Returns:
-        dict: Dictionary of different tourist sites
-    """    
-
+def retrieve_user_dests(userID: str):
     conn = get_connection()
 
     with conn.cursor() as cursor:
@@ -150,21 +139,35 @@ def retrieve_tourist_destinations(userID: str):
             cursor.execute(query, (userID,))
             dests = cursor.fetchall()
 
-            client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
-            sights = {}
-
-            for arr in dests:
-                dest = arr.get("userDestinations")
-                if dest:
-                    results = client.search({
-                        "engine": "google",
-                        "q": f"{dest} top sights"
-                    })
-
-                    sights[dest] = results['top_sights']
-
-            return sights
-        
+            if dests is None:
+                return {'msg': 'user isnt going anywhere'}
+            
+            return dests
         except Exception as e:
             return {'err': str(e)}
+
+def retrieve_tourist_destinations(location: str):
+    """Returns the top sights of a given city
+
+    WARNING: DO NOT REPEATEDLY CALL THIS FUNCTION WITHOUT REASON. IT MIGHT WASTE REQUESTS
+
+    Args:
+        location (str): City to be queried for
+
+    Returns:
+        dict: Top sights of the passsed city with the city as its key
+    """
+
+    client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
+    results = client.search({
+        "engine": "google",
+        "q": f"{location} top sights"
+    })
+
+    if results["top_sights"].get("sights") is None:
+        return {'msg': "no sights found"}
+    
+    print(results['search_metadata'])
+    
+    return results["top_sights"].get("sights")
         

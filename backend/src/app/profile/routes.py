@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask_login import login_required, current_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, retrieve_tourist_destinations
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, retrieve_tourist_destinations, retrieve_user_dests
 
 bp = Blueprint("profile", __name__)
 
@@ -116,14 +116,29 @@ def update_reservation_status():
             "message": result.get("error")
          }), 500
 
+@bp.route('/get-user-dests', methods=['GET'])
+@login_required
+def get_user_dests():
+    results = retrieve_user_dests(current_user.get_id())
+
+    if results is None:
+        return jsonify(results), 404
+    if 'err' in results:
+        return jsonify(results), 500
+    
+    return jsonify(results), 200
+
 @bp.route('/get-tourist-dests', methods=['GET'])
 @login_required
 def get_tourist_dests():
-    results = retrieve_tourist_destinations(current_user.get_id())
+    location = request.args.get('location')
     
-    if 'err' in results:
-        return jsonify(results), 500
+    if location is None:
+        return jsonify({'msg': 'no city passed'})
+    
+    results = retrieve_tourist_destinations(location)
+    
     if results is None:
-        return jsonify({'err': 'No sights found.'}), 404
+        return jsonify(results), 404
     
     return jsonify(results), 200
