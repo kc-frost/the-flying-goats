@@ -6,6 +6,7 @@ import { UserService } from '../_shared/services/user-service';
 import { environment } from '../../_environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { DestinationCache } from './utils/destination-cache';
 
 @Component({
   selector: 'app-profile-page',
@@ -17,6 +18,8 @@ import { DatePipe } from '@angular/common';
 export class ProfilePage {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef)
+  private destcache = inject(DestinationCache);
+  private ls = localStorage;
   private formBuilder = inject(FormBuilder);
   private userReservations = new BehaviorSubject<any[]>([]);
   private userBio = new BehaviorSubject<string>("");
@@ -43,6 +46,8 @@ export class ProfilePage {
     this.loadReservations();
     this.loadBio();
     this.loadProfilePicture();
+
+    this.loadUserDests();
     this.loadReviews();
   }
 
@@ -56,7 +61,7 @@ export class ProfilePage {
     this.http.get<any[]>(`${environment.api_url}/api/user-reservations`).subscribe({
       next: (data) => {
         this.userReservations.next(data);
-        console.log(data);
+        // console.log(data);
         // load reservations automatically
         this.cdr.detectChanges();
         
@@ -265,6 +270,61 @@ export class ProfilePage {
     this.cdr.detectChanges();
   }
 
+  // TOURIST DESTINATION LOGIC
+  private allSights = new BehaviorSubject<any>(null);
+  private allDests = new BehaviorSubject<any>(null);
+  allSights$ = this.allSights.asObservable();
+  allDests$ = this.allDests.asObservable();
+
+  private currentDestSights = new BehaviorSubject<any>(null);
+  currentDestSights$ = this.currentDestSights.asObservable();
+  currentDest: string = "--Select a city--";
+
+  loadUserDests() {
+    this.destcache.loadUserDests().subscribe({
+      next: (res) => {
+        let arr = [];
+        for (let i = 0; i < res.length; i++) {
+          arr.push(res[i].userDestinations);
+        }
+
+        this.allDests.next(arr);
+        this.destcache.cacheCheck(arr);
+      }
+    })
+  }
+
+  loadSight(city: any) {
+    this.currentDest = city;
+
+    let possibleSight = this.ls.getItem(this.currentDest!);
+    if (possibleSight) {
+      const raw = JSON.parse(possibleSight);
+      const mapped = raw.map((s: any) => ({
+        title: s.title,
+        location: this.currentDest,
+        desc: s.description,
+        rating: s.rating,
+        thumbnail: s.thumbnail,
+        link: s.link
+      }));
+
+      this.currentDestSights.next(mapped);
+    } else {
+      this.currentDestSights.next(null);
+    }
+  }
+
+  // this is for css purposes
+  getRatingClass(rating: number): string {
+    if (rating >= 4) {
+      return "rating high";
+    } else if (rating >= 2.5) {
+      return "rating medium";
+    } else {
+      return "rating low";
+    }
+  }
   // How many stars were clicked (by default, 0)
   rating = 0;
   reviewModalOpen = false;

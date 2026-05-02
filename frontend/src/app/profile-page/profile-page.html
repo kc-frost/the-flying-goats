@@ -23,28 +23,141 @@
         </section>
     </section>
 
-    <section class="reservation-view">
-        <div class="header">
-            <header><h1>Your Reservations</h1></header>
-            <section class="tab">
-                <div class="depart">
-                    <input id="past" name="tab" type="radio" (click)="selectedTab = 'past'">
-                    <label for="past">Past</label>
-                </div>
-                <div class="upc">
-                    <input id="upc" name="tab" type="radio" checked (click)="selectedTab = 'upcoming'">
-                    <label for="upc">Upcoming</label>
-                </div>
+    <section class="right-content">
+        <section class="reservation-view">
+            <div class="header">
+                <header><h1>Your Reservations</h1></header>
+                <section class="tab">
+                    <div class="depart">
+                        <input id="past" name="tab" type="radio" (click)="selectedTab = 'past'">
+                        <label for="past">Past</label>
+                    </div>
+                    <div class="upc">
+                        <input id="upc" name="tab" type="radio" checked (click)="selectedTab = 'upcoming'">
+                        <label for="upc">Upcoming</label>
+                    </div>
+                </section>
+            </div>
+            <section class="content">
+                @for (reservation of filteredReservations; track $index) {
+                    <details open class="reservation-card">
+                        <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm':'+00:00'}}</summary>
+                            @if (selectedTab === 'upcoming') {
+                                <button class="edit-reservation-btn" (click)="openReservationModal(reservation, $event)">
+                                    <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
+                                </button>
+                            }
+                        <table>
+                        <tr>
+                            <th>Date</th>
+                            <th>Flight Number</th>
+                            <th>Departing</th>
+                            <th>Arriving</th>
+                            <th>Seat Number</th>
+                        </tr>
+                        
+                        <!-- DEPART DETAILS -->
+                        <tr>
+                            <!-- Updated these since DB changed attribute names-->
+                            <td>
+                                <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
+                                <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.departFlight}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.departOrigin}}</p>
+                                <p>{{reservation.departLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
+                                <p>{{reservation.departLiftOffDate | date:'hh:mma'}} / {{reservation.departLiftOffDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.departDestination}}</p>
+                                <p>{{reservation.departArrivingDate | date:'ccc dd MMM yyyy'}}</p>
+                                <p>{{reservation.departArrivingDate | date:'hh:mma'}} / {{reservation.departArrivingDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.departSeatNumber}}</p>
+                            </td>
+                        </tr>
+    
+                        <!-- RETURN DETAILS -->
+                        <tr>
+                            <th>Date</th>
+                            <th>Flight Number</th>
+                            <th>Departing</th>
+                            <th>Arriving</th>
+                            <th>Seat Number</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}} </p>
+                                <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.returnFlight}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.returnOrigin}}</p>
+                                <p>{{reservation.returnLiftOffDate | date:'ccc dd MMM yyyy'}}</p>
+                                <p>{{reservation.returnLiftOffDate | date:'hh:mma'}} / {{reservation.returnLiftOffDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.returnDestination}}</p>
+                                <p>{{reservation.returnArrivingDate | date:'ccc dd MMM yyyy'}}</p>
+                                <p>{{reservation.returnArrivingDate | date:'hh:mma'}} / {{reservation.returnArrivingDate | date:'HH:mm'}}</p>
+                            </td>
+                            <td>
+                                <p>{{reservation.returnSeatNumber}}</p>
+                            </td>
+                        </tr>
+                    </table>
+                    </details>
+                }
+                    
             </section>
-        </div>
-        <section class="content">
-            @for (reservation of filteredReservations; track $index) {
-                <details open class="reservation-card">
-                    <summary> {{reservation.reservationDate | date:'MMM d, y, HH:mm':'+00:00'}}</summary>
-                        @if (selectedTab === 'upcoming') {
-                            <button class="edit-reservation-btn" (click)="openReservationModal(reservation, $event)">
-                                <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
+    
+            <!-- Editing reservations-->
+            @if (reservationModalOpen && selectedReservation) {
+                <div class="reservation-modal-backdrop" (click)="closeReservationModal()">
+                    <div class="reservation-modal" (click)="$event.stopPropagation()">
+                        <div class="reservation-modal-header">
+                            <h2>Edit Reservation</h2>
+                            <button class="reservation-modal-close" (click)="closeReservationModal()">✕</button>
+                        </div>
+    
+                        <section class="reservation-modal-body">
+                            <div class="seat-edit-group">
+                                <label for="departSeat">Depart Seat:</label>
+                                <input id="departSeat" [formControl]="departSeatControl" placeholder="Enter new depart seat" />
+                                @if (departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) {
+                                    <p class="seat-taken">Someone's already sitting there.</p>
+                                }
+                            </div>
+    
+                            <div class="seat-edit-group">
+                                <label for="returnSeat">Return Seat:</label>
+                                <input id="returnSeat" [formControl]="returnSeatControl" placeholder="Enter new return seat" />
+                                @if (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value)) {
+                                    <p class="seat-taken">Someone's already sitting there.</p>
+                                }
+                            </div>
+                        </section>
+    
+                        <footer class="reservation-modal-actions">
+                            <button type="button" class="save-btn"
+                                (click)="updateReservationSeats()"
+                                [disabled]="(departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) || (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value))">
+                                Save
                             </button>
+                            <button type="button" class="delete-btn" (click)="deleteReservation()">
+                                Delete Reservation
+                            </button>
+                        </footer>
+                    </div>
+                </div>
+            }
+    
                         }
                         @if (selectedTab === 'past') {
                             <button class="add-review-btn" (click)="openReviewModal(reservation)">
@@ -172,46 +285,55 @@
                 
         </section>
 
-        <!-- Editing reservations-->
-        @if (reservationModalOpen && selectedReservation) {
-            <div class="reservation-modal-backdrop" (click)="closeReservationModal()">
-                <div class="reservation-modal" (click)="$event.stopPropagation()">
-                    <div class="reservation-modal-header">
-                        <h2>Edit Reservation</h2>
-                        <button class="reservation-modal-close" (click)="closeReservationModal()">✕</button>
-                    </div>
-
-                    <section class="reservation-modal-body">
-                        <div class="seat-edit-group">
-                            <label for="departSeat">Depart Seat:</label>
-                            <input id="departSeat" [formControl]="departSeatControl" placeholder="Enter new depart seat" />
-                            @if (departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) {
-                                <p class="seat-taken">Someone's already sitting there.</p>
-                            }
-                        </div>
-
-                        <div class="seat-edit-group">
-                            <label for="returnSeat">Return Seat:</label>
-                            <input id="returnSeat" [formControl]="returnSeatControl" placeholder="Enter new return seat" />
-                            @if (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value)) {
-                                <p class="seat-taken">Someone's already sitting there.</p>
-                            }
-                        </div>
-                    </section>
-
-                    <footer class="reservation-modal-actions">
-                        <button type="button" class="save-btn"
-                            (click)="updateReservationSeats()"
-                            [disabled]="(departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) || (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value))">
-                            Save
-                        </button>
-                        <button type="button" class="delete-btn" (click)="deleteReservation()">
-                            Delete Reservation
-                        </button>
-                    </footer>
+        <section class="tourist-dest">
+            <header>
+                <h1>Tourist Destinations</h1>
+            </header>
+            <section class="content">
+                <div class="selector">
+                    <label for="dests">Pick a destination</label>
+                    <select #destSelect name="dests" (change)="loadSight(destSelect.value)">
+                        <option value="--Select a city--" selected>--Select a city--</option>
+                        @for (place of allDests$ | async; track $index) {
+                            <option [value]="place">{{place}}</option>
+                        }
+                    </select>
                 </div>
-            </div>
-        }
 
+                <div class="dests">
+                    @if (currentDest === "--Select a city--") {
+                        <h3>Please select a city</h3>
+                    } @else {
+                        @for (place of currentDestSights$ | async; track $index) {
+                            <div class="card">
+                                <div class="image">
+                                    <img [src]="place.thumbnail || '/profile/gru.svg'" (error)="$any($event.target).src = '/profile/gru.svg'"/>
+                                </div>
+                                <div class="info">
+                                    <div class="info-top">
+                                        <span class="title">{{place.title}}</span>
+                                        <span class="loc">{{place.location}}</span>
+                                    </div>
+                                    <p class="desc">{{place.desc}}</p>
+                                    @if (place.rating) {
+                                        <p [class]="getRatingClass(place.rating)">Rating: {{place.rating}} / 5</p>
+                                    } @else {
+                                        <p class="rating no-rating">No rating available</p>
+                                    }
+                                </div>
+                                <div class="learn">
+                                    <a target="_blank" [href]="place.link"> View More</a>
+                                </div>
+                            </div>
+                        } @empty {
+                            <!-- DESIGN THIS IN A LATER COMMIT -->
+                            <h3>No destinations available</h3>
+                            <p>Max API calls likely reached</p>
+                        } 
+                    }
+                </div>
+            </section>
+        </section>
     </section>
+
 </section>

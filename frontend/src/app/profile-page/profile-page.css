@@ -6,7 +6,7 @@
     justify-content: space-evenly;
     gap: 50px;
 
-    height: 1000px;
+    /* height: 1000px; */
     & > * {
         margin-top: 70px;
     }
@@ -128,29 +128,226 @@
     
 }
 
-.reservation-view {
-    background-color: whitesmoke;
-    width: 1000px;
-    height: 600px;
-    max-height: 600px;
+/* kai, why arent the tourist-dest and reservation-view nested like you always like to do? */
+/* because its so fucking long */
 
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+.right-content {
     display: flex;
     flex-direction: column;
-    
-    
-    & .header {
-        flex-shrink: 0;
+    gap: 50px;
+
+    margin-bottom: 30px;
+
+    & .tourist-dest, .reservation-view {
+        display: flex;
+        flex-direction: column;
+
+        background-color: whitesmoke;
+        width: 1000px;
+        border-radius: 10px;
 
         & header {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
-        }
 
-        & h1 {
-            margin-left: 20px;
+            h1 {
+                margin-left: 20px;
+            }
         }
+    }
+}
+
+.tourist-dest {
+    height: 800px;
+    gap: 20px;
+    opacity: 1;
+
+    & .content {
+        display: flex;
+        flex-direction: column;
+        margin: 5px 20px 20px 20px;
+        padding: 20px 30px;
+        gap: 50px;
+    }
+
+    & .selector {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 20px;
+        gap: 6px;
+
+        border-left: 5px solid var(--primary-color);
+        border-right: 5px solid var(--primary-color);
+        border-radius: 5px;
+
+        transition: background-color 130ms ease, transform 130ms ease;
+
+        &:hover {
+            background-color:#e8e8e8;
+            transform: scale(1.01);
+
+            & label {
+                color:#616161;
+            }
+        }
+        
+        & label {
+            font-family: var(--header-font);
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8d8d8d;
+            letter-spacing: 0.1rem;
+            font-style: italic;
+            transition: color 130ms ease;
+        }
+        
+        & select {
+            width: 100%;
+            height: 25px;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    & .dests {
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+        overflow-y: auto;
+        overflow-x: clip;
+        scrollbar-width: thin;
+        gap: 45px;
+
+        & .card {
+            width: 100%;
+            height:max-content;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 145px 1fr auto;
+            align-items: center;
+            gap: 50px;
+            transition: background-color 130ms ease;
+
+            &:hover {
+                background-color: #e8e8e8;
+            }
+
+            & .image {
+                width: 145px;
+                height: 145px;
+                border-radius: 8px;
+                object-fit: cover;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+
+            & .info {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: space-around;
+
+                & .info-top {
+                    display: inline-flex;
+                    flex-direction: row;
+                    gap: 10px;
+                    align-items: center;
+                    justify-content: center;
+
+                    & .title {
+                        font-size: 1.4rem;
+                        font-weight: bold;
+                    }
+
+                    & .loc {
+                        font-size: 0.8rem;
+                        border-radius: 10px;
+                        border: 2px solid var(--primary-color);
+                        background-color:#2b4e8f;
+                        color: white;
+                        padding: 3px;
+                    }
+                }
+
+                & .rating {
+                    font-size: 0.8rem;
+                    border-radius: 10px;
+                    padding: 5px;
+                    text-align: center;
+
+                    &.no-rating {
+                        border: 2px solid rgb(194, 193, 193);
+                        background-color: gainsboro;
+                        color: black;
+                    }
+
+                    &.low {
+                        border: 2px solid rgb(87, 2, 2);
+                        background-color: rgb(165, 24, 24);
+                        color: whitesmoke;
+                    }
+
+                    &.medium {
+                        border: 2px solid rgb(149, 129, 3);
+                        background-color: rgb(199, 174, 13);
+                        color: whitesmoke;
+                    }
+
+                    &.high {
+                        border: 2px solid rgb(3, 131, 3);
+                        background-color: rgb(1, 184, 1);
+                        color: rgb(234, 255, 234);
+                    }
+                }
+            }
+
+            & .learn {
+                align-self: center;
+                text-align: center;
+                margin-right: 40px;
+                width: 90px;
+                border: 2px solid var(--primary-color);
+                border-radius: 10px;
+                padding: 5px;
+                font-size: 0.96rem;
+                
+                transition: 
+                    transform 130ms ease,
+                    background-color 130ms ease;
+
+                &:hover {
+                    transform: scale(1.1);
+                    background-color:#2b4e8f;
+                    font-weight: bold;
+
+                    & a {
+                        color: white;
+                    }
+                }
+
+                & a {
+                    text-decoration: none;
+
+                    transition: color 130ms ease;
+                }
+            }
+        }
+    }
+}
+
+
+.reservation-view {
+    height: 700px;
+    max-height: 700px;
+    & .header {
+        flex-shrink: 0;
     }
     
     & .tab {
@@ -262,6 +459,7 @@
         overflow-y: auto;
         margin: 20px;
         padding: 20px 30px;
+        scrollbar-width: thin;
 
         & table {
             width: 100%;
