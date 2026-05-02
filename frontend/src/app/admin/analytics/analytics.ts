@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { AnalyticsService } from './utils/analytics-service';
 import { AsyncPipe } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-analytics',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './analytics.html',
   styleUrl: './analytics.css',
 })

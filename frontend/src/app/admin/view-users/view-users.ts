@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../../_environments/environment";
 import { ChangeDetectorRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 
 type UserInfo = {
   userID: number;
@@ -17,7 +18,7 @@ type UserInfo = {
 @Component({
   selector: "app-view-users",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: "./view-users.html",
   styleUrls: ["./view-users.css"],
 })
