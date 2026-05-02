@@ -6,15 +6,47 @@ main {
     right: 0;
     bottom: 0;
     left: 0;
-    background-color:blue;
 
     display: flex;
     flex-direction: column;
     gap: 35px;
+
+    & header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.go-back {
+        background-color: var(--primary-color);
+        font-family: var(--header-font);
+        font-size: 1rem;
+        font-weight: bold;
+        color: whitesmoke;
+        
+        width: 100px;
+        height: 40px;
+
+        border-radius: 10px;
+        border: 2px solid whitesmoke;
+        margin-right: 40px;
+
+        cursor: pointer;
+
+        transition: background-color 400ms, transform 100ms;
+        &:hover {
+            background-color: rgb(45, 78, 139);
+        }
+
+        &:active {
+            transform: scale(0.94);
+        }
 }
 
 .box {
     background-color: whitesmoke;
+    box-shadow: 0px 4px 8px -2px rgba(9, 30, 66, 0.45);
 
     border-radius: 10px;
     overflow-y: auto;

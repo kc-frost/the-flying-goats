@@ -3,10 +3,11 @@ import { OverrideService } from './utils/override-service';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-reservation-override',
-  imports: [AsyncPipe, ReactiveFormsModule],
+  imports: [AsyncPipe, ReactiveFormsModule, RouterLink],
   templateUrl: './reservation-override.html',
   styleUrl: './reservation-override.css',
 })

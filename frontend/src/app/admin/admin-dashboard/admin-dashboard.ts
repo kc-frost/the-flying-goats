@@ -14,4 +14,8 @@ export class AdminDashboard {
   authService = inject(AuthService);
   userService = inject(UserService);
   isOutletActive = false;
+
+  goToUrl() {
+    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+  }
 }

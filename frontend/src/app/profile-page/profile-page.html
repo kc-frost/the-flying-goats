@@ -156,7 +156,7 @@
                                 [disabled]="(departSeatControl.value && isSeatTaken('depart', departSeatControl.value)) || (returnSeatControl.value && isSeatTaken('return', returnSeatControl.value))">
                                 Save
                             </button>
-                            <button type="button" class="delete-btn" (click)="deleteReservation()">
+                            <button type="button" class="delete-btn" [routerLink]="'/dashboard/reservation-override'">
                                 Delete Reservation
                             </button>
                         </footer>

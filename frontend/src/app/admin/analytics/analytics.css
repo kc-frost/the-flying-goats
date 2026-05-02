@@ -20,6 +20,11 @@ header {
     padding-right: 50px;
     padding-left: 20px;
 
+    .buttons {
+        display: flex;
+        gap: 15px;
+    }
+
     .refresh {
         background-color: var(--primary-color);
         font-family: var(--header-font);

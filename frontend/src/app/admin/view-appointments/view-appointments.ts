@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { environment } from "../../../_environments/environment";
+import { RouterLink } from "@angular/router";
 
 // Changed cause, you guessed it, DB changes. New datatypes, general attributes, and new names
 type ReservationRow = {
@@ -26,7 +27,7 @@ type ReservationRow = {
 @Component({
   selector: "app-view-appointments",
   standalone: true,
-  imports: [CommonModule,],
+  imports: [CommonModule, RouterLink],
   templateUrl: "./view-appointments.html",
   styleUrls: ["./view-appointments.css"],
 })

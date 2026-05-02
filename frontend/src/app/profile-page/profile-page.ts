@@ -7,11 +7,12 @@ import { environment } from '../../_environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DestinationCache } from './utils/destination-cache';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-profile-page',
   // AsyncPipe subscribes to an Observable/Promise and emits the latest value emitted, and then is marked to be checked for changes
-  imports: [ReactiveFormsModule, AsyncPipe, DatePipe],
+  imports: [ReactiveFormsModule, AsyncPipe, DatePipe, RouterLink],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })
