@@ -14,6 +14,42 @@
     background-size: cover;
 }
 
+/* Epilepsy mode stuff */
+:host-context(.epilepsy-home) .bg {
+    background-image: none;
+    animation: wheelRainbowHome 1200ms linear infinite;
+}
+
+:host-context(.epilepsy-home) .bg::before {
+    display: none;
+}
+
+/* Key colors that the rainbow switches between. Customizeable, just don't change the percentages or stuff breaks and it starts cycling badly and everything slows down and jesus christ
+ The percentages are transitions btw, which is why eventually this has to end at 100. */
+@keyframes wheelRainbowHome {
+    0% {
+        background: #ff1744;
+    }
+    16% {
+        background: #ff9100;
+    }
+    33% {
+        background: #ffea00;
+    }
+    50% {
+        background: #00e676;
+    }
+    66% {
+        background: #00b0ff;
+    }
+    83% {
+        background: #651fff;
+    }
+    100% {
+        background: #ff1744;
+    }
+}
+
 /* This is a pseudo element that doesn't appear in
 the HTML file. */
 /* This also creates the "fake" black overlay image. */

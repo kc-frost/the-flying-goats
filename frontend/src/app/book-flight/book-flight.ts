@@ -118,6 +118,7 @@ export class BookFlight {
         alert("Booking created! Safe travels :)");
       },
       error: (err) => {
+        alert(err.error?.error || err.error?.message || "Seats taken buddy, and my lap isn't an option.");
         console.log("BOOKING NOT RECEIVED:", err);
       }
     });

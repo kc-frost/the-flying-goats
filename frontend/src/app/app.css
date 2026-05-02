@@ -12,6 +12,36 @@ img.brand-logo {
     height: 100px;
 }
 
+/* FUN WHEEL EPILEPSY STUFF (not really epilepsy) */
+main.epilepsy-home {
+    min-height: 100vh;
+    animation: wheelRainbowHome 1200ms linear infinite;
+}
+
+@keyframes wheelRainbowHome {
+    0% {
+        background: #ff1744;
+    }
+    16% {
+        background: #ff9100;
+    }
+    33% {
+        background: #ffea00;
+    }
+    50% {
+        background: #00e676;
+    }
+    66% {
+        background: #00b0ff;
+    }
+    83% {
+        background: #651fff;
+    }
+    100% {
+        background: #ff1744;
+    }
+}
+
 /* For: navigation-links */
 .nav-links-group {
     display: flex;
@@ -25,6 +55,7 @@ img.brand-logo {
     display: flex;
     flex-direction: row;
     align-items: center;
+    /* I swear there should be a curly bracket here, but adding it breaks stuff somehow??? */
 
 .modal {
     display: flex;
@@ -103,3 +134,322 @@ img.brand-logo {
         content: url("/header/profile-dropdown/profile-dropdown-hover.svg");
     }
 }
+
+
+/* FUN WHEEL BUTTON STUFF */
+
+.wheel-nav-btn {
+    width: 52px;
+    height: 52px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.wheel-nav-icon {
+    width: 48px;
+    height: 48px;
+    fill: none;
+    stroke: white;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.wheel-nav-icon path {
+    fill: white;
+    stroke: white;
+}
+
+.wheel-nav-btn:hover .wheel-nav-icon {
+    transform: rotate(12deg);
+}
+
+/* END OF FUN WHEEL BUTTON STUFF */
+
+
+/* FUN WHEEL MODAL STUFF */
+
+.wheel-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+}
+
+.wheel-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.50);
+    z-index: 3000;
+}
+
+.wheel-panel {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(760px, calc(100% - 2vh));
+    max-height: calc(100vh - 2vh);
+    background: rgb(241, 241, 241);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    z-index: 3001;
+    overflow: hidden;
+}
+
+.wheel-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1.25vh;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    background: #192e56;
+    color: white;
+    position: relative;
+}
+
+.wheel-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.wheel-close-btn {
+    position: absolute;
+    right: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.wheel-close-btn img {
+    width: 18px;
+    height: 18px;
+}
+
+.wheel-body {
+    padding: 20px 20px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wheel-instructions {
+    margin: 0 0 14px 0;
+    font-weight: 700;
+    color: #192e56;
+    text-align: center;
+}
+
+.wheel-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.wheel-wheel-area {
+    position: relative;
+    width: 380px;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-spin-btn {
+    width: 360px;
+    height: 360px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-spin-btn:disabled {
+    cursor: default;
+}
+
+.prize-wheel {
+    width: 360px;
+    height: 360px;
+    border-radius: 999px;
+    position: relative;
+    border: 10px solid #2fc6d3;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+    background:
+        conic-gradient(
+            #ff3b30 0deg 45deg,
+            #31c4f3 45deg 90deg,
+            #7b2cff 90deg 135deg,
+            #ffcc00 135deg 180deg,
+            #34c759 180deg 225deg,
+            #ff2d55 225deg 270deg,
+            #af52de 270deg 315deg,
+            #ff9500 315deg 360deg
+        );
+    transition: transform 3.2s cubic-bezier(.12,.76,.22,1);
+}
+
+.wheel-idle-shell {
+    width: 360px;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-idle-shell.wheel-idle {
+    animation: wheelIdleSpin 11s linear infinite;
+}
+
+@keyframes wheelIdleSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.wheel-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 112px;
+    min-height: 42px;
+    margin-left: -56px;
+    margin-top: -21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    line-height: 1.05;
+    font-weight: 800;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.55);
+    transform-origin: center center;
+}
+
+.wheel-center {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background: #2fc6d3;
+    border: 8px solid white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 5px 16px rgba(0,0,0,0.34);
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 76px;
+    height: 62px;
+    z-index: 5;
+}
+
+.wheel-pointer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: white;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+.wheel-pointer::after {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    width: 58px;
+    height: 46px;
+    background: #2fc6d3;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+.wheel-leg {
+    width: 32px;
+    height: 86px;
+    background: #2fc6d3;
+    margin-top: -6px;
+}
+
+.wheel-base {
+    width: 148px;
+    height: 30px;
+    border: 6px solid #2fc6d3;
+    background: transparent;
+    border-radius: 4px;
+}
+
+.bad-wind-group {
+    position: absolute;
+    right: -115px;
+    top: 138px;
+    width: 140px;
+    z-index: 6;
+    animation: badWindShove 900ms ease-in-out infinite alternate;
+}
+
+.bad-wind {
+    width: 140px;
+    height: 72px;
+    object-fit: contain;
+}
+
+.bad-wind-group p {
+    margin: 0;
+    color: #192e56;
+    font-weight: 800;
+    font-size: 13px;
+    text-align: center;
+}
+
+@keyframes badWindShove {
+    from {
+        transform: translateX(0) rotate(-3deg);
+    }
+    to {
+        transform: translateX(-40px) rotate(4deg);
+    }
+}
+
+.wheel-result {
+    min-height: 54px;
+    margin-top: 18px;
+    color: #192e56;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-result h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+/* END OF FUN WHEEL MODAL STUFF */

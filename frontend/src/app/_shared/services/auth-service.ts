@@ -34,7 +34,8 @@ export class AuthService {
         // Mark user as logged-in
         this.setAuthenticatedTrue();
 
-        if (res.body.is_admin) {
+        // updated admin check to also see if the user has the role "admin" in the db
+        if (res.body.is_admin || res.body.role === 'Admin') {
           this.setAdminTrue()
         }
 
@@ -85,7 +86,7 @@ export class AuthService {
         this.userService.role = res.body.role;
 
         this.setAuthenticatedTrue();
-        if (res.body.is_admin) {
+        if (res.body.is_admin || res.body.role === 'Admin') {
           this.setAdminTrue()
         }
 

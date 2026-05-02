@@ -1,8 +1,8 @@
 from flask import jsonify, request, Blueprint
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from app.db import get_connection
 
-from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status
+from .service import get_user_reservations, get_profile_picture, save_profile_picture, update_booking_seat, update_booking_status, apply_fun_wheel_outcome\
 
 bp = Blueprint("profile", __name__)
 
@@ -31,7 +31,31 @@ def user_reservations():
     """    
 
     return jsonify(get_user_reservations(current_user.get_id()))
-        
+# FUN WHEEL STUFF
+@bp.route('/fun-wheel/outcome', methods=['POST'])
+@login_required
+def fun_wheel_outcome():
+    data = request.get_json()
+    outcome = data.get("outcome")
+
+    if outcome is None:
+        return jsonify({"success": False, "message": "Missing wheel outcome"}), 400
+
+    result = apply_fun_wheel_outcome(current_user.get_id(), outcome)
+
+    if not result.get("success"):
+        return jsonify({"success": False, "message": result.get("error")}), 500
+
+    if result.get("loggedOut"):
+        logout_user()
+
+    return jsonify({
+        "success": True,
+        "message": result.get("message"),
+        "loggedOut": result.get("loggedOut", False)
+    }), 200
+# Route part of FUN FUN WHEEL OF FUN ends here but more stuff later in file
+
 @bp.route('/get-bio', methods=['GET'])
 @login_required
 def get_bio():
