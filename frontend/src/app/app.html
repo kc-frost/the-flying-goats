@@ -1,5 +1,6 @@
-<main>
-  <!-- HEADER -->
+<!-- FUN WHEEL EPILEPSY MODE why am I still capitalizing everything?-->
+<main [class.epilepsy-home]="epilepsyMode() && isHomeRoute()">
+  <!-- HEADER --> 
   <header>
     <!-- Brand Details -->
     <section class="brand-group">
@@ -38,6 +39,34 @@
 
     <!-- User Profile -->
     <section class="dropdown">
+<!-- FUN WHEEL STUFF -->
+@if (authService.authenticated$ | async) {
+  <button
+    type="button"
+    class="wheel-nav-btn"
+    aria-label="Open Wheel"
+    title="Spin the chaos wheel"
+    (click)="openWheelModal()">
+    <svg class="wheel-nav-icon" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="48" r="33"></circle>
+      <circle cx="50" cy="48" r="24"></circle>
+      <circle cx="50" cy="48" r="6"></circle>
+      <line x1="50" y1="15" x2="50" y2="42"></line>
+      <line x1="50" y1="54" x2="50" y2="81"></line>
+      <line x1="17" y1="48" x2="44" y2="48"></line>
+      <line x1="56" y1="48" x2="83" y2="48"></line>
+      <line x1="27" y1="25" x2="45" y2="43"></line>
+      <line x1="55" y1="53" x2="73" y2="71"></line>
+      <line x1="73" y1="25" x2="55" y2="43"></line>
+      <line x1="45" y1="53" x2="27" y2="71"></line>
+      <path d="M39 6 L61 6 L50 23 Z"></path>
+      <line x1="42" y1="81" x2="36" y2="95"></line>
+      <line x1="58" y1="81" x2="64" y2="95"></line>
+      <line x1="30" y1="95" x2="70" y2="95"></line>
+    </svg>
+  </button>
+}
+<!-- END OF FUN WHEEL STUFF -->
       <p>Login/Register</p>
       <a (click)="handleProfileClick()">
         <img class="profile-dropdown" 
@@ -55,6 +84,72 @@
     </section>
   </header>
 
+<!-- FUN WHEEL MODAL STUFF -->
+@if (showWheelModal()) {
+  <section class="wheel-modal">
+    <div class="wheel-backdrop" (click)="closeWheelModal()"></div>
+
+    <section class="wheel-panel" (click)="$event.stopPropagation()">
+      <header class="wheel-header">
+        <h1>FUN FUN WHEEL OF FUN</h1>
+        <button type="button" class="wheel-close-btn" (click)="closeWheelModal()">
+          <img src="/xButton/maybe-virus.svg" alt="Close" />
+        </button>
+      </header>
+
+      <div class="wheel-body">
+        <p class="wheel-instructions">
+          Click the wheel to spin the FUN FUN WHEEL OF FUN
+        </p>
+
+        <section class="wheel-stage">
+          <div class="wheel-wheel-area">
+            <div class="wheel-pointer"></div>
+
+            @if (showBadWind()) {
+              <section class="bad-wind-group">
+                <img class="bad-wind" src="/wheel/bad-wind-definitely-real.png" alt="Bad wind png" />
+                <p>WHOOPS</p>
+              </section>
+            }
+
+            <div class="wheel-idle-shell" [class.wheel-idle]="!isWheelSpinning()">
+              <button
+                type="button"
+                class="wheel-spin-btn"
+                [disabled]="isWheelSpinning()"
+                (click)="spinWheel()">
+
+                <div
+                  class="prize-wheel"
+                  [style.transform]="'rotate(' + wheelRotation() + 'deg)'">
+
+                @for (option of wheelOptions; track option.label) {
+                  <span
+                    class="wheel-label"
+                    [style.transform]="'rotate(' + option.labelAngle + 'deg) translateY(-118px) rotate(90deg)'">
+                    {{ option.label }}
+                  </span>
+                }
+
+                <div class="wheel-center"></div>
+              </div>
+            </button>
+            </div>
+          </div>
+
+          <div class="wheel-leg"></div>
+          <div class="wheel-base"></div>
+        </section>
+
+        <section class="wheel-result">
+          <h2>{{ wheelResult() }}</h2>
+        </section>
+      </div>
+    </section>
+  </section>
+}
+<!-- END OF FUN WHEEL MODAL STUFF -->
   <!-- ---------- -->
   <!-- CONTENT -->
   <!-- Manual separator to make it visually distinct -->

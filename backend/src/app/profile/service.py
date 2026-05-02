@@ -1,7 +1,10 @@
 from flask import jsonify, current_app
 from unittest import result
 from app.db import get_connection
+from app.auth.security import get_hashed_password
 from datetime import timedelta
+# No idea what this import does but it fixes shit so we ball
+import re
 import serpapi
 
 def get_user_reservations(userID: str):
@@ -121,6 +124,219 @@ def update_booking_status(data):
             return {"success": False, 
                     "error": str(e)}
         
+# Hub of wheel outcomes
+def apply_fun_wheel_outcome(user_id: str, outcome: str):
+    conn = get_connection()
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                select u.userID, u.email, u.isStaff, s.positionID
+                from users u
+                left join staff s on s.staffID = u.userID
+                where u.userID = %s
+                for update
+            """, (user_id,))
+            user = cursor.fetchone()
+
+            if user is None:
+                return {"success": False, "error": "User not found"}
+
+            if outcome == "delete-account":
+                return delete_wheel_user(conn, cursor, user)
+
+            if outcome == "demotion":
+                return demote_wheel_user(conn, cursor, user)
+
+            if outcome == "become-pilot":
+                promote_wheel_user(cursor, user, 2)
+                conn.commit()
+                return {"success": True, "message": "You're a pilot now, captian."}
+
+            if outcome == "become-admin":
+                promote_wheel_user(cursor, user, 6)
+                conn.commit()
+                return {"success": True, "message": "You're now an admin. Don't break shit, please. -Richard"}
+
+            if outcome == "cancel-reservations":
+                cancelled_count = cancel_all_wheel_reservations(cursor, user["userID"], user["userID"])
+                conn.commit()
+                return {"success": True, "message": f"Cancelled {cancelled_count} reservation(s)."}
+
+            return {"success": True, "message": "Free flights for life! Wait, why is it windy?"}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False, "error": str(e)}
+
+# Deletes the user.
+# Admins can't be delted
+# Pilots can be deleted, but their flights are reassigned to another pilot
+def delete_wheel_user(conn, cursor, user):
+    if is_wheel_admin(user):
+        conn.commit()
+        return {"success": True, "message": "Admin shield activated. You survived... luckily..."}
+
+    if is_wheel_pilot(user):
+        reassign_wheel_pilot_flights(cursor, user["userID"])
+
+    cancel_all_wheel_reservations(cursor, user["userID"], user["userID"])
+    cursor.execute("delete from cancellationnotifs where userID = %s", (user["userID"],))
+    cursor.execute("delete from pilotassignmentnotifs where userID = %s", (user["userID"],))
+    cursor.execute("delete from users where userID = %s", (user["userID"],))
+    conn.commit()
+
+    return {
+        "success": True,
+        "message": "LMAOOOO Your account has been deleted by the wheel. GGs we hated you anyways.",
+        "loggedOut": True
+    }
+
+# Demotes pilots, and deletes customers.
+# Admins can't be demoted
+def demote_wheel_user(conn, cursor, user):
+    if is_wheel_admin(user):
+        conn.commit()
+        return {"success": True, "message": "Admin shield activated. You can't be demoted by the wheel."}
+
+    if not is_wheel_pilot(user):
+        return delete_wheel_user(conn, cursor, user)
+
+    reassigned_pilot_id = reassign_wheel_pilot_flights(cursor, user["userID"])
+    cursor.execute("update staff set positionID = %s where staffID = %s", (5, user["userID"]))
+    conn.commit()
+
+    return {
+        "success": True,
+        "message": f"You have been PROMOTED TO CUSTOMER!!! Your flights were reassigned to pilot {reassigned_pilot_id}."
+    }
+
+# Promotes customers to pilots. Admins and pilots don't benefit.
+def promote_wheel_user(cursor, user, position_id):
+    if not user["isStaff"]:
+        cursor.execute("update users set isStaff = true where userID = %s", (user["userID"],))
+
+    cursor.execute("""
+        insert into staff(staffID, email, positionID)
+        values (%s, %s, %s)
+        on duplicate key update email = values(email), positionID = values(positionID)
+    """, (user["userID"], user["email"], position_id))
+
+# When a pilot is demoted or fired, their flights gotta be reassigned
+def reassign_wheel_pilot_flights(cursor, demoted_pilot_id):
+    replacement_pilot_id = get_available_wheel_pilot(cursor, demoted_pilot_id)
+
+    if replacement_pilot_id is None:
+        replacement_pilot_id = create_spare_wheel_pilot(cursor)
+
+    cursor.execute("""
+        select IATA
+        from flight
+        where assignedPilot = %s
+    """, (demoted_pilot_id,))
+    flights = cursor.fetchall()
+
+    cursor.execute("""
+        update flight
+        set assignedPilot = %s
+        where assignedPilot = %s
+    """, (replacement_pilot_id, demoted_pilot_id))
+
+    for flight in flights:
+        cursor.execute("""
+            insert ignore into pilotassignmentnotifs(userID, flightID)
+            values (%s, %s)
+        """, (replacement_pilot_id, flight["IATA"]))
+
+    cursor.execute("delete from pilotassignmentnotifs where userID = %s", (demoted_pilot_id,))
+    return replacement_pilot_id
+
+# Helper method
+def get_available_wheel_pilot(cursor, excluded_pilot_id):
+    cursor.execute("""
+        select s.staffID
+        from staff s
+        where s.positionID = %s
+        and s.staffID <> %s
+        order by (
+            select count(*)
+            from flight f
+            where f.assignedPilot = s.staffID
+        ), s.staffID
+        limit 1
+    """, (2, excluded_pilot_id))
+    pilot = cursor.fetchone()
+    return None if pilot is None else pilot["staffID"]
+
+# Creating artificial pilots in the case that after a pilots deletion or demotion, there are no available pilots at the time.
+# This should, theoretically, be pretty rare, but just in case.
+# I use regex to find the highest numbered SparePilot (General naming scheme for these artificial pilots), then increment that number. Infinite pilots, infinite workers.
+def create_spare_wheel_pilot(cursor):
+    cursor.execute("""
+        select username
+        from users
+        where username REGEXP '^SparePilot[0-9]+$'
+    """)
+    # don't ask me how re works :pray:
+    spare_numbers = []
+    for row in cursor.fetchall():
+        match = re.fullmatch(r"SparePilot(\d+)", row["username"])
+        if match:
+            spare_numbers.append(int(match.group(1)))
+
+    # creates a user on the spot
+    next_spare_number = max(spare_numbers, default=0) + 1
+    username = f"SparePilot{next_spare_number}"
+    email = f"{username}@sparepilot.com"
+    phone_number = str(next_spare_number).zfill(10)[-10:]
+
+    cursor.execute("""
+        insert into users(phoneNumber, fname, lname, username, email, password, isStaff, registeredDate)
+        values (%s, %s, %s, %s, %s, %s, true, now())
+    """, (
+        phone_number,
+        "Spare",
+        f"Pilot{next_spare_number}",
+        username,
+        email,
+        get_hashed_password(username)
+    ))
+    spare_pilot_id = cursor.lastrowid
+
+    # This should be an update. Staff should never be inserted, but only updating their positionID.
+    cursor.execute("""
+        insert into staff(staffID, email, positionID)
+        values (%s, %s, %s)
+        on duplicate key update email = values(email), positionID = values(positionID)
+    """, (spare_pilot_id, email, 2))
+
+    return spare_pilot_id
+
+# Cancels all user reservations
+def cancel_all_wheel_reservations(cursor, user_id, cancelled_by):
+    cursor.execute("""
+        select bookingNumber
+        from booking
+        where userID = %s
+    """, (user_id,))
+    bookings = cursor.fetchall()
+
+    for booking in bookings:
+        booking_number = booking["bookingNumber"]
+        cursor.execute("delete from booking where bookingNumber = %s", (booking_number,))
+        cursor.execute("""
+            update bookinghistory
+            set cancelledBy = %s,
+                reason = %s
+            where bookingNumber = %s
+        """, (cancelled_by, "Cancelled by the FUN FUN WHEEL OF FUN", booking_number))
+
+    return len(bookings)
+
+def is_wheel_admin(user):
+    return user["positionID"] == 6 or user["email"].strip().endswith("@admin.com")
+
+def is_wheel_pilot(user):
+    return user["isStaff"] and user["positionID"] == 2
 # Look into adding leftover service files over the weekend
 
 def create_review(bookingID: str, userID: str, rating: str, review: str):

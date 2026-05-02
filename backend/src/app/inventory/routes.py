@@ -35,8 +35,8 @@ def addItemToInventory():
 @admin_required
 def deleteItemFromInventory():
     data = request.json
-    itemID = data['itemID']
-    result = delete_from_inventory(itemID)
+    # Fixed this, no idea why data wasn't in the argument anymore
+    result = delete_from_inventory(data)
     if result.get("success"):
         return jsonify({
             "success": True,

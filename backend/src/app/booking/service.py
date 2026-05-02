@@ -264,6 +264,9 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
         dict: A dict containing an error message if the op fails 
     """    
     conn = get_connection()
+    seatTakenQuery = """
+        select 1 from planeseat where seatNumber = %s and scheduleID = %s
+    """
     
     with conn.cursor() as cursor:
         try:
@@ -307,6 +310,17 @@ def book_a_flight(outboundFlight: dict, inboundFlight: dict):
             if row is None:
                 raise ValueError("Return Schedule can't be found")
             
+            outboundSeat = outboundFlight.get("seatNumber")
+            inboundSeat = inboundFlight.get("seatNumber")
+
+            cursor.execute(seatTakenQuery, (outboundSeat, departSchedule))
+            if cursor.fetchone():
+                return {"error": f"Depart seat {outboundSeat} is taken buddy. Pick a new seat."}
+
+            cursor.execute(seatTakenQuery, (inboundSeat, returnSchedule))
+            if cursor.fetchone():
+                return {"error": f"Return seat {inboundSeat} is taken buddy. Pick a new seat."}
+
 
             # Commented out for now, this is the old stuff, doesn't work anymore but I'ma preserve just in case.
 

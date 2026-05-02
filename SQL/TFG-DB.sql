@@ -142,7 +142,11 @@ create table booking(
     constraint ensure_depart_schedule_exists foreign key (departScheduleID) references schedule(scheduleID),
     constraint ensure_return_schedule_exists foreign key (returnScheduleID) references schedule(scheduleID),
     constraint ensure_depart_seat_exists foreign key (departSeat, departScheduleID) references planeseat(seatNumber, scheduleID),
-    constraint ensure_return_seat_exists foreign key (returnSeat, returnScheduleID) references planeseat(seatNumber, scheduleID)
+    constraint ensure_return_seat_exists foreign key (returnSeat, returnScheduleID) references planeseat(seatNumber, scheduleID),
+    -- I told you I was gunna add this index... eventually
+    -- These exists to speed up all the triggers associated with booking cause a lot of stuff relies on this combo
+    index booking_depart_seat_schedule(departSeat, departScheduleID),
+    index booking_return_seat_schedule(returnSeat, returnScheduleID)
 );
 
 -- python will change cancelledBy,
@@ -170,12 +174,15 @@ create table bookinghistory(
 
 create table reviews(
 ratingID int primary key auto_increment,
-bookingID int,
-userID int,
-rating int,
+bookingID int not null,
+userID int not null,
+rating int check (rating between 1 and 5),
 review text, 
 creationDate datetime default current_timestamp,
-deletionDate datetime default null
+deletionDate datetime default null,
+-- Ensures user and booking actually exists 
+constraint ensure_review_user_history_exists foreign key (userID) references userHistory(userID),
+constraint ensure_review_booking_history_exists foreign key (bookingID) references BookingHistory(BookingNumber)
 );
 
 create table item (
@@ -491,6 +498,44 @@ for each row
     from schedule ds
     join schedule rs on rs.scheduleID = new.returnScheduleID where ds.scheduleID = new.departScheduleID;
 
+-- Prevents two active bookings from taking the same seat on the same schedule
+create trigger preventOverlappingSeatsBeforeBookingInsert
+before insert on booking
+for each row
+begin
+    if exists (
+        select 1
+        from booking b
+        where (b.departSeat = new.departSeat and b.departScheduleID = new.departScheduleID)
+           or (b.returnSeat = new.departSeat and b.returnScheduleID = new.departScheduleID)
+           or (b.departSeat = new.returnSeat and b.departScheduleID = new.returnScheduleID)
+           or (b.returnSeat = new.returnSeat and b.returnScheduleID = new.returnScheduleID)
+    ) then
+        signal sqlstate '45000'
+        set message_text = "This seats taken buddy, and my lap isn't an option.";
+    end if;
+end//
+
+-- Same thing as previous trigger but for updates
+create trigger preventOverlappingSeatsBeforeBookingUpdate
+before update on booking
+for each row
+begin
+    if exists (
+        select 1
+        from booking b
+        where b.bookingNumber <> old.bookingNumber
+          and (
+                (b.departSeat = new.departSeat and b.departScheduleID = new.departScheduleID)
+             or (b.returnSeat = new.departSeat and b.returnScheduleID = new.departScheduleID)
+             or (b.departSeat = new.returnSeat and b.departScheduleID = new.returnScheduleID)
+             or (b.returnSeat = new.returnSeat and b.returnScheduleID = new.returnScheduleID)
+          )
+    ) then
+        signal sqlstate '45000'
+        set message_text = "Still taken bud. My lap still isn't an option either.";
+    end if;
+end//
 
 create trigger updateBookingHistoryAfterBookingCancellation
 after delete on booking
@@ -977,11 +1022,15 @@ insert into planeseat (seatNumber, scheduleID, classID) values
 ("1A", 1, 1),
 ("1A", 52, 1),
 ("1A", 53, 1),
+("1A", 54, 1),
+("1A", 55, 1),
 ("1A", 56, 1),
 ("1B", 1, 1),
 ("1B", 11, 1),
 ("1B", 52, 1),
 ("1B", 53, 1),
+("1B", 54, 1),
+("1B", 55, 1),
 ("1C", 54, 1),
 ("1C", 60, 1),
 ("2A", 11, 1),
@@ -991,10 +1040,10 @@ insert into planeseat (seatNumber, scheduleID, classID) values
 
 insert into booking (bookingNumber, bookingDate, userID, departSeat, returnSeat, departScheduleID, returnScheduleID) values
 (7, "2026-04-14 17:38:20", 29, "1B", "1A", 52, 53),
-(8, "2026-04-14 17:38:25", 29, "1B", "1A", 52, 53),
+(8, "2026-04-14 17:38:25", 29, "1A", "1B", 52, 53),
 (9, "2026-04-14 17:39:07", 29, "1C", "3C", 54, 55),
-(10, "2026-04-14 17:39:09", 29, "1C", "3C", 54, 55),
-(11, "2026-04-14 17:39:11", 29, "1C", "3C", 54, 55),
+(10, "2026-04-14 17:39:09", 29, "1A", "1A", 54, 55),
+(11, "2026-04-14 17:39:11", 29, "1B", "1B", 54, 55),
 (12, "2026-04-16 17:30:32", 1, "1A", "2C", 56, 57),
 (13, "2026-04-16 17:40:38", 1, "1C", "2A", 60, 61);
 
