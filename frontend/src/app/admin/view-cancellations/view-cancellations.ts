@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { CancellationService } from './utils/cancellation-service';
 import { BehaviorSubject } from 'rxjs';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-view-cancellations',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './view-cancellations.html',
   styleUrl: './view-cancellations.css',
 })

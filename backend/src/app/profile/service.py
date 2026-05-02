@@ -1,10 +1,11 @@
-from flask import jsonify
+from flask import jsonify, current_app
 from unittest import result
 from app.db import get_connection
 from app.auth.security import get_hashed_password
 from datetime import timedelta
 # No idea what this import does but it fixes shit so we ball
 import re
+import serpapi
 
 def get_user_reservations(userID: str):
     conn = get_connection()
@@ -336,3 +337,112 @@ def is_wheel_admin(user):
 
 def is_wheel_pilot(user):
     return user["isStaff"] and user["positionID"] == 2
+# Look into adding leftover service files over the weekend
+
+def create_review(bookingID: str, userID: str, rating: str, review: str):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+             INSERT INTO `reviews`(`bookingID`, `userID`, `rating`, `review`, `creationDate`) VALUES
+                (%s, %s, %s, %s, now())
+            """
+
+            cursor.execute(query, [bookingID, userID, rating, review,])
+            
+            conn.commit()
+            return {'success': 'ok'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}
+         
+def retrieve_user_dests(userID: str):
+  conn = get_connection()
+  
+  with conn.cursor() as cursor:
+    try:
+        query = """
+            SELECT DISTINCT a.place as userDestinations
+            FROM booking  b
+            JOIN schedule sd ON b.departScheduleID = sd.scheduleID
+            JOIN flight f ON sd.flightID = f.IATA
+            JOIN airports a ON f.destination = a.airportID
+            WHERE userID = %s;
+            """
+        
+        cursor.execute(query, (userID,))
+        dests = cursor.fetchall()
+
+        if dests is None:
+            return {'msg': 'user isnt going anywhere'}
+            
+        return dests
+    
+    except Exception as e:
+        return {'err': str(e)}
+
+def retrieve_tourist_destinations(location: str):
+    """Returns the top sights of a given city
+
+    WARNING: DO NOT REPEATEDLY CALL THIS FUNCTION WITHOUT REASON. IT MIGHT WASTE REQUESTS
+
+    Args:
+        location (str): City to be queried for
+
+    Returns:
+        dict: Top sights of the passsed city with the city as its key
+    """
+
+    client = serpapi.Client(api_key=current_app.config.get("SERPAPI_KEY"))
+    results = client.search({
+        "engine": "google",
+        "q": f"{location} top sights"
+    })
+
+    if results["top_sights"].get("sights") is None:
+        return {'msg': "no sights found"}
+    
+    print(results['search_metadata'])
+    
+    return results["top_sights"].get("sights")
+        
+        
+def retrieve_reviews(userID: str):
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT *
+                FROM `reviews`
+                WHERE `userID` = %s AND
+                `deletionDate` IS NULL
+            """
+
+            cursor.execute(query, [userID,])
+            rows = cursor.fetchall()
+
+            return rows
+        
+        except Exception as e:
+            return {'err': str(e)}
+        
+def erase_review(ratingID: int):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                UPDATE `reviews`
+                SET `deletionDate` = now()
+                WHERE `ratingID` = %s
+            """
+
+            cursor.execute(query, (ratingID,))
+            conn.commit()
+
+            return {'success': 'erased review'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}

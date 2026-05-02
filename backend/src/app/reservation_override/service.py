@@ -94,7 +94,37 @@ def get_cancelleable_reservations():
             return rows
         
         else:
-            return {'err': 'you are neither an admin or a pilot. get out of here'}
+            try:
+                query = """
+                    SELECT
+                        bh.bookingNumber,
+                        fd.IATA,
+                        u.username,
+                        sd.liftOff,
+                        sd.landing,
+                        ao.IATA as origin,
+                        ad.IATA as destination
+                    FROM
+                        bookinghistory bh
+                    INNER JOIN schedule sd ON bh.departScheduleID = sd.scheduleID
+                    INNER JOIN flight fd ON sd.flightID = fd.IATA
+                    INNER JOIN airports ao ON fd.origin = ao.airportID
+                    INNER JOIN airports ad ON fd.destination = ad.airportID
+                    INNER JOIN users u ON bh.userID = u.userID 
+                    WHERE bh.bookingStatus != 'Cancelled' AND
+                    u.username = %s
+                """
+
+                cursor.execute(query, (current_user.username,))
+                rows = cursor.fetchall()
+
+                if rows is None:
+                    return {'message': 'no reservations at all again..........'}
+
+            except Exception as e:
+                return {'err': str(e)}
+            
+            return rows
         
 def do_override_reservation(bookingNumber: int, reason: str):
     """Override the damn booking

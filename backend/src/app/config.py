@@ -12,6 +12,9 @@ class Config:
     
     # for sessions, return "dev" if none set
     SECRET_KEY = os.getenv("SECRET_KEY", "dev")
+
+    # for serpapi api (used for getting tourist destinations)
+    SERPAPI_KEY = os.getenv("SERPAPI_KEY")
     
     # for flask run
     FLASK_HOST = "0.0.0.0"

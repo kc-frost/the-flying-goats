@@ -1,7 +1,10 @@
 <main>
     <header>
         <h1>Analytics</h1>
-        <button class="refresh" (click)="refresh()">Refresh</button>
+        <div class="buttons">
+            <button class="refresh" (click)="refresh()">Refresh</button>
+            <button class="refresh" [routerLink]="'/dashboard'">Go Back</button>
+        </div>
     </header>
 
     <section class="analytics">
