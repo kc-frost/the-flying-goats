@@ -46,6 +46,12 @@
                                 <img src="/editIcon/pencilIcon.png" alt="Edit reservation" />
                             </button>
                         }
+                        @if (selectedTab === 'past') {
+                            <button class="add-review-btn" (click)="openReviewModal(reservation)">
+                                <img src="/profile/add-review.svg" alt="Add review" />
+                                Add Review
+                            </button>
+                        }
                     <table>
                     <tr>
                         <th>Date</th>
@@ -112,7 +118,57 @@
                     </tr>
                 </table>
                 </details>
+
+                @if (reviewModalOpen) {
+                <div class="review-modal-backdrop" (click)="closeReviewModal()">
+                    <div class="review-modal" (click)="$event.stopPropagation()">
+                        <header>
+                            <h2>Add Review</h2>
+                            <button (click)="closeReviewModal()">✕</button>
+                        </header>
+
+                        <form [formGroup]="reviewForm">
+                            <section class="body">
+                                @let currentReview = (currentReview$ | async);
+                                <div class="left">
+                                    <div class="stars">
+                                        @for (star of [1,2,3,4,5]; track star) {
+                                            <img [src]="star <= rating ? star_filled : star_empty"
+                                            (click)="setRating(star);" />
+                                        }
+                                    </div>
+
+                                    @if (currentReview) {
+                                        <p>Change this all you want.<br>Rating is stuck here <span style="font-weight: bold;">forever</span>!</p>
+                                    }
+                                
+                                    <div class="buttons">
+                                        <!-- Disables submit if there already exists a review, or form is invalid -->
+                                        <button class="submit" (click)="submitReview()" [disabled]="isFormInvalid" [class.disabled]="isFormInvalid">Save
+                                        </button>
+                                        <button class="delete" (click)="deleteReview(currentReview.ratingID)" [disabled]="!currentReview" [class.disabled]="!currentReview">Delete
+                                        </button>
+                                    </div>
+                                
+                                </div>
+                                <div class="right">
+                                    <div class="review">
+                                        @if (currentReview) {
+                                            <div class="review-block">
+                                                <p class="review-label"> Your Review </p>
+                                                <p class="review-content"> {{ currentReview.review }} </p>
+                                            </div>
+                                        } @else {
+                                            <textarea formControlName="review" maxlength="370" placeholder="This is the best flight ever..." ></textarea>
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                </div>
             }
+        }
                 
         </section>
 

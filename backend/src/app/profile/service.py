@@ -121,3 +121,61 @@ def update_booking_status(data):
                     "error": str(e)}
         
 # Look into adding leftover service files over the weekend
+
+
+def create_review(bookingID: str, userID: str, rating: str, review: str):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                INSERT INTO `reviews`(`bookingID`, `userID`, `rating`, `review`, `creationDate`) VALUES
+                (%s, %s, %s, %s, now())
+            """
+
+            cursor.execute(query, [bookingID, userID, rating, review,])
+            
+            conn.commit()
+            return {'success': 'ok'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}
+        
+def retrieve_reviews(userID: str):
+    conn = get_connection()
+    
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                SELECT *
+                FROM `reviews`
+                WHERE `userID` = %s AND
+                `deletionDate` IS NULL
+            """
+
+            cursor.execute(query, [userID,])
+            rows = cursor.fetchall()
+
+            return rows
+        
+        except Exception as e:
+            return {'err': str(e)}
+        
+def erase_review(ratingID: int):
+    conn = get_connection()
+
+    with conn.cursor() as cursor:
+        try:
+            query = """
+                UPDATE `reviews`
+                SET `deletionDate` = now()
+                WHERE `ratingID` = %s
+            """
+
+            cursor.execute(query, (ratingID,))
+            conn.commit()
+
+            return {'success': 'erased review'}
+        except Exception as e:
+            conn.rollback()
+            return {'err': str(e)}

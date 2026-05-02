@@ -203,7 +203,6 @@
     
     /* separated this from being nested under .content because i wanted more control */
     & details {
-        cursor: pointer;
         border: 3px solid #aaaaaa;
         border-radius: 5px;
         padding: 20px;
@@ -213,10 +212,47 @@
 
         &:hover {
             background-color: #aeaeae;
+            
+            & .add-review-btn {
+                background-color: transparent;
+                cursor: pointer;
+            }
+        }
+
+        & .add-review-btn {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+
+            border: 2px solid #808080;
+            border-radius: 8px;
+            padding: 4px 10px;
+
+            font-family: var(--body-font);
+            font-size: 0.8rem;
+
+            transition: 0.3s;
+
+            & img {
+                width: 20px;
+                height: 20px;
+                object-fit: contain;
+            }
+
+            &:hover {
+                border: 2px solid #808080;
+                background-color: rgb(225, 225, 225);
+            }
+
+            &:active {
+                transform: scale(0.93);
+            }
         }
     }
 
     & summary {
+        cursor: pointer;
         font-size:large;
         font-weight: 700;
     }
@@ -436,5 +472,209 @@
         &:hover {
             background-color: #c53030;
         }
+    }
+}
+
+.review-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.3);
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    
+    /* animation: slide-down 130ms ease; */
+    overflow: hidden;
+    
+    & .review-modal {
+        border-radius: 10px;
+        width: 700px;
+        height: 370px;
+        background-color: whitesmoke;
+        z-index: 1005;
+        display: flex;
+        flex-direction: column;
+        gap: 55px;
+
+        & header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+
+            & button {
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                font-weight: bold;
+                cursor: pointer;
+                color: #e3e3e3;
+                line-height: 1;
+                
+                transition: transform 130ms ease;
+
+                &:hover {
+                    color: rgb(183, 1, 1);
+                }
+
+                &:active {
+                    transform: scale(0.93);
+                }
+            }
+        }
+
+        & .body {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        & .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 80px;
+
+            & .stars {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                
+                & img {
+                    width: 30px;
+                    height: 30px;
+
+                    &:hover {
+                        cursor: pointer;
+                        content: url("/profile/star-filled.svg");
+
+                    }
+                }
+            }
+
+            & p:first-of-type {
+                margin-top: -70px;
+                margin-bottom: -10px;
+                color: red;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            & .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            & button {
+                width: 110px;
+                height: 35px;
+                font-size: 0.9rem;
+                font-weight: bold;
+                border-radius: 5px;
+                border: none;
+                color: white;
+
+                transition: transform 130ms ease;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &:active {
+                    transform: scale(0.98);
+                }
+                
+                &.disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            }
+
+            & .submit {
+                background-color: var(--primary-color);
+
+                &:hover {
+                    background-color: #2b4e8f;
+                }
+
+            }
+
+            & .delete {
+                background-color: #e53e3e;
+
+                &:hover {
+                    background-color: #C53030;
+                }
+            }
+        }
+
+        }
+
+        & .right {
+            & .review {
+                & textarea, .review-block {
+                    border-radius: 3px;
+                    width: 300px;
+                    height: 150px;
+                    padding: 5px;
+                    font-family: var(--body-font);
+                }
+
+                & .review-block {
+                    border-left: 3px solid var(--primary-color);
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    overflow: auto;
+                    scrollbar-width: thin;
+
+                    & * {
+                        margin-left: 3px;
+                    }
+
+                    & .review-label {
+                        font-size: 1.1rem;
+                        letter-spacing: 0.06rem;
+                        color: #6b7280;
+                        margin-bottom: 3px;
+                    }
+
+                    & .review-content {
+                        font-style: italic;
+                        font-size: 0.9rem;
+                        line-height: 1.5rem;
+                    }
+                }
+
+                textarea {
+                    border: 3px solid var(--primary-color);
+                    resize: none;
+                    transition: box-shadow 130ms ease;
+
+                    &:focus {
+                        box-shadow: 5px 5px var(--primary-color);
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
     }
 }
