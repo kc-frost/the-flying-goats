@@ -97,7 +97,7 @@ export class App implements OnInit {
     this.showWheelModal.set(true);
     this.isWheelSpinning.set(false);
     this.showBadWind.set(false);
-    this.wheelResult.set("Temp I'm thinking");
+    this.wheelResult.set("Try your luck!");
   }
 
   closeWheelModal() {
@@ -105,7 +105,7 @@ export class App implements OnInit {
     this.showWheelModal.set(false);
     this.isWheelSpinning.set(false);
     this.showBadWind.set(false);
-    this.wheelResult.set("Temp I'm thinking");
+    this.wheelResult.set("Try your luck!");
   }
 
   spinWheel() {

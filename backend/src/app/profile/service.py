@@ -1,6 +1,7 @@
 from flask import jsonify, current_app
 from unittest import result
 from app.db import get_connection
+from app.auth.service import check_ifpilot, check_role, if_admin
 from app.auth.security import get_hashed_password
 from datetime import timedelta
 # No idea what this import does but it fixes shit so we ball
@@ -172,11 +173,11 @@ def apply_fun_wheel_outcome(user_id: str, outcome: str):
 # Admins can't be delted
 # Pilots can be deleted, but their flights are reassigned to another pilot
 def delete_wheel_user(conn, cursor, user):
-    if is_wheel_admin(user):
+    if if_admin(user["email"]) or check_role(user["email"]).get("role") == "Admin":
         conn.commit()
         return {"success": True, "message": "Admin shield activated. You survived... luckily..."}
 
-    if is_wheel_pilot(user):
+    if check_ifpilot(user["userID"]):
         reassign_wheel_pilot_flights(cursor, user["userID"])
 
     cancel_all_wheel_reservations(cursor, user["userID"], user["userID"])
@@ -194,11 +195,11 @@ def delete_wheel_user(conn, cursor, user):
 # Demotes pilots, and deletes customers.
 # Admins can't be demoted
 def demote_wheel_user(conn, cursor, user):
-    if is_wheel_admin(user):
+    if if_admin(user["email"]) or check_role(user["email"]).get("role") == "Admin":
         conn.commit()
         return {"success": True, "message": "Admin shield activated. You can't be demoted by the wheel."}
 
-    if not is_wheel_pilot(user):
+    if not check_ifpilot(user["userID"]):
         return delete_wheel_user(conn, cursor, user)
 
     reassigned_pilot_id = reassign_wheel_pilot_flights(cursor, user["userID"])
@@ -332,11 +333,6 @@ def cancel_all_wheel_reservations(cursor, user_id, cancelled_by):
 
     return len(bookings)
 
-def is_wheel_admin(user):
-    return user["positionID"] == 6 or user["email"].strip().endswith("@admin.com")
-
-def is_wheel_pilot(user):
-    return user["isStaff"] and user["positionID"] == 2
 # Look into adding leftover service files over the weekend
 
 def create_review(bookingID: str, userID: str, rating: str, review: str):
