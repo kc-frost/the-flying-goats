@@ -155,3 +155,31 @@
 .search-btn:hover {
   color: white;
 }
+
+.user-delete-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 160ms, transform 100ms;
+}
+
+.user-delete-btn:hover {
+  background-color: rgba(190, 32, 32, 0.12);
+}
+
+.user-delete-btn:active {
+  transform: scale(0.94);
+}
+
+.user-delete-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}

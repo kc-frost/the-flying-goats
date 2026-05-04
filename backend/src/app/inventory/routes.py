@@ -29,7 +29,7 @@ def addItemToInventory():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 @bp.post("/inventory/delete")
 @admin_required
@@ -46,7 +46,7 @@ def deleteItemFromInventory():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 @bp.post("/inventory/edit")
 @admin_required
@@ -61,7 +61,7 @@ def editInventory():
         return jsonify({
             "success": False,
             "message": result.get("error")
-         }), 500
+         }), result.get("status", 500)
 
 
 @bp.post('/planes/add')
@@ -80,7 +80,7 @@ def create_plane():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 @bp.get('/planes')
 @admin_required
@@ -93,7 +93,7 @@ def planes():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 # Again, these are seperate. Probably going to display this for something else later,
 # but for now atleast, in inventory, planes will be called, not available planes.
@@ -108,7 +108,7 @@ def available_planes():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 @bp.post('/planes/update-ICAO')
 @admin_required
@@ -125,7 +125,7 @@ def updatePlaneStatus():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 @bp.post('/planes/delete')
 @admin_required
@@ -142,7 +142,7 @@ def deletePlane():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)
 
 # Read how this works in service.py
 @bp.post('/planes/clear-finished')
@@ -159,4 +159,4 @@ def clear_finished_flights():
         return jsonify({
             "success": False,
             "message": result.get("error")
-        }), 500
+        }), result.get("status", 500)

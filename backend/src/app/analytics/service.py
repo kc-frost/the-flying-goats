@@ -1,4 +1,5 @@
 from app.db import get_connection
+from app.auth.service import check_role, if_admin
 
 def get_most_active_users():
     """Queries the database for the top 3 most active users, defined by the total amount of reservations they've made
@@ -208,11 +209,12 @@ def get_cancellations_this_month_by_category():
     with conn.cursor() as cursor:
         try:
             query = """
-                select cancellationCategory, total_cancellations
-                from bhcancellationsbywhodoneit
-                where deletionYear = year(curdate())
-                and deletionMonth = month(curdate())
-                order by total_cancellations desc
+                select u.email
+                from bookinghistory bh
+                left join users u on u.userID = bh.cancelledBy
+                where bh.bookingStatus = 'Cancelled'
+                and year(bh.cancellationDate) = year(curdate())
+                and month(bh.cancellationDate) = month(curdate())
             """
 
             cursor.execute(query)
@@ -224,7 +226,31 @@ def get_cancellations_this_month_by_category():
         except Exception as e:
             return {'err': str(e)}
 
-        return rows
+        cancellationCounts = {}
+        for row in rows:
+            email = row.get('email') or ''
+
+            if if_admin(email):
+                cancellationCategory = 'admin'
+            else:
+                role = check_role(email)
+                if role.get('role') == 'Admin':
+                    cancellationCategory = 'admin'
+                elif role.get('role') == 'Pilot':
+                    cancellationCategory = 'pilot'
+                else:
+                    cancellationCategory = 'user'
+
+            cancellationCounts[cancellationCategory] = cancellationCounts.get(cancellationCategory, 0) + 1
+
+        result = []
+        for cancellationCategory, total_cancellations in cancellationCounts.items():
+            result.append({
+                'cancellationCategory': cancellationCategory,
+                'total_cancellations': total_cancellations
+            })
+
+        return sorted(result, key=lambda row: row['total_cancellations'], reverse=True)
 
 def get_total_reservations_this_year():
     conn = get_connection()

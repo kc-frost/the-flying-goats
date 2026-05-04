@@ -64,4 +64,29 @@ export class ViewUsers implements OnInit {
     this.searchTerm = "";
     this.getUsers();
   }
+
+  deleteUser(user: UserInfo): void {
+    const confirmed = window.confirm(`Delete user ${user.email}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    this.http
+      .post(`${environment.api_url}/admin/users/delete`, {
+        userID: user.userID,
+      })
+      .subscribe({
+        next: () => {
+          this.getUsers(this.searchTerm);
+        },
+        error: (err) => {
+          console.error("error deleting user:", err);
+          let message = "YOU messed up somehow.";
+          if (err.error && err.error.message) {
+            message = err.error.message;
+          }
+          alert(message);
+        },
+      });
+  }
 }

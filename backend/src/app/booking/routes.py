@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from .service import cancel_reservation, get_taken_seats, get_airports, filtered_airports, get_available_flights, book_a_flight, update_reservation_seat, user_details_match
 
@@ -110,7 +110,7 @@ def cancel_reservation_route():
     data = request.json
     bookingID = data.get("bookingID")
 
-    result = cancel_reservation(bookingID)
+    result = cancel_reservation(bookingID, current_user.get_id())
     if isinstance(result, dict) and "error" in result:
         return jsonify({"success": False, "message": result.get("error")}), 500
     return jsonify({"success": True, "message": "Reservation successfully cancelled"}), 200

@@ -1,5 +1,4 @@
 from app.db import get_connection
-from unittest import result
 
 """
 This specifically searches from the view inventorynames NOT inventory, because inventory is the container
@@ -12,7 +11,6 @@ def find_inventory():
         cursor.execute("select * from inventorynames")
         result = [dict(row) for row in cursor.fetchall()]
     return result
-
 """ 
 inserting into both inventory and item, and with how I did the sql structure, into respective tables as well.
 """
@@ -20,17 +18,18 @@ def insert_into_inventory(data):
     conn = get_connection()
 
     itemInsertQuery = """
-    insert into item(itemID, itemName, itemDescription, type) values (%s, %s, %s, %s);
+    insert into item(itemID, itemName, itemDescription, type) values (%s, %s, %s, %s)
+    on duplicate key update itemID = itemID;
     """
     inventoryQuery = """
     insert into inventory(itemID, quantity) values (%s, %s)
     on duplicate key update quantity = quantity + values(quantity);
     """
 
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(itemInsertQuery, (
-                data.get("itemID"), # Incase itemID isn't given, auto increment kicks in, so it's an optional field
+                data.get("itemID"),
                 data['itemName'],
                 data['itemDescription'],
                 data['type']
@@ -41,24 +40,27 @@ def insert_into_inventory(data):
                 data['quantity']
             ))
             conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return {"success": False, "error": str(e)}
+            return {"success": True}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False, "error": str(e)}
 
-    return {"success": True}
 
 def delete_from_inventory(data):
     conn = get_connection()
     deleteQuery = "delete from `inventory` where itemID=%s"
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(deleteQuery, (data['itemID'],))
+            if cursor.rowcount == 0:
+                conn.rollback()
+                return {"success": False, "error": "Inventory item not found.", "status": 404}
             conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return {"success": False,
-                    "error": str(e)}
-    return {"success": True}
+            return {"success": True}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False,
+                "error": str(e)}
 
 """
 Updates both item itself, and inventory quantity.
@@ -67,20 +69,26 @@ def update_inventory(data):
     conn = get_connection()
     inventoryQuery = "Update inventory set quantity = %s where itemID=%s"
     itemQuery = "Update item set type = %s where itemID = %s"
-    with conn.cursor() as cursor:
-        try:
+    existsQuery = "select 1 from inventory where itemID = %s"
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(existsQuery, (data['itemID'],))
+            if cursor.fetchone() is None:
+                return {"success": False,
+                        "error": "Inventory item not found.",
+                        "status": 404}
             cursor.execute(inventoryQuery, 
                            (data['quantity'], 
                             data['itemID']))
             cursor.execute(itemQuery, 
-                           (data['type'], 
+                           (data['type'],
                             data['itemID']))
             conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return {"success": False,
-                    "error": str(e)}
-        return{"success": True}
+            return{"success": True}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False,
+                "error": str(e)}
 
 
 """
@@ -105,18 +113,16 @@ def create_planes(data):
     conn = get_connection()
     query = """
     insert into plane(ICAO) values (%s)"""
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(query, (data['ICAO'],))
             conn.commit()
-            result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
-                    "data": result}
-        except Exception as e:
-            conn.rollback()
-            return {"success": False, 
-                    "error": str(e)}
-    return {"success": True, "data": result}
+                    "data": {"ICAO": data['ICAO']}}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False,
+                "error": str(e)}
 
 # This gets the planes from the planestatus view, not hanger.
 def get_planes():
@@ -124,16 +130,15 @@ def get_planes():
     query = """
     select * from planestatus
     """
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(query)
             result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
-        except Exception as e:
-            return {"success": False, 
-                    "error": str(e)}
-    return {"success": True, "data": result}
+    except Exception as e:
+        return {"success": False,
+                "error": str(e)}
 
 # Changed inherently cause of DB changes. Still not used, but might as well be consistent.
 def get_available_planes():
@@ -141,16 +146,15 @@ def get_available_planes():
     query = """
     select * from plane where ICAO in (select ICAO from hanger where planeStatus = "Available")
     """
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(query)
             result = [dict(row) for row in cursor.fetchall()]
             return {"success": True,
                     "data": result}
-        except Exception as e:
-            return {"success": False, 
-                    "error": str(e)}
-    return {"success": True, "data": result}
+    except Exception as e:
+        return {"success": False,
+                "error": str(e)}
 
 # For updating the plane ICAO between "In Use" and "Available".
 def update_plane_ICAO(data):
@@ -158,17 +162,24 @@ def update_plane_ICAO(data):
     query = """
     update plane set ICAO = %s where ICAO = %s
     """
-    with conn.cursor() as cursor:
-        try:
+    existsQuery = "select 1 from plane where ICAO = %s"
+    try:
+        with conn.cursor() as cursor:
+            if data['ICAO'] == data['old_ICAO']:
+                cursor.execute(existsQuery, (data['old_ICAO'],))
+                if cursor.fetchone() is not None:
+                    return {"success": True}
+
             cursor.execute(query, (data['ICAO'], data['old_ICAO']))
+            if cursor.rowcount == 0:
+                conn.rollback()
+                return {"success": False, "error": "Plane not found.", "status": 404}
             conn.commit()
-            return {"success": True,
-                    "data": result}
-        except Exception as e:
-            conn.rollback()
-            return {"success": False, 
-                    "error": str(e)}
-    return {"success": True, "data": result}
+            return {"success": True}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False,
+                "error": str(e)}
 
 # This will delete the plane from the plane table, but not the hanger. 
 def delete_plane(data):
@@ -176,18 +187,18 @@ def delete_plane(data):
     query = """
     delete from plane where ICAO = %s
     """
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(query, (data['ICAO'],))
+            if cursor.rowcount == 0:
+                conn.rollback()
+                return {"success": False, "error": "Plane not found.", "status": 404}
             conn.commit()
-            result = [dict(row) for row in cursor.fetchall()]
-            return {"success": True,
-                    "data": result}
-        except Exception as e:
-            conn.rollback()
-            return {"success": False, 
-                    "error": str(e)}
-    return {"success": True, "data": result}
+            return {"success": True}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False,
+                "error": str(e)}
 
 # This loops through all flights, and calls the function I created in MySQL
 # The function clears all pilots and planes from flights that are considered "completed"
@@ -197,15 +208,15 @@ def clear_all_expired_schedules():
     funcCallQuery = """
     call clearpilotandflightavailability()
     """
-    with conn.cursor() as cursor:
-        try:
+    try:
+        with conn.cursor() as cursor:
             cursor.execute("select IATA from flight")
             flights = cursor.fetchall()
             for f in flights:
                 cursor.execute(funcCallQuery)
             conn.commit()
             return {"success": True}
-        except Exception as e:
-            conn.rollback()
-            return {"success": False, "error": str(e)}
+    except Exception as e:
+        conn.rollback()
+        return {"success": False, "error": str(e)}
         

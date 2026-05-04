@@ -207,14 +207,25 @@ def update_reservation_seat(departSeat, returnSeat, bookingID):
         return {"error": str(e)}
 
 # If a user wants to change their reservation time, they just gotta cancel and rebook, ggs :100:, will implement a better version later
-def cancel_reservation(bookingID):
+def cancel_reservation(bookingID, cancelledBy):
     conn = get_connection()
     query = """
         delete from booking where bookingNumber = %s;
     """
+    updateQuery = """
+        update bookinghistory
+        set cancelledBy = %s,
+            reason = %s
+        where bookingNumber = %s;
+    """
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (bookingID,))
+            cursor.execute(updateQuery, (
+                cancelledBy,
+                "Cancelled by user.",
+                bookingID
+            ))
             conn.commit()
         except Exception as e:
             conn.rollback()
